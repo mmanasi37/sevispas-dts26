@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  '@openthink/audit': set this to true or false
+  esbuild: true
+  msgpackr-extract: set this to true or false
+  sharp: true
+  unrs-resolver: true
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
