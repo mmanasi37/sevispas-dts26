@@ -1,48 +1,39 @@
-import { Router, Request, Response } from 'express';
-import { db } from '../database/index.js';
+import { Router, type Request, type Response } from 'express';
+import * as staffController from '../controllers/user.controller.js';
+import * as borrowerController from '../controllers/user.controller.js';
+import * as loansController from '../controllers/user.controller.js';
+import * as authController from '../controllers/user.controller.js';
+import * as rolesController from '../controllers/user.controller.js';
+import * as permissionsController from '../controllers/user.controller.js';
+import * as userController from '../controllers/user.controller.js';
 
 const router: Router = Router();
 
 router.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!');
+    res.json({
+        status: "healthy"
+    });
 });
 
-router.get('/users', async (req: Request, res: Response) => {
-    // res.json([{ id: 1, name: 'Alice' }]);
+// Staff: StaffTable;
+// Borrower: BorrowerTable;
+// Loan: LoanTable;
+// LoanApplication: LoanApplicationTable;
+// LoanStatus: LoanStatusTable;
+// LoanHistory: LoanHistoryTable;
+// LoanBorrower: LoanBorrowerTable;
+// Role: RoleTable;
+// Permission: PermissionTable;
+// RoleUser: RoleUserTable;
+// PermissionRole: PermissionRoleTable;
 
-    // const persons = await db
-    //     .selectFrom('person')
-    //     .select('id')
-    //     .where('first_name', '=', 'Arnold')
-    //     .execute();
+router.get('/staff', staffController.findPeople);
+router.get('/borrower', borrowerController.findPeople);
+router.get('/loans', loansController.findPeople);
 
-    const catto = await db.transaction().execute(async (trx) => {
-        const jennifer = await trx.insertInto('person')
-            .values({
-                first_name: 'Jennifer',
-                last_name: 'Aniston',
-                gender: 'male'
-            })
-            .returning('id')
-            .executeTakeFirstOrThrow()
-
-        return await trx.insertInto('pet')
-            .values({
-                owner_id: jennifer.id,
-                name: 'Catto',
-                species: 'cat',
-                // is_favorite: false,
-            })
-            .returningAll()
-            .executeTakeFirst()
-    })
-
-    const persons = await db
-        .selectFrom(['person', 'pet'])
-        .select('person.id')
-        .execute();
-
-    return persons;
-});
+router.get('/auth', authController.findPeople);
+router.get('/users', userController.findPeople);
+router.get('/roles', rolesController.findPeople);
+router.get('/permissions', permissionsController.findPeople);
 
 export default router;

@@ -1,27 +1,22 @@
-import { Pool } from 'pg'
-import { Kysely, PostgresDialect } from 'kysely'
-import { FileMigrationProvider, Migrator } from 'kysely/migration'
-import { Database } from '../types.js';
+import { Pool } from 'pg';
+import { Kysely, PostgresDialect } from 'kysely';
+import { FileMigrationProvider, Migrator } from 'kysely/migration';
+import { type Database } from './schema.js';
 
 const dialect = new PostgresDialect({
     pool: new Pool({
-        database: 'test',
+        database: 'sevispass_db',
         host: 'localhost',
-        user: 'admin',
-        port: 5434,
-        max: 10,
+        port: 5432,
+        user: 'db_admin',
+        password: 'secr3t',
+        // schema: 'system_v1'
     })
 });
 
 export const db = new Kysely<Database>({
     dialect,
-})
+});
 
-// const migratorConfig = {
-//     db,
-//     provider: new FileMigrationProvider({}),
-//     allowUnorderedMigrations: true
-// };
-
-// const migrator = new Migrator(migratorConfig)
-// await migrator.migrateToLatest()
+// const tenant = "system_v1";
+// db.withSchema(tenant)

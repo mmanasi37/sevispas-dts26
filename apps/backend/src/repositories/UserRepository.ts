@@ -1,15 +1,23 @@
 import { db } from '../database/index.js';
-import { PersonUpdate, Person, NewPerson } from '../types.js';
+import { UserUpdate, User, NewUser } from '../types.js';
 
-export async function findPersonById(id: number) {
-    return await db.selectFrom('person')
+
+const result = await db
+    .selectFrom('User')
+    // .innerJoin('Users as u', 'u.id', 'p.author_id')
+    // .select(['p.title', 'u.name as author_name'])
+    .execute();
+
+
+export async function findUserById(id: number) {
+    return await db.selectFrom('User')
         .where('id', '=', id)
         .selectAll()
         .executeTakeFirst();
 }
 
-export async function findPeople(criteria: Partial<Person>) {
-    let query = db.selectFrom('person')
+export async function findPeople(criteria: Partial<User>) {
+    let query = db.selectFrom('User')
 
     if (criteria.id) {
         query = query.where('id', '=', criteria.id) // Kysely is immutable, you must re-assign!
@@ -38,19 +46,19 @@ export async function findPeople(criteria: Partial<Person>) {
     return await query.selectAll().execute()
 }
 
-export async function updatePerson(id: number, updateWith: PersonUpdate) {
-    await db.updateTable('person').set(updateWith).where('id', '=', id).execute()
+export async function updateUser(id: number, updateWith: UserUpdate) {
+    await db.updateTable('User').set(updateWith).where('id', '=', id).execute()
 }
 
-export async function createPerson(person: NewPerson) {
-    return await db.insertInto('person')
-        .values(person)
+export async function createUser(user: NewUser) {
+    return await db.insertInto('User')
+        .values(user)
         .returningAll()
         .executeTakeFirstOrThrow()
 }
 
-export async function deletePerson(id: number) {
-    return await db.deleteFrom('person').where('id', '=', id)
+export async function deleteUser(id: number) {
+    return await db.deleteFrom('User').where('id', '=', id)
         .returningAll()
         .executeTakeFirst()
 }

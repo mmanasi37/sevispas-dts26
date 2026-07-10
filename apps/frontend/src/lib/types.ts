@@ -1,3 +1,8 @@
+export interface UserSession {
+  username: string;
+  password: string;
+  cookieName: string;
+}
 export interface User {
   id: string;
   name: string;

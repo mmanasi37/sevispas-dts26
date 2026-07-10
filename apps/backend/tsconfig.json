@@ -2,8 +2,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "target": "ES2022",
-    "module": "NodeNext",
+    "target": "esnext",
+    "module": "nodenext",
     "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
     "strict": true,
@@ -12,7 +12,11 @@
     "skipLibCheck": true,
     "declaration": true,
     "declarationMap": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
   },
   "include": ["src/**/*"]
 }

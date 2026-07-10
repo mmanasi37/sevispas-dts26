@@ -1,69 +1,66 @@
-import {
-    ColumnType,
-    Generated,
-    GeneratedAlways,
-    Insertable,
-    JSONColumnType,
-    Selectable,
-    Updateable,
-} from 'kysely'
+import { Selectable, Insertable, Updateable } from "kysely";
+import { UserTable, PetTable, AuditTable, AuthProviderTable, AuthTokenTable, BorrowerTable, LoanApplicationTable, LoanBorrowerTable, LoanHistoryTable, LoanStatusTable, LoanTable, PermissionRoleTable, PermissionTable, RoleTable, RoleUserTable, StaffTable } from "./database/schema.js";
 
-export interface Database {
-    person: PersonTable
-    pet: PetTable
-    audit: AuditTable
-    // toy: ToyTable
-    // wine: WineTable
-    // wine_stock_change: WineStockChangeTable
-}
+export type User = Selectable<UserTable>;
+export type NewUser = Insertable<UserTable>;
+export type UserUpdate = Updateable<UserTable>;
 
-interface AuditTable {
-    id: Generated<number>
-    action: string
-}
+export type AuthProvider = Selectable<AuthProviderTable>;
+export type NewAuthProvider = Insertable<AuthProviderTable>;
+export type AuthProviderUpdate = Updateable<AuthProviderTable>;
 
-export interface PersonTable {
-    id: Generated<number>
-    first_name: string
-    last_name: string | null
-    gender: 'male' | 'female' | 'other' | null
-    metadata: JSONColumnType<{
-        login_at: string
-        ip: string | null
-        agent: string | null
-        plan: 'free' | 'premium'
-    }> | null
-    // address: { city: string } | null
-    // age: number | null
-    // birthdate: ColumnType<Date | null, string | null | undefined, string | null>
-    // experience: { role: string }[] | null
-    // has_pets: Generated<'Y' | 'N'>
-    // middle_name: string | null
-    // nicknames: string[] | null
-    // nullable_column: string | null
-    // profile: {
-    //     addresses: { city: string }[]
-    //     website: { url: string }
-    // } | null
-    // updated_at: ColumnType<Date | null, string | null | undefined, string | null>
-    // // created_at: ColumnType<Date, string | undefined, never>
-    // created_at: GeneratedAlways<Date>
-    // deleted_at: ColumnType<Date | null, string | null | undefined, string | null>
-    // marital_status: 'single' | 'married' | 'divorced' | 'widowed' | null
-}
+export type AuthToken = Selectable<AuthTokenTable>;
+export type NewAuthToken = Insertable<AuthTokenTable>;
+export type AuthTokenUpdate = Updateable<AuthTokenTable>;
 
-export type Person = Selectable<PersonTable>
-export type NewPerson = Insertable<PersonTable>
-export type PersonUpdate = Updateable<PersonTable>
+export type Staff = Selectable<StaffTable>;
+export type NewStaff = Insertable<StaffTable>;
+export type StaffUpdate = Updateable<StaffTable>;
 
-export interface PetTable {
-    id: Generated<number>
-    name: string
-    owner_id: number
-    species: 'dog' | 'cat'
-}
+export type Borrower = Selectable<BorrowerTable>;
+export type NewBorrower = Insertable<BorrowerTable>;
+export type BorrowerUpdate = Updateable<BorrowerTable>;
 
-export type Pet = Selectable<PetTable>
-export type NewPet = Insertable<PetTable>
-export type PetUpdate = Updateable<PetTable>
+export type Loan = Selectable<LoanTable>;
+export type NewLoan = Insertable<LoanTable>;
+export type LoanUpdate = Updateable<LoanTable>;
 
+export type LoanApplication = Selectable<LoanApplicationTable>;
+export type NewLoanApplication = Insertable<LoanApplicationTable>;
+export type LoanApplicationUpdate = Updateable<LoanApplicationTable>;
+
+export type LoanStatus = Selectable<LoanStatusTable>;
+export type NewLoanStatus = Insertable<LoanStatusTable>;
+export type LoanStatusUpdate = Updateable<LoanStatusTable>;
+
+export type LoanHistory = Selectable<LoanHistoryTable>;
+export type NewLoanHistory = Insertable<LoanHistoryTable>;
+export type LoanHistoryUpdate = Updateable<LoanHistoryTable>;
+
+export type LoanBorrower = Selectable<LoanBorrowerTable>;
+export type NewLoanBorrower = Insertable<LoanBorrowerTable>;
+export type LoanBorrowerUpdate = Updateable<LoanBorrowerTable>;
+
+export type Role = Selectable<RoleTable>;
+export type NewRole = Insertable<RoleTable>;
+export type RoleUpdate = Updateable<RoleTable>;
+
+export type Permission = Selectable<PermissionTable>;
+export type NewPermission = Insertable<PermissionTable>;
+export type PermissionUpdate = Updateable<PermissionTable>;
+
+export type RoleUser = Selectable<RoleUserTable>;
+export type NewRoleUser = Insertable<RoleUserTable>;
+export type RoleUserUpdate = Updateable<RoleUserTable>;
+
+export type PermissionRole = Selectable<PermissionRoleTable>;
+export type NewPermissionRole = Insertable<PermissionRoleTable>;
+export type PermissionRoleUpdate = Updateable<PermissionRoleTable>;
+
+export type Audit = Selectable<AuditTable>;
+export type NewAudit = Insertable<AuditTable>;
+export type AuditUpdate = Updateable<AuditTable>;
+
+export type Pet = Selectable<PetTable>;
+export type NewPet = Insertable<PetTable>;
+export type PetUpdate = Updateable<PetTable>;

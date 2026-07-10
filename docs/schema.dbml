@@ -1,0 +1,182 @@
+// Database: sevispass_db
+// Schema: system_v1
+
+Table User {
+  id bigint [pk, increment]
+  phone_number int
+  email varchar(100)
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table AuthProvider {
+  id bigint [pk, increment]
+  phone_number int
+  email varchar(100)
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table AuthToken {
+  id bigint [pk, increment]
+  user_id bigint [ref: > User.id]
+  auth_provider_id bigint [ref: > AuthProvider.id]
+  token varchar(500)
+  token_type varchar(50)
+  expires_at timestamp
+  is_revoked boolean
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table Staff {
+  id bigint [pk, increment]
+  user_id bigint [ref: > User.id]
+  staff_number varchar(50)
+  first_name varchar(100)
+  last_name varchar(100)
+  role varchar(50)
+  department varchar(100)
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table Borrower {
+  id bigint [pk, increment]
+  user_id bigint [ref: > User.id]
+  borrower_number varchar(50)
+  first_name varchar(100)
+  last_name varchar(100)
+  date_of_birth date
+  national_id varchar(50)
+  phone_number int
+  email varchar(100)
+  physical_address text
+  employment_status varchar(50)
+  employer varchar(100)
+  monthly_income decimal(10,2)
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table Loan {
+  id bigint [pk, increment]
+  borrower_id bigint [ref: > Borrower.id]
+  loan_number varchar(50)
+  amount decimal(15,2)
+  interest_rate decimal(5,2)
+  term_months int
+  purpose text
+  applied_date date
+  approved_date date
+  disbursement_date date
+  created_by bigint [ref: > Staff.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table LoanApplication {
+  id bigint [pk, increment]
+  loan_id bigint [ref: > Loan.id]
+  borrower_id bigint [ref: > Borrower.id]
+  application_date date
+  application_status varchar(50)
+  reviewed_by bigint [ref: > Staff.id]
+  review_date date
+  review_notes text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table LoanStatus {
+  id bigint [pk, increment]
+  loan_id bigint [ref: > Loan.id]
+  status_code varchar(50)
+  status_name varchar(100)
+  status_description text
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table LoanHistory {
+  id bigint [pk, increment]
+  loan_id bigint [ref: > Loan.id]
+  status_id bigint [ref: > LoanStatus.id]
+  changed_by bigint [ref: > Staff.id]
+  old_status varchar(50)
+  new_status varchar(50)
+  change_date timestamp
+  change_notes text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+}
+
+Table LoanBorrower {
+  id bigint [pk, increment]
+  loan_id bigint [ref: > Loan.id]
+  borrower_id bigint [ref: > Borrower.id]
+  is_primary boolean
+  relationship_type varchar(50)
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by bigint
+
+  Indexes {
+    loan_id [name: "loanborrower_loan_id_foreign"]
+    borrower_id [name: "loanborrower_borrower_id_foreign"]
+    deleted_by [name: "loanborrower_deleted_by_foreign"]
+  }
+}
+
+Table Role {
+  id int [pk, increment]
+  name varchar
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table Permission {
+  id int [pk, increment]
+  name varchar
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+// Pivot Tables
+Table RoleUser {
+  role_id bigint [ref: > Role.id]
+  user_id bigint [ref: > User.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table PermissionRole {
+  permission_id bigint [ref: > Permission.id]
+  role_id bigint [ref: > Role.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp  
+}

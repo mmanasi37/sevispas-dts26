@@ -2,8 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Users, FileText, Clock, DollarSign } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function StaffDashboard() {
   const stats = [
@@ -72,7 +74,7 @@ export default function StaffDashboard() {
                   </div>
                 ))}
               </div>
-              <Button variant="outline" className="w-full mt-4">View All Applications</Button>
+              <Link href={"/staff/applications"} className={cn(buttonVariants('link'), "w-full mt-4")}>View All Applications</Link>
             </CardContent>
           </Card>
 

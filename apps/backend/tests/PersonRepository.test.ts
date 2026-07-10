@@ -1,10 +1,10 @@
 import { sql } from 'kysely'
 import { db } from '../src/database/index'
-import * as PersonRepository from '../src/repositories/PersonRepository'
+import * as UserRepository from '../src/repositories/UserRepository'
 
-describe('PersonRepository', () => {
+describe('UserRepository', () => {
     before(async () => {
-        await db.schema.createTable('person')
+        await db.schema.createTable('User')
             .addColumn('id', 'serial', (cb) => cb.primaryKey())
             .addColumn('first_name', 'varchar', (cb) => cb.notNull())
             .addColumn('last_name', 'varchar')
@@ -16,34 +16,34 @@ describe('PersonRepository', () => {
     })
 
     afterEach(async () => {
-        await sql`truncate table ${sql.table('person')}`.execute(db)
+        await sql`truncate table ${sql.table('User')}`.execute(db)
     })
 
     after(async () => {
-        await db.schema.dropTable('person').execute()
+        await db.schema.dropTable('User').execute()
     })
 
-    it('should find a person with a given id', async () => {
-        await PersonRepository.findPersonById(123)
+    it('should find a user with a given id', async () => {
+        await UserRepository.findUserById(123)
     })
 
     it('should find all people named Arnold', async () => {
-        await PersonRepository.findPeople({ first_name: 'Arnold' })
+        await UserRepository.findPeople({ first_name: 'Arnold' })
     })
 
-    it('should update gender of a person with a given id', async () => {
-        await PersonRepository.updatePerson(123, { gender: 'woman' })
+    it('should update gender of a user with a given id', async () => {
+        await UserRepository.updateUser(123, { gender: 'woman' })
     })
 
-    it('should create a person', async () => {
-        await PersonRepository.createPerson({
+    it('should create a user', async () => {
+        await UserRepository.createUser({
             first_name: 'Jennifer',
             last_name: 'Aniston',
             gender: 'woman',
         })
     })
 
-    it('should delete a person with a given id', async () => {
-        await PersonRepository.deletePerson(123)
+    it('should delete a user with a given id', async () => {
+        await UserRepository.deleteUser(123)
     })
 })

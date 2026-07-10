@@ -3,7 +3,7 @@ import { Pool } from 'pg'
 import { promises as fs } from 'fs'
 import { Kysely, PostgresDialect } from 'kysely'
 import { FileMigrationProvider, Migrator } from 'kysely/migration'
-import { Database } from '../types.js'
+import type { Database } from './schema.js'
 
 async function migrateToLatest() {
   const db = new Kysely<Database>({
@@ -14,6 +14,15 @@ async function migrateToLatest() {
       }),
     }),
   })
+
+  // const migratorConfig = {
+  //     db,
+  //     provider: new FileMigrationProvider({}),
+  //     allowUnorderedMigrations: true
+  // };
+
+  // const migrator = new Migrator(migratorConfig)
+  // await migrator.migrateToLatest();
 
   const migrator = new Migrator({
     db,

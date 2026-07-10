@@ -7,10 +7,16 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm -r test",
-    "clean": "pnpm -r --parallel exec rm -rf dist"
+    "clean": "pnpm -r --parallel exec rm -rf dist",
+    "generate-sql": "dbml2sql docs/schema.dbml --postgres -o docs/schema.sql",
+    "generate-ts": "kysely-codegen --dialect postgres --input-file docs/schema.sql --output-file db.d.ts"
   },
   "engines": {
     "node": ">=22",
     "pnpm": ">=9"
+  },
+  "devDependencies": {
+    "kysely-codegen": "^0.20.0",
+    "typescript": "^6.0.3"
   }
 }
