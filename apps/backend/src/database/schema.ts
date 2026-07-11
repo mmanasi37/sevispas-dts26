@@ -4,37 +4,37 @@ import type {
     JSONColumnType,
 } from 'kysely';
 
-// export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
-//     ? ColumnType<S, I | undefined, U>
-//     : ColumnType<T, T | undefined, T>;
-
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 export type Decimal = ColumnType<number, number | string, number | string>;
 
 export interface Database {
-    User: UserTable;
     AuthProvider: AuthProviderTable;
     AuthToken: AuthTokenTable;
     Staff: StaffTable;
     Borrower: BorrowerTable;
     Loan: LoanTable;
     LoanApplication: LoanApplicationTable;
-    LoanStatus: LoanStatusTable;
-    LoanHistory: LoanHistoryTable;
-    LoanBorrower: LoanBorrowerTable;
+    LoanApplicationStatus: LoanApplicationStatusTable;
+    LoanStatusType: LoanStatusTypeTable;
+    LoanDocument: LoanDocumentTable;
     Role: RoleTable;
     Permission: PermissionTable;
-    RoleUser: RoleUserTable;
+    RoleStaff: RoleStaffTable;
     PermissionRole: PermissionRoleTable;
+    BorrowerAccount: BorrowerAccountTable;
+    MainAccount: MainAccountTable;
+
 }
 
-export interface UserTable {
+export interface StaffTable {
     id: Generated<number>;
+    staff_number: string | null;
     first_name: string
     last_name: string | null
     gender: 'male' | 'female' | 'other' | null
     phone_number: number | null;
     email: string | null;
+    role: string | null;
     // marital_status: 'single' | 'married' | 'divorced' | 'widowed' | null
     // address: { city: string } | null
     // age: number | null
@@ -76,7 +76,7 @@ export interface AuthProviderTable {
 
 export interface AuthTokenTable {
     id: Generated<number>;
-    user_id: number | null;
+    staff_id: number | null;
     auth_provider_id: number | null;
     token: string | null;
     token_type: string | null;
@@ -87,24 +87,9 @@ export interface AuthTokenTable {
     deleted_at: Timestamp | null;
     deleted_by: number | null;
 }
-
-export interface StaffTable {
-    id: Generated<number>;
-    user_id: number | null;
-    staff_number: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    role: string | null;
-    department: string | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
-    deleted_at: Timestamp | null;
-    deleted_by: number | null;
-}
-
 export interface BorrowerTable {
     id: Generated<number>;
-    user_id: number | null;
+    staff_id: number | null;
     borrower_number: string | null;
     first_name: string | null;
     last_name: string | null;
@@ -142,10 +127,12 @@ export interface LoanTable {
 
 export interface LoanApplicationTable {
     id: Generated<number>;
-    loan_id: number | null;
-    borrower_id: number | null;
-    application_date: ColumnType<Date, Date | string, Date | string> | null;
-    application_status: string | null;
+    loan_id: number;
+    loan_officer_id: number;
+    loan_amount: number;
+    loan_application_status_id: number;
+    application_date: ColumnType<Date, Date | string, Date | string>;
+    borrower_id: number;
     reviewed_by: number | null;
     review_date: ColumnType<Date, Date | string, Date | string> | null;
     review_notes: string | null;
@@ -154,45 +141,50 @@ export interface LoanApplicationTable {
     deleted_at: Timestamp | null;
     deleted_by: number | null;
 }
-
-export interface LoanStatusTable {
+export interface LoanStatusTypeTable {
     id: Generated<number>;
-    loan_id: number | null;
-    status_code: string | null;
-    status_name: string | null;
+    status_name: string;
+    status_code: string;
     status_description: string | null;
+    created_at: Timestamp;
+    updated_at: Timestamp;
+}
+
+export interface LoanApplicationStatusTable {
+    id: Generated<number>;
+    loan_application_id: number | null;
+    loan_status_type_id: number | null;
     is_active: boolean | null;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
-    deleted_at: Timestamp | null;
-    deleted_by: number | null;
 }
 
-export interface LoanHistoryTable {
+export interface LoanApplicationApprovalTable {
     id: Generated<number>;
-    loan_id: number | null;
-    status_id: number | null;
-    changed_by: number | null;
-    old_status: string | null;
-    new_status: string | null;
-    change_date: Timestamp | null;
-    change_notes: string | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
-    deleted_at: Timestamp | null;
-    deleted_by: number | null;
+    loan_application_id: number | null;
+    loan_status_type_id: number | null;
+    is_active: boolean;
+    reviewed_by: number;
+    review_date: Date;
+    review_notes: string;
+    is_reviewd: boolean;
+    created_at: Timestamp;
+    updated_at: Timestamp;
 }
 
-export interface LoanBorrowerTable {
+export interface LoanDocumentTable {
     id: Generated<number>;
-    loan_id: number | null;
-    borrower_id: number | null;
-    is_primary: boolean | null;
-    relationship_type: string | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
-    deleted_at: Timestamp | null;
-    deleted_by: number | null;
+    loan_application_id: number;
+    document_title: string;
+    document_file_path: string;
+    document_description: string;
+    file_format: string;
+    borrower_id: number;
+    uploaded_by: number;
+    created_at: Timestamp;
+    updated_at: Timestamp;
+    deleted_at: Timestamp;
+    deleted_by: number;
 }
 
 export interface RoleTable {
@@ -211,9 +203,9 @@ export interface PermissionTable {
     deleted_at: Timestamp | null;
 }
 
-export interface RoleUserTable {
+export interface RoleStaffTable {
     permission_id: number | null;
-    user_id: number | null;
+    staff_id: number | null;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
     deleted_at: Timestamp | null;
@@ -232,9 +224,21 @@ export interface AuditTable {
     action: string
 }
 
-export interface PetTable {
-    id: Generated<number>
-    name: string
-    owner_id: number
-    species: 'dog' | 'cat'
+export interface BorrowerAccountTable {
+    id: Generated<number>;
+    account_name: string;
+    account_balance: number;
+    account_owner_id: number;
+    date_opened: Date;
+    created_at: Timestamp | null;
+    updated_at: Timestamp | null;
+    deleted_at: Timestamp | null;
+}
+export interface MainAccountTable {
+    id: Generated<number>;
+    account_name: string;
+    account_balance: number;
+    created_at: Timestamp | null;
+    updated_at: Timestamp | null;
+    deleted_at: Timestamp | null;
 }

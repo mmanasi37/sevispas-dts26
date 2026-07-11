@@ -3,7 +3,7 @@ import { Pool } from 'pg'
 import { promises as fs } from 'fs'
 import { Kysely, PostgresDialect } from 'kysely'
 import { FileMigrationProvider, Migrator } from 'kysely/migration'
-import type { Database } from './schema.js'
+import type { Database } from './schema.ts'
 
 async function migrateToLatest() {
   const db = new Kysely<Database>({
@@ -13,7 +13,7 @@ async function migrateToLatest() {
         database: 'kysely_test',
       }),
     }),
-  })
+  });
 
   // const migratorConfig = {
   //     db,
@@ -32,9 +32,9 @@ async function migrateToLatest() {
       // This needs to be an absolute path.
       migrationFolder: path.join(__dirname, './migrations'),
     }),
-  })
+  });
 
-  const { error, results } = await migrator.migrateToLatest()
+  const { error, results } = await migrator.migrateToLatest();
 
   results?.forEach((it) => {
     if (it.status === 'Success') {
@@ -42,7 +42,7 @@ async function migrateToLatest() {
     } else if (it.status === 'Error') {
       console.error(`failed to execute migration "${it.migrationName}"`)
     }
-  })
+  });
 
   if (error) {
     console.error('failed to migrate')
@@ -50,7 +50,7 @@ async function migrateToLatest() {
     process.exit(1)
   }
 
-  await db.destroy()
+  await db.destroy();
 }
 
 migrateToLatest()

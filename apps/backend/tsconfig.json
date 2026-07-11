@@ -14,7 +14,7 @@
     "declarationMap": false,
     "sourceMap": false,
     "rewriteRelativeImportExtensions": true,
-    "erasableSyntaxOnly": true,
+    "erasableSyntaxOnly": false,
     "verbatimModuleSyntax": true,
     "noEmit": true,
   },

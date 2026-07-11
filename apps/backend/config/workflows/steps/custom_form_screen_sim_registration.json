@@ -1,0 +1,50 @@
+{
+  "screen_id": "custom_form_screen",
+  "title": "SIM Registration Details",
+  "description": "Please provide additional information required for SIM activation.",
+  "fields": [
+    {
+      "id": 1,
+      "key": "simType",
+      "type": "dropdown",
+      "label": "SIM Type",
+      "is_required": true,
+      "options": [
+        {
+          "key": "prepaid",
+          "name": "Prepaid"
+        },
+        {
+          "key": "postpaid",
+          "name": "Postpaid"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "key": "preferredPlan",
+      "type": "dropdown",
+      "label": "Preferred Plan",
+      "is_required": true,
+      "options": [
+        {
+          "key": "basic",
+          "name": "Basic Plan"
+        },
+        {
+          "key": "premium",
+          "name": "Premium Plan"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "key": "billingAddress",
+      "type": "textfield",
+      "label": "Billing Address",
+      "data_type": "text",
+      "is_required": true,
+      "placeholder": "Enter billing address"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+    "version": "2.0",
+    "workflowId": "<UUID>",
+    "workflow_name": "Opening an Account at [RP_NAME]",
+    "workflow_background_image": "https://[URL]/banner.png",
+    "branding": {
+        "background_color": "#1B3A6B",
+        "organization_logo": "https://[URL]/logo.png",
+        "organization_name": "[RP_NAME]",
+        "text_color": "#FFFFFF"
+    },
+    "tags": [
+        "onboarding",
+        "[PROJECT_ID]"
+    ],
+    "description": "Open an account at [RP_NAME].",
+    "start_workflow": "Start Application",
+    "end_workflow": "Cancel",
+    "on_completion": {
+        "action": "status_update",
+        "credential_type": "[PROJECT_ID][CRED_NAME]"
+    },
+    "body": {
+        "steps": [ /* step objects */]
+    },
+    "offer_title": "",
+    "offer_description": "",
+    "disclosedFields": [
+        "name",
+        "dob",
+        "photo"
+    ]
+}

@@ -1,0 +1,83 @@
+{
+    "id": "flow_sevis_issuance",
+    "label": "SevisPNG Credential Issuance via LORA",
+    "nodes": [
+        {
+            "id": "http_trigger",
+            "type": "http in",
+            "name": "Webhook: New Citizen Onboarding",
+            "url": "/onboard/citizen",
+            "method": "POST",
+            "wires": [
+                [
+                    "parse_legacy_record"
+                ]
+            ]
+        },
+        {
+            "id": "parse_legacy_record",
+            "type": "function",
+            "name": "Extract NID & Build LORA Config",
+            "func": "const nid = msg.payload.nid_number;\n// Fetch from legacy DB (mocked here)\nconst legacyData = { nid: nid, name: 'Madi Kila', dob: '1990-05-15' };\n// Generate DID for holder\nconst holderDID = `did:sevispng:citizen:${nid.toLowerCase()}`;\nmsg.lora_config = { ...legacyData, holderDID };\nreturn msg;",
+            "wires": [
+                [
+                    "create_credential_offer"
+                ]
+            ]
+        },
+        {
+            "id": "create_credential_offer",
+            "type": "http request",
+            "name": "POST to SevisPNG /oidc4vci/offers",
+            "method": "POST",
+            "url": "https://sandbox-api.sevis.gov.pg/v1/oidc4vci/credential_offers",
+            "headers": {
+                "Authorization": "Bearer {{api_key}}",
+                "Content-Type": "application/json"
+            },
+            "body": {
+                "credential_type": "PNGCitizenIdentityCredential",
+                "holder_did": "did:sevispng:citizen:madi_kila_123",
+                "claims": {
+                    "name": "Madi Kila",
+                    "birthDate": "1990-05-15",
+                    "nationality": "PG"
+                }
+            },
+            "wires": [
+                [
+                    "send_didcomm_message"
+                ]
+            ]
+        },
+        {
+            "id": "send_didcomm_message",
+            "type": "function",
+            "name": "Send Credential via DIDComm",
+            "func": "// Construct a DIDComm v2 message with the offer URL\nconst offerUrl = msg.payload.offer_url;\nconst didcommMsg = {\n  to: msg.lora_config.holderDID,\n  from: 'did:sevispng:dict:issuer_01',\n  type: 'https://didcomm.org/credentials/2.0/offer-credential',\n  body: { offer_url: offerUrl }\n};\n// Send to the holder's DIDComm service endpoint\n// (Actual sending logic via HTTP or WebSocket)\nmsg.payload = didcommMsg;\nreturn msg;",
+            "wires": [
+                [
+                    "record_transaction"
+                ]
+            ]
+        },
+        {
+            "id": "record_transaction",
+            "type": "postgres",
+            "name": "Log Issuance to DB",
+            "query": "INSERT INTO credential_issuances (holder_did, credential_id, status, issued_at) VALUES ($1, $2, 'ISSUED', NOW());",
+            "wires": [
+                [
+                    "http_response"
+                ]
+            ]
+        },
+        {
+            "id": "http_response",
+            "type": "http response",
+            "name": "Return Success",
+            "statusCode": "201",
+            "wires": []
+        }
+    ]
+}

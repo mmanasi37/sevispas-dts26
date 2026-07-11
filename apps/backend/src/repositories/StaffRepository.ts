@@ -1,0 +1,73 @@
+import { db } from '../database/index.ts';
+import type { StaffUpdate, Staff, NewStaff } from '../types.ts';
+
+
+// const result = await db
+//     .selectFrom('Staff')
+//     // .innerJoin('Staffs as u', 'u.id', 'p.author_id')
+//     // .select(['p.title', 'u.name as author_name'])
+//     .execute();
+
+
+export async function findStaffById(id: number) {
+    return await db.selectFrom('Staff')
+        .where('id', '=', id)
+        .selectAll()
+        .executeTakeFirst();
+}
+
+export async function findPeople(criteria: Partial<Staff>) {
+    let query = db.selectFrom('Staff')
+
+    if (criteria.id) {
+        query = query.where('id', '=', criteria.id) // Kysely is immutable, you must re-assign!
+    }
+
+    if (criteria.first_name) {
+        query = query.where('first_name', '=', criteria.first_name)
+    }
+
+    if (criteria.last_name !== undefined) {
+        query = query.where(
+            'last_name',
+            criteria.last_name === null ? 'is' : '=',
+            criteria.last_name
+        )
+    }
+
+    if (criteria.gender) {
+        query = query.where('gender', '=', criteria.gender)
+    }
+
+    if (criteria.created_at) {
+        query = query.where('created_at', '=', criteria.created_at)
+    }
+
+    return await query.selectAll().execute()
+}
+
+export async function getStaffs() {
+    return await db.selectFrom('Staff').selectAll().execute()
+}
+export async function getStaff(id: number) {
+    return await db.selectFrom('Staff').where('id', '=', id)
+        .selectAll()
+        .executeTakeFirst()
+}
+
+export async function updateStaff(id: number, updateWith: StaffUpdate) {
+    await db.updateTable('Staff').set(updateWith).where('id', '=', id).execute()
+}
+
+export async function createStaff(user: NewStaff) {
+    return await db.insertInto('Staff')
+        .values(user)
+        .returningAll()
+        .executeTakeFirstOrThrow()
+}
+
+export async function deleteStaff(id: number) {
+    return await db.deleteFrom('Staff').where('id', '=', id)
+        .returningAll()
+        .executeTakeFirst()
+}

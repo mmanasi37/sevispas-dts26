@@ -1,40 +1,113 @@
 import type { Request, Response } from "express";
-import { db } from "../database/index.js";
+import * as loanRepo from '../repositories/LoanRepository.ts';
+import * as borrowerRepo from '../repositories/BorrowerRepository.ts';
+import * as staffRepo from '../repositories/StaffRepository.ts';
 
-async function findLoan(req: Request, res: Response) {
-    // res.json([{ id: 1, name: 'Alice' }]);
+export async function getLoanTypes(req: Request, res: Response) {
+    const loans = await loanRepo.getLoanTypes();
 
-    // const users = await db
-    //     .selectFrom('User')
-    //     .select('id')
-    //     .where('first_name', '=', 'Arnold')
-    //     .execute();
+    res.json(loans);
+}
 
-    const catto = await db.transaction().execute(async (trx) => {
-        const jennifer = await trx.insertInto('User')
-            .values({
-                first_name: 'Jennifer',
-                last_name: 'Aniston',
-                gender: 'male'
-            })
-            .returning('id')
-            .executeTakeFirstOrThrow()
+export async function getLoanType(req: Request, res: Response) {
+    const loanTypeId = parseInt(String(req.params.loanTypeId));
 
-        return await trx.insertInto('Borrower')
-            .values({
-                owner_id: jennifer.id,
-                name: 'Catto',
-                species: 'cat',
-                // is_favorite: false,
-            })
-            .returningAll()
-            .executeTakeFirst()
-    })
+    const loan = await loanRepo.getLoanType(loanTypeId);
 
-    const users = await db
-        .selectFrom(['User', 'Borrower'])
-        .select('user.id')
-        .execute();
+    res.json(loan);
+}
 
-    return users;
+export async function updateLoanType(req: Request, res: Response) {
+    const loanTypeId = parseInt(String(req.params.loanTypeId));
+    const payload = req.body;
+
+    const loan = await loanRepo.updateLoanType(loanTypeId, payload);
+
+    res.json(loan);
+}
+
+export async function cancelLoan(req: Request, res: Response) {
+    const loanId = parseInt(String(req.params.loanId));
+
+    const loan = await loanRepo.cancelLoanApplication(loanId);
+
+    res.json(loan);
+}
+
+export async function applyLoan(req: Request, res: Response) {
+    const borrowerInfo = req.body;
+
+    const {
+        loan_id,
+        loan_amount
+    } = borrowerInfo;
+
+    const borrower_id = 1;
+    const loan_officer_id = 1; // will be determined when the application falls into the queue and an officer accepts the application for processing
+    const loan_application_status_id = 1;
+    const application_date = new Date();
+
+    const loan = await loanRepo.applyLoan({
+        loan_id,
+        loan_officer_id,
+        borrower_id,
+        loan_amount,
+        loan_application_status_id,
+        application_date
+    });
+
+    res.json(loan);
+}
+
+export async function getLoanApplications(req: Request, res: Response) {
+    const types = await loanRepo.getLoanApplications();
+
+    res.json(types);
+}
+
+export async function getLoanApplication(req: Request, res: Response) {
+    const loanId = parseInt(String(req.params.loanId));
+    const types = await loanRepo.getLoanApplication(loanId);
+
+    res.json(types);
+}
+
+export async function getLoanApplicationStatus(req: Request, res: Response) {
+    const loanId = parseInt(String(req.params.loanId));
+
+    const application = await loanRepo.getLoanApplication(loanId);
+    const status = await loanRepo.getLoanApplicationStatus(loanId);
+    const reviewedBy = application?.reviewed_by && await staffRepo.getStaff(application?.reviewed_by);
+    const borrower = application?.borrower_id && await borrowerRepo.getBorrower(application?.borrower_id);
+    const loanOfficer = application?.loan_officer_id && await borrowerRepo.getBorrower(application?.loan_officer_id);
+
+    res.json({
+        ...application,
+        statuses: [status],
+        borrower,
+        loan: application,
+        reviewed_by: reviewedBy,
+        loan_officer: loanOfficer
+    });
+}
+
+export async function updateLoanApplication(req: Request, res: Response) {
+    const loanId = parseInt(String(req.params.loanId));
+    const types = await loanRepo.getLoanApplication(loanId);
+
+    res.json(types);
+}
+
+export async function submitLoanApplication(req: Request, res: Response) {
+    const loanId = parseInt(String(req.params.loanId));
+    const types = await loanRepo.getLoanApplication(loanId);
+
+    res.json(types);
+}
+
+export async function cancelLoanApplication(req: Request, res: Response) {
+    const loanId = parseInt(String(req.params.loanId));
+    const types = await loanRepo.getLoanApplication(loanId);
+
+    res.json(types);
 }

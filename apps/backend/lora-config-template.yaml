@@ -1,0 +1,60 @@
+# lora-config-template.yaml
+# SevisPNG Legacy Onboarding & Registration Adapter - Template v1.0
+# Purpose: Map legacy DB fields to Verifiable Credential schemas
+
+template:
+  name: "PNG_NID_Issuance"
+  version: "1.0.0"
+  description: "Maps legacy NID records to W3C VC for DID:sevispng"
+
+# Source system configuration
+legacy_source:
+  system: "PNG_NID_Database"
+  type: "postgresql"
+  table: "citizen_records"
+  connection_ref: "secrets.db_connection"
+
+# Credential issuance rules
+issuance_rules:
+  credential_type: "PNGCitizenIdentityCredential"
+  credential_schema_url: "https://schemas.sevis.gov.pg/PNGCitizenIdentity-v1.json"
+  validity_period_days: 365
+  automatic_revocation_check: true
+
+# Field mapping: Legacy DB -> Verifiable Credential (using SD-JWT for selective disclosure)
+field_mappings:
+  - legacy_field: "nid_number"
+    vc_field: "id"
+    disclosure: "always"  # Required for subject identification
+    transformation: "string"
+  
+  - legacy_field: "full_name"
+    vc_field: "name"
+    disclosure: "selective"  # User can choose to hide this
+    transformation: "title_case"
+  
+  - legacy_field: "date_of_birth"
+    vc_field: "birthDate"
+    disclosure: "selective"
+    transformation: "iso8601_date"
+  
+  - legacy_field: "place_of_birth"
+    vc_field: "birthPlace"
+    disclosure: "selective"
+    transformation: "string"
+  
+  - legacy_field: "nationality"
+    vc_field: "nationality"
+    disclosure: "selective"
+    transformation: "iso3166_country_code"
+
+# DIDComm service endpoints
+didcomm:
+  service_endpoint: "https://lora-adapter.sevis.gov.pg/didcomm"
+  verification_method: "did:key:z6Mkj7o5xYvVK8aXrZ9wLp4Qm2N3bC5dE6fG7hJ8kL9#z6Mkj7o5xYvVK8aXrZ9wLp4Qm2N3bC5dE6fG7hJ8kL9"
+
+# OIDC4VCI settings
+oidc4vci:
+  credential_issuer_endpoint: "https://sandbox-api.sevis.gov.pg/oidc4vci"
+  credential_endpoint: "https://sandbox-api.sevis.gov.pg/oidc4vci/credentials"
+  deferred_credential_endpoint: "https://sandbox-api.sevis.gov.pg/oidc4vci/deferred"

@@ -1,0 +1,70 @@
+    {
+        "screen_id": "custom_form_screen",
+        "title": "Complete the Following Information",
+        "description": "[RP_NAME] requires the following fields not part of your Digital ID.",
+        "tips": [
+            {
+                "title": "Tip",
+                "description": "Complete only the required fields to continue."
+            }
+        ],
+        "fields": [
+            {
+                "id": 1,
+                "key": "averageMonthlyIncome",
+                "type": "textfield",
+                "label": "Average Monthly Income",
+                "data_type": "number",
+                "is_required": true,
+                "placeholder": "Enter income"
+            },
+            {
+                "id": 2,
+                "key": "occupation",
+                "type": "textfield",
+                "label": "Occupation",
+                "data_type": "string",
+                "is_required": true,
+                "placeholder": "Occupation"
+            },
+            {
+                "id": 3,
+                "key": "motherName",
+                "type": "textfield",
+                "label": "Mother's Name",
+                "data_type": "string",
+                "is_required": true,
+                "placeholder": "Enter your mother's name"
+            },
+            {
+                "id": 4,
+                "key": "country_of_residence",
+                "type": "country",
+                "label": "Country of Residence",
+                "data_type": "country",
+                "is_required": true,
+                "placeholder": "Country of Residence"
+            },
+            {
+                "id": 5,
+                "key": "marriage_anniversary",
+                "type": "date",
+                "label": "Marriage Anniversary",
+                "data_type": "date",
+                "is_required": true,
+                "placeholder": "Marriage Anniversary"
+            },
+            {
+                "id": 6,
+                "key": "phone_number",
+                "type": "phone_textfield",
+                "label": "VF Phone Number (8xxxxxxx",
+                "data_type": "phone_textfield",
+                "is_required": true,
+                "is_editable": true,
+                "default_value": "",
+                "autofill_if_available": true,
+                "placeholder": "VF Phone Number (8xxxxxxx)"
+            }
+        ]
+    }

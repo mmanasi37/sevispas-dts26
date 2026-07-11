@@ -1,0 +1,50 @@
+{
+    "screen_id": "cid_screen",
+    "title": "Share Your Credential",
+    "description": "According to [LOCAL_REGULATIONS], [RP_NAME] is requesting access to the following data from your [NATIONAL_CREDENTIAL_NAME]. Please select the box to give your consent.",
+    "tips": [
+        {
+            "title": "Tip",
+            "description": "You can revoke access at any time from the Disclosures tab."
+        }
+    ],
+    "disclosedCredentialType": "[CREDENTIAL_TYPE_ID]",
+    "fields": [],
+    "disclosedFields": [
+        {
+            "id": 1,
+            "name": "name_eng",
+            "label": "Full Name"
+        },
+        {
+            "id": 2,
+            "name": "dob",
+            "label": "Date of Birth"
+        },
+        {
+            "id": 3,
+            "name": "documentNumber",
+            "label": "ID Number"
+        },
+        {
+            "id": 4,
+            "name": "phone",
+            "label": "Telephone"
+        },
+        {
+            "id": 5,
+            "name": "gender_eng",
+            "label": "Gender"
+        },
+        {
+            "id": 6,
+            "name": "email",
+            "label": "Email"
+        },
+        {
+            "id": 7,
+            "name": "photo",
+            "label": "Photo"
+        }
+    ]
+}

@@ -1,0 +1,68 @@
+services:
+  lora:
+
+  backend:
+
+  
+  frontend:
+
+
+services:
+  notification-service:
+    image: notification-service:latest
+    container_name: notification-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: ["bun", "run", "devx"]
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+    #   redis:
+    #     condition: service_started
+    #   rabbitmq:
+    #     condition: service_started
+    networks:
+      - stagin-network
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
+  # worker:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/Dockerfile
+  #   container_name: notification-worker-prod
+  #   restart: always
+  #   environment:
+  #     - NODE_ENV=production
+  #   command: ["bun", "run", "start:worker"] # Or whatever script starts your worker
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #   networks:
+  #     - stagin-network
+
+volumes:
+  redis_data_prod:
+  postgres_data_prod:
+  mongodb_data_prod:
+
+networks:
+  stagin-network:
+    driver: bridge

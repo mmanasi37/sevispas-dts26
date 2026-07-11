@@ -2,9 +2,8 @@ import 'dotenv/config';
 import express, { type Application, type Request, type Response } from 'express';
 import axios from 'axios';
 // import session from 'express-session';
-import routes from './routes/index.js';
-import { generateState, generateNonce, verifyState, processVPToken } from './libs/utils.js';
-import { db } from './database/index.js';
+import routes from './routes/index.ts';
+import { generateState, generateNonce, verifyState, processVPToken } from './libs/utils.ts';
 import { debug } from 'node:util';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -14,6 +13,8 @@ const port = 3001;
 
 const SSO_SERVER = "";
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // app.use(session);
 app.use(morgan('combined'));
 
@@ -34,7 +35,7 @@ var corsOptions = {
 };
 // app.use(cors(corsOptions));
 
-app.use('/api', routes);
+app.use(routes);
 
 // app.resource = function (path: string, obj: Object) {
 //   this.get(path, obj.index);

@@ -102,6 +102,8 @@ Table LoanApplication {
   deleted_by bigint
 }
 
+
+
 Table LoanStatus {
   id bigint [pk, increment]
   loan_id bigint [ref: > Loan.id]
@@ -145,6 +147,26 @@ Table LoanBorrower {
     loan_id [name: "loanborrower_loan_id_foreign"]
     borrower_id [name: "loanborrower_borrower_id_foreign"]
     deleted_by [name: "loanborrower_deleted_by_foreign"]
+  }
+}
+
+Table "site_documents" {
+  "id" char(36) [pk, not null]
+  "document_title" varchar(200) [not null]
+  "document_file_path" varchar(200) [not null]
+  "document_description" varchar(300)
+  "file_format" varchar(255) [not null]
+  "userId" bigint [not null]
+  "siteId" bigint [not null]
+  "created_at" timestamp
+  "updated_at" timestamp
+  "deleted_at" timestamp
+  "deleted_by" bigint
+
+  Indexes {
+    userId [name: "site_documents_userid_foreign"]
+    siteId [name: "site_documents_siteid_foreign"]
+    deleted_by [name: "site_documents_deleted_by_foreign"]
   }
 }
 

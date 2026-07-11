@@ -1,13 +1,14 @@
 import { Router, type Request, type Response } from 'express';
-import * as staffController from '../controllers/user.controller.js';
-import * as borrowerController from '../controllers/user.controller.js';
-import * as loansController from '../controllers/user.controller.js';
-import * as authController from '../controllers/user.controller.js';
-import * as rolesController from '../controllers/user.controller.js';
-import * as permissionsController from '../controllers/user.controller.js';
-import * as userController from '../controllers/user.controller.js';
+import * as loansController from '../controllers/loan.controller.ts';
+import * as authController from '../controllers/staff.controller.ts';
+import * as rolesController from '../controllers/staff.controller.ts';
+import * as permissionsController from '../controllers/staff.controller.ts';
+import borrower from './borrower.ts';
+import staff from './staff.ts';
 
 const router: Router = Router();
+router.use(borrower);
+router.use(staff);
 
 router.get('/', (req: Request, res: Response) => {
     res.json({
@@ -27,13 +28,20 @@ router.get('/', (req: Request, res: Response) => {
 // RoleUser: RoleUserTable;
 // PermissionRole: PermissionRoleTable;
 
-router.get('/staff', staffController.findPeople);
-router.get('/borrower', borrowerController.findPeople);
-router.get('/loans', loansController.findPeople);
+router.post('/apply_loan', loansController.applyLoan);
+router.get('/loan_types', loansController.getLoanTypes);
+router.get('/loan_types/:loanTypeId', loansController.getLoanType);
+router.put('/loan_types/:loanTypeId', loansController.updateLoanType);
 
-router.get('/auth', authController.findPeople);
-router.get('/users', userController.findPeople);
-router.get('/roles', rolesController.findPeople);
-router.get('/permissions', permissionsController.findPeople);
+router.get('/loans', loansController.getLoanApplications);
+router.get('/loans/:loanId', loansController.getLoanApplication);
+router.put('/loans/:loanId', loansController.updateLoanApplication);
+router.get('/loans/:loanId/status', loansController.getLoanApplicationStatus);
+router.post('/loans/:loanId/submit', loansController.submitLoanApplication);
+router.post('/loans/:loanId/cancel', loansController.cancelLoanApplication);
+
+// router.get('/auth', authController.findPeople);
+// router.get('/roles', rolesController.findPeople);
+// router.get('/permissions', permissionsController.findPeople);
 
 export default router;
