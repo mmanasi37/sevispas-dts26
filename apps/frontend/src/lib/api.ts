@@ -47,6 +47,27 @@ export async function getBorrowerDashboard(sevispassId: string): Promise<Borrowe
   return res.json();
 }
 
+export interface NewLoanApplicationInput {
+  amount: number;
+  term: string;
+  purpose: string;
+}
+
+export async function createLoanApplication(
+  sevispassId: string,
+  input: NewLoanApplicationInput
+): Promise<LoanApplication> {
+  const res = await fetch(`${API_URL}/api/borrowers/${sevispassId}/applications`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to submit application (${res.status})`);
+  }
+  return res.json();
+}
+
 // The loan currently being paid off — the one with at least one non-paid repayment.
 // Falls back to the most recently submitted loan if every loan is fully repaid.
 export function getActiveLoan(applications: LoanApplication[]): LoanApplication | undefined {

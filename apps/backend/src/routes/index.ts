@@ -4,6 +4,7 @@ import {
     findBorrowerBySevisPassId,
     getBorrowerLoanApplications,
     getLoanRepayments,
+    createLoanApplication,
 } from '../repositories/BorrowerRepository.js';
 
 const router: Router = Router();
@@ -35,6 +36,21 @@ router.get('/borrowers/:sevispassId/dashboard', async (req: Request, res: Respon
     );
 
     res.json({ borrower, applications: applicationsWithRepayments });
+});
+
+router.post('/borrowers/:sevispassId/applications', async (req: Request, res: Response) => {
+    const borrower = await findBorrowerBySevisPassId(String(req.params.sevispassId));
+    if (!borrower) {
+        return res.status(404).json({ error: 'Borrower not found' });
+    }
+
+    const { amount, term, purpose } = req.body ?? {};
+    if (typeof amount !== 'number' || amount <= 0 || typeof term !== 'string' || typeof purpose !== 'string') {
+        return res.status(400).json({ error: 'amount (positive number), term, and purpose are required' });
+    }
+
+    const application = await createLoanApplication(borrower.id, { amount, term, purpose });
+    res.status(201).json({ ...application, repayments: [] });
 });
 
 router.get('/users', async (req: Request, res: Response) => {

@@ -8,13 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { UserCheck, Globe, Shield } from "lucide-react";
+import { UserCheck, Globe, Shield, AlertCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
+import { createLoanApplication } from "@/lib/api";
+import { DEMO_SEVISPASS_ID } from "@/lib/session";
 
 export default function LoanApplication() {
   const router = useRouter();
   const [language, setLanguage] = useState<"en" | "tp">("en");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [amount, setAmount] = useState("");
+  const [term, setTerm] = useState("");
+  const [purpose, setPurpose] = useState("");
 
   const content = {
     en: {
@@ -57,11 +64,19 @@ export default function LoanApplication() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await createLoanApplication(DEMO_SEVISPASS_ID, {
+        amount: Number(amount),
+        term,
+        purpose,
+      });
       router.push("/borrower/status");
-    }, 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit application");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -112,6 +127,8 @@ export default function LoanApplication() {
                     type="number"
                     placeholder="5000"
                     className="pl-10"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
                     required
                   />
                 </div>
@@ -119,8 +136,8 @@ export default function LoanApplication() {
 
               <div className="space-y-2">
                 <Label htmlFor="term">{t.term}</Label>
-                <Select>
-                  <SelectTrigger>
+                <Select value={term} onValueChange={setTerm} required>
+                  <SelectTrigger id="term">
                     <SelectValue placeholder="Select term" />
                   </SelectTrigger>
                   <SelectContent>
@@ -132,8 +149,8 @@ export default function LoanApplication() {
 
               <div className="space-y-2">
                 <Label htmlFor="purpose">{t.purpose}</Label>
-                <Select>
-                  <SelectTrigger>
+                <Select value={purpose} onValueChange={setPurpose} required>
+                  <SelectTrigger id="purpose">
                     <SelectValue placeholder="Select purpose" />
                   </SelectTrigger>
                   <SelectContent>
@@ -152,6 +169,13 @@ export default function LoanApplication() {
                   {t.noDocs}
                 </p>
               </div>
+
+              {error && (
+                <div className="flex items-center gap-2 p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  {error}
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : t.submit}
