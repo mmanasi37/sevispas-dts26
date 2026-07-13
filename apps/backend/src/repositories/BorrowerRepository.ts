@@ -57,26 +57,28 @@ export async function creditAccount(fromAccountNumber: number, toAccountNumber: 
             throw new Error(`MainAccount account not found`);
         }
 
-        if (mainAccount.account_balance > 0) {
-            const mainAccount = await trx.updateTable('MainAccount')
-                .set({
-                    account_balance: sql`${sql.raw('account_balance')} - ${amount}`,
-                })
-                .where('MainAccount.id', '=', fromAccountNumber)
-                .returning('account_balance')
-                .executeTakeFirstOrThrow();
-
-
-            const borrowerAccount = await trx.updateTable('BorrowerAccount')
-                .set({
-                    account_balance: sql`${sql.raw('account_balance')} + ${amount}`,
-                    updated_at: new Date()
-                })
-                .where('BorrowerAccount.id', '=', toAccountNumber)
-                .executeTakeFirstOrThrow();
-
-            return [borrowerAccount, mainAccount]
+        if (mainAccount.account_balance < amount) {
+            throw new Error(`Insufficient balance. Available: ${mainAccount.account_balance}`);
         }
+
+        const mainAccountUpdated = await trx.updateTable('MainAccount')
+            .set({
+                account_balance: sql`${sql.raw('account_balance')} - ${amount}`,
+            })
+            .where('MainAccount.id', '=', fromAccountNumber)
+            .returning('account_balance')
+            .executeTakeFirstOrThrow();
+
+
+        const borrowerAccount = await trx.updateTable('BorrowerAccount')
+            .set({
+                account_balance: sql`${sql.raw('account_balance')} + ${amount}`,
+                updated_at: new Date()
+            })
+            .where('BorrowerAccount.id', '=', toAccountNumber)
+            .executeTakeFirstOrThrow();
+
+        return [mainAccountUpdated, mainAccount]
     });
 
     return approveLoan;
@@ -88,7 +90,6 @@ export async function debitAccount(fromAccountNumber: number, toAccountNumber: n
     }
 
     const approveLoan = await db.transaction().execute(async (trx) => {
-
         const borrowerAccount = await trx.updateTable('BorrowerAccount')
             .set({
                 account_balance: sql`${sql.raw('account_balance')} - ${amount}`,
@@ -101,25 +102,27 @@ export async function debitAccount(fromAccountNumber: number, toAccountNumber: n
             throw new Error(`BorrowerAccount account not found`);
         }
 
-        if (borrowerAccount.account_balance > 0) {
-            const borrowerAccount = await trx.updateTable('BorrowerAccount')
-                .set({
-                    account_balance: sql`${sql.raw('account_balance')} - ${amount}`,
-                })
-                .where('BorrowerAccount.id', '=', fromAccountNumber)
-                .returning('account_balance')
-                .executeTakeFirstOrThrow();
-
-            const mainAccount = await trx.updateTable('MainAccount')
-                .set({
-                    account_balance: sql`${sql.raw('account_balance')} + ${amount}`,
-                    updated_at: new Date()
-                })
-                .where('MainAccount.id', '=', toAccountNumber)
-                .executeTakeFirstOrThrow();
-
-            return [borrowerAccount, mainAccount]
+        if (borrowerAccount.account_balance < amount) {
+            throw new Error(`Insufficient balance. Available: ${borrowerAccount.account_balance}`);
         }
+
+        const borrowerAccountUpdated = await trx.updateTable('BorrowerAccount')
+            .set({
+                account_balance: sql`${sql.raw('account_balance')} - ${amount}`,
+            })
+            .where('BorrowerAccount.id', '=', fromAccountNumber)
+            .returning('account_balance')
+            .executeTakeFirstOrThrow();
+
+        const mainAccount = await trx.updateTable('MainAccount')
+            .set({
+                account_balance: sql`${sql.raw('account_balance')} + ${amount}`,
+                updated_at: new Date()
+            })
+            .where('MainAccount.id', '=', toAccountNumber)
+            .executeTakeFirstOrThrow();
+
+        return [borrowerAccountUpdated, mainAccount]
     });
 
     return approveLoan;

@@ -22,7 +22,6 @@ export const db = new Kysely<Database>({
 // const tenant = "system_v1";
 // db.withSchema(tenant)
 
-
 // Utility to map related data
 type Relation<T, U> = {
     parent: T;
