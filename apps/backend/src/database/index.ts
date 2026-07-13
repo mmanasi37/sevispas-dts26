@@ -1,17 +1,15 @@
-import { Pool } from 'pg'
-import { Kysely, PostgresDialect } from 'kysely'
+import { createClient } from '@libsql/client'
+import { LibsqlDialect } from '@libsql/kysely-libsql'
+import { Kysely } from 'kysely'
 import { FileMigrationProvider, Migrator } from 'kysely/migration'
 import { Database } from '../types.js';
 
-const dialect = new PostgresDialect({
-    pool: new Pool({
-        database: 'test',
-        host: 'localhost',
-        user: 'admin',
-        port: 5434,
-        max: 10,
-    })
-});
+const dialect = new LibsqlDialect({
+    client: createClient({
+        url: process.env.TURSO_DATABASE_URL!,
+        authToken: process.env.TURSO_AUTH_TOKEN,
+    }),
+})
 
 export const db = new Kysely<Database>({
     dialect,
