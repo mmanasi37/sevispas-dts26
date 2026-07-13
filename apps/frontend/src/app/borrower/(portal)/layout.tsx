@@ -14,6 +14,7 @@ import {
   Shield,
   LogOut,
 } from "lucide-react";
+import ChacheChat from "@/components/ChacheChat";
 
 const navItems = [
   { href: "/borrower/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -83,6 +84,7 @@ export default function BorrowerPortalLayout({
       </header>
 
       <main>{children}</main>
+      <ChacheChat />
     </div>
   );
 }
