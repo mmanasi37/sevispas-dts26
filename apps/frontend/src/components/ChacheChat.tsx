@@ -77,10 +77,11 @@ export default function ChacheChat() {
     return (
       <Button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg p-0 z-50"
+        className="fixed bottom-6 right-6 h-14 rounded-full shadow-lg px-5 gap-2 z-50"
         aria-label="Open Chache assistant"
       >
-        <MessageCircle className="h-6 w-6" />
+        <MessageCircle className="h-5 w-5" />
+        <span className="text-sm font-medium">Ask Chache</span>
       </Button>
     );
   }
