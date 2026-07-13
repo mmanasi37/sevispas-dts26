@@ -12,10 +12,58 @@ export interface Database {
     person: PersonTable
     pet: PetTable
     audit: AuditTable
+    borrowers: BorrowerTable
+    loan_applications: LoanApplicationTable
+    repayments: RepaymentTable
     // toy: ToyTable
     // wine: WineTable
     // wine_stock_change: WineStockChangeTable
 }
+
+export interface BorrowerTable {
+    id: Generated<number>
+    sevispass_id: string
+    first_name: string
+    last_name: string
+    email: string | null
+    credit_score: number
+    member_since: string
+    created_at: Generated<string>
+}
+
+export type Borrower = Selectable<BorrowerTable>
+export type NewBorrower = Insertable<BorrowerTable>
+export type BorrowerUpdate = Updateable<BorrowerTable>
+
+export interface LoanApplicationTable {
+    id: Generated<number>
+    reference: string
+    borrower_id: number
+    amount: number
+    term: string
+    purpose: string
+    status: string
+    rejection_reason: string | null
+    submitted_at: Generated<string>
+    decided_at: string | null
+}
+
+export type LoanApplication = Selectable<LoanApplicationTable>
+export type NewLoanApplication = Insertable<LoanApplicationTable>
+export type LoanApplicationUpdate = Updateable<LoanApplicationTable>
+
+export interface RepaymentTable {
+    id: Generated<number>
+    loan_application_id: number
+    due_date: string
+    amount: number
+    status: string
+    paid_at: string | null
+}
+
+export type Repayment = Selectable<RepaymentTable>
+export type NewRepayment = Insertable<RepaymentTable>
+export type RepaymentUpdate = Updateable<RepaymentTable>
 
 interface AuditTable {
     id: Generated<number>

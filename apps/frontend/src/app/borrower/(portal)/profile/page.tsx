@@ -1,16 +1,60 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Shield, TrendingUp } from "lucide-react";
+import { Shield, TrendingUp, AlertCircle } from "lucide-react";
+import { getBorrowerDashboard, type BorrowerDashboard } from "@/lib/api";
+
+// No real session yet (SevisPass login isn't wired up) — hardcoded to the seeded demo borrower.
+const DEMO_SEVISPASS_ID = "SP-2024-001";
+
+function initials(firstName: string, lastName: string) {
+  return `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
+}
+
+function formatMonthYear(dateString: string) {
+  return new Date(dateString).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+function formatMonthShort(dateString: string) {
+  return new Date(dateString).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+}
 
 export default function BorrowerProfile() {
-  const loanHistory = [
-    { date: "Jan 2024", amount: 5000, status: "active", repaid: 1000 },
-    { date: "Oct 2023", amount: 2000, status: "completed", repaid: 2000 },
-    { date: "Jun 2023", amount: 1500, status: "completed", repaid: 1500 },
-  ];
+  const [data, setData] = useState<BorrowerDashboard | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getBorrowerDashboard(DEMO_SEVISPASS_ID)
+      .then(setData)
+      .catch((err) => setError(err.message));
+  }, []);
+
+  if (error) {
+    return (
+      <div className="p-4 max-w-4xl mx-auto">
+        <div className="flex items-center gap-2 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm">
+          <AlertCircle className="h-4 w-4" />
+          Couldn&apos;t load profile data: {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div className="p-4 max-w-4xl mx-auto text-sm text-gray-500">Loading profile...</div>;
+  }
+
+  const { borrower, applications } = data;
+
+  const totalBorrowed = applications.reduce((sum, app) => sum + app.amount, 0);
+  const allRepayments = applications.flatMap((app) => app.repayments);
+  const paidRepayments = allRepayments.filter((r) => r.status === "paid");
+  const repaymentRate = allRepayments.length
+    ? Math.round((paidRepayments.length / allRepayments.length) * 100)
+    : 0;
 
   return (
     <div className="p-4">
@@ -23,11 +67,13 @@ export default function BorrowerProfile() {
               <div className="text-center">
                 <Avatar className="h-24 w-24 mx-auto mb-4">
                   <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">
-                    JD
+                    {initials(borrower.first_name, borrower.last_name)}
                   </AvatarFallback>
                 </Avatar>
-                <h2 className="text-xl font-bold">John Doe</h2>
-                <p className="text-sm text-gray-500">SevisPass ID: SP-2024-001</p>
+                <h2 className="text-xl font-bold">
+                  {borrower.first_name} {borrower.last_name}
+                </h2>
+                <p className="text-sm text-gray-500">SevisPass ID: {borrower.sevispass_id}</p>
                 <Badge className="mt-2" variant="outline">
                   <Shield className="h-3 w-3 mr-1" />
                   Verified Identity
@@ -37,19 +83,19 @@ export default function BorrowerProfile() {
               <div className="mt-6 space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Member Since</span>
-                  <span>June 2023</span>
+                  <span>{formatMonthYear(borrower.member_since)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Credit Score</span>
-                  <span className="font-semibold text-green-600">720</span>
+                  <span className="font-semibold text-green-600">{borrower.credit_score}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Total Borrowed</span>
-                  <span>K 8,500</span>
+                  <span>K {totalBorrowed.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Repayment Rate</span>
-                  <span className="font-semibold text-green-600">98%</span>
+                  <span className="font-semibold text-green-600">{repaymentRate}%</span>
                 </div>
               </div>
             </CardContent>
@@ -64,41 +110,47 @@ export default function BorrowerProfile() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {loanHistory.map((loan, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-semibold">Loan #{index + 1}</p>
-                        <p className="text-sm text-gray-500">{loan.date}</p>
+                {applications.map((loan, index) => {
+                  const repaid = loan.repayments
+                    .filter((r) => r.status === "paid")
+                    .reduce((sum, r) => sum + r.amount, 0);
+                  const isActive = loan.repayments.some((r) => r.status !== "paid");
+                  const progress = Math.round((repaid / loan.amount) * 100);
+
+                  return (
+                    <div key={loan.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold">Loan #{index + 1}</p>
+                          <p className="text-sm text-gray-500">{formatMonthShort(loan.submitted_at)}</p>
+                        </div>
+                        <Badge variant={isActive ? "default" : "outline"}>
+                          {isActive ? "Active" : "Completed"}
+                        </Badge>
                       </div>
-                      <Badge variant={loan.status === "active" ? "default" : "outline"}>
-                        {loan.status === "active" ? "Active" : "Completed"}
-                      </Badge>
+                      <div className="mt-2 flex gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-500">Amount:</span>
+                          <span className="ml-1 font-semibold">K {loan.amount.toLocaleString()}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Repaid:</span>
+                          <span className="ml-1 font-semibold">K {repaid.toLocaleString()}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Progress:</span>
+                          <span className="ml-1 font-semibold">{progress}%</span>
+                        </div>
+                      </div>
+                      <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-600 h-2 rounded-full"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="mt-2 flex gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-500">Amount:</span>
-                        <span className="ml-1 font-semibold">K {loan.amount}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Repaid:</span>
-                        <span className="ml-1 font-semibold">K {loan.repaid}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Progress:</span>
-                        <span className="ml-1 font-semibold">
-                          {Math.round((loan.repaid / loan.amount) * 100)}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-green-600 h-2 rounded-full"
-                        style={{ width: `${(loan.repaid / loan.amount) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="mt-4 p-3 bg-blue-50 rounded-lg">

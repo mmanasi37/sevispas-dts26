@@ -1,5 +1,6 @@
-import 'dotenv/config';
+import './env.js';
 import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
 import axios from 'axios';
 // import session from 'express-session';
 import routes from './routes/index.js';
@@ -9,6 +10,9 @@ const app: Application = express();
 const port = 3001;
 
 const SSO_SERVER = "";
+
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true }));
+app.use(express.json());
 
 // app.use(session);
 

@@ -1,10 +1,40 @@
 import { Router, Request, Response } from 'express';
 import { db } from '../database/index.js';
+import {
+    findBorrowerBySevisPassId,
+    getBorrowerLoanApplications,
+    getLoanRepayments,
+} from '../repositories/BorrowerRepository.js';
 
 const router: Router = Router();
 
 router.get('/', (req: Request, res: Response) => {
     res.send('Hello World!');
+});
+
+router.get('/borrowers/:sevispassId', async (req: Request, res: Response) => {
+    const borrower = await findBorrowerBySevisPassId(String(req.params.sevispassId));
+    if (!borrower) {
+        return res.status(404).json({ error: 'Borrower not found' });
+    }
+    res.json(borrower);
+});
+
+router.get('/borrowers/:sevispassId/dashboard', async (req: Request, res: Response) => {
+    const borrower = await findBorrowerBySevisPassId(String(req.params.sevispassId));
+    if (!borrower) {
+        return res.status(404).json({ error: 'Borrower not found' });
+    }
+
+    const applications = await getBorrowerLoanApplications(borrower.id);
+    const applicationsWithRepayments = await Promise.all(
+        applications.map(async (application) => ({
+            ...application,
+            repayments: await getLoanRepayments(application.id),
+        }))
+    );
+
+    res.json({ borrower, applications: applicationsWithRepayments });
 });
 
 router.get('/users', async (req: Request, res: Response) => {
