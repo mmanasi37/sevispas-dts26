@@ -31,10 +31,6 @@ export async function findPeople(criteria: Partial<Person>) {
         query = query.where('gender', '=', criteria.gender)
     }
 
-    if (criteria.created_at) {
-        query = query.where('created_at', '=', criteria.created_at)
-    }
-
     return await query.selectAll().execute()
 }
 
