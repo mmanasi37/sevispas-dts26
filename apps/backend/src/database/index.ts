@@ -3,8 +3,10 @@ import { Kysely, PostgresDialect } from 'kysely';
 import { FileMigrationProvider, Migrator } from 'kysely/migration';
 import { type Database, type LoanApplicationStatusTable, type LoanApplicationTable } from './schema.ts';
 import type { LoanApplication, LoanApplicationStatus } from '../types.ts';
+import { createClient } from '@libsql/client'
+import { LibsqlDialect } from '@libsql/kysely-libsql'
 
-const dialect = new PostgresDialect({
+const pgDialect = new PostgresDialect({
     pool: new Pool({
         database: 'sevispass_db',
         host: 'localhost',
@@ -14,6 +16,13 @@ const dialect = new PostgresDialect({
         // schema: 'system_v1'
     })
 });
+
+const dialect = new LibsqlDialect({
+    client: createClient({
+        url: process.env.TURSO_DATABASE_URL!,
+        authToken: process.env.TURSO_AUTH_TOKEN,
+    }),
+})
 
 export const db = new Kysely<Database>({
     dialect,

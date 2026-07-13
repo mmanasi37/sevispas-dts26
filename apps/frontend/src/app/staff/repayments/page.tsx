@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Bell, DollarSign, AlertCircle, CheckCircle } from "lucide-react";
+import { Bell, AlertCircle, CheckCircle } from "lucide-react";
+import { KinaIcon } from "@/components/ui/kina-icon";
 
 export default function RepaymentTracking() {
   const repayments = [
@@ -62,7 +63,7 @@ export default function RepaymentTracking() {
                     <p className="font-medium">Upcoming</p>
                     <p className="text-2xl font-bold text-blue-600">K 2,100</p>
                   </div>
-                  <DollarSign className="h-8 w-8 text-blue-600" />
+                  <KinaIcon className="h-8 w-8 text-blue-600" />
                 </div>
               </div>
             </CardContent>

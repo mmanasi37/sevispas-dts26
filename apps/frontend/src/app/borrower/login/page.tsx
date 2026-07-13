@@ -18,7 +18,7 @@ export default function BorrowerLogin() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      router.push("/borrower/application");
+      router.push("/borrower/dashboard");
     }, 2000);
   };
 

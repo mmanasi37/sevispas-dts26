@@ -1,20 +1,21 @@
-import 'dotenv/config';
 import express, { type Application, type Request, type Response } from 'express';
-import axios from 'axios';
-// import session from 'express-session';
-import routes from './routes/index.ts';
-import { generateState, generateNonce, verifyState, processVPToken } from './libs/utils.ts';
 import { debug } from 'node:util';
 import cors from 'cors';
 import morgan from 'morgan';
+import axios from 'axios';
+// import session from 'express-session';
+import routes from './routes/index.ts';
+import './env.ts';
+import { generateState, generateNonce, verifyState, processVPToken } from './libs/utils.ts';
 
 const app: Application = express();
 const port = 3001;
 
 const SSO_SERVER = "";
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 // app.use(session);
 app.use(morgan('combined'));
 
@@ -23,7 +24,7 @@ var corsOptions = {
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
-  origin: 'http://example.com',
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true
   // origin: "*",
   // origin: function (_origin, callback) {
   //   // db.loadOrigins is an example call to load
@@ -33,7 +34,7 @@ var corsOptions = {
   //   });
   // },
 };
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(routes);
 
