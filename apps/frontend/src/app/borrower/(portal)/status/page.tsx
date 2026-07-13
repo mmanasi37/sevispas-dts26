@@ -43,10 +43,9 @@ export default function LoanStatus() {
   const currentStatus = statusConfig[status];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">MIJOE</h1>
+        <div className="flex justify-end mb-6">
           <Button variant="outline" onClick={() => window.location.href = "/borrower/application"}>
             New Application
           </Button>

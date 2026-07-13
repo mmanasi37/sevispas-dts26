@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { UserCheck, Shield, DollarSign, Calendar, Target, CheckCircle, XCircle } from "lucide-react";
+import { UserCheck, Shield, Calendar, Target, CheckCircle, XCircle } from "lucide-react";
+import { KinaIcon } from "@/components/ui/kina-icon";
 
 export default function ApplicationReview() {
   const [showReason, setShowReason] = useState(false);
@@ -53,7 +54,7 @@ export default function ApplicationReview() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="h-4 w-4 text-gray-500" />
+                  <KinaIcon className="h-4 w-4 text-gray-500" />
                   <span className="font-medium">Loan Amount</span>
                 </div>
                 <p className="text-2xl font-bold">K 3,000</p>

@@ -3,7 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle, Circle, Calendar, DollarSign } from "lucide-react";
+import { CheckCircle, Circle, Calendar } from "lucide-react";
+import { KinaIcon } from "@/components/ui/kina-icon";
 
 export default function RepaymentSchedule() {
   const repayments = [
@@ -15,12 +16,11 @@ export default function RepaymentSchedule() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="p-4">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">MIJOE</h1>
+        <div className="flex justify-end items-center mb-6">
           <Badge variant="outline" className="text-sm">
-            <DollarSign className="h-3 w-3 mr-1" />
+            <KinaIcon className="h-3 w-3 mr-1" />
             Balance: K 2,500
           </Badge>
         </div>

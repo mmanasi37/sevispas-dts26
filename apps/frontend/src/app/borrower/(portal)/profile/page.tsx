@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Shield, TrendingUp } from "lucide-react";
+import { Shield, TrendingUp } from "lucide-react";
 
 export default function BorrowerProfile() {
   const loanHistory = [
@@ -13,7 +13,7 @@ export default function BorrowerProfile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="p-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">My Profile</h1>
 

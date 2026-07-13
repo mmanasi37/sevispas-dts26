@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { UserCheck, Globe, DollarSign, Calendar, Target, Shield } from "lucide-react";
+import { UserCheck, Globe, Shield } from "lucide-react";
+import { KinaIcon } from "@/components/ui/kina-icon";
 
 export default function LoanApplication() {
   const router = useRouter();
@@ -64,10 +65,9 @@ export default function LoanApplication() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">MIJOE</h1>
+        <div className="flex justify-end items-center mb-6">
           <div className="flex gap-2">
             <Button
               variant={language === "en" ? "default" : "outline"}
@@ -106,7 +106,7 @@ export default function LoanApplication() {
               <div className="space-y-2">
                 <Label htmlFor="amount">{t.amount}</Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                  <KinaIcon className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                   <Input
                     id="amount"
                     type="number"

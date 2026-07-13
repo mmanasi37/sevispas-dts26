@@ -3,13 +3,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, FileText, Clock, DollarSign } from "lucide-react";
+import { Users, FileText, Clock } from "lucide-react";
+import { KinaIcon } from "@/components/ui/kina-icon";
 
 export default function StaffDashboard() {
   const stats = [
     { label: "New Applications", value: "24", icon: FileText, change: "+12%", trend: "up" },
     { label: "Pending Approvals", value: "18", icon: Clock, change: "-3%", trend: "down" },
-    { label: "Active Loans", value: "142", icon: DollarSign, change: "+8%", trend: "up" },
+    { label: "Active Loans", value: "142", icon: KinaIcon, change: "+8%", trend: "up" },
     { label: "Overdue Repayments", value: "7", icon: Users, change: "-2%", trend: "down" },
   ];
 
