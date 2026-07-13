@@ -1,6 +1,6 @@
 # MIJOE — Financial Track
 
-MIJOE is a microfinance platform powered by **SevisPass** digital identity, built by **Team MIJOE** for the **2026 DICT Hackathon**. It lets borrowers apply for and track microloans, and gives loan officers a staff portal to review applications, manage borrowers, and track repayments.
+MIJOE is a microfinance platform powered by **SevisPass** digital identity, built by **Team MCM** for the **2026 DICT Hackathon**. It lets borrowers apply for and track microloans, and gives loan officers a staff portal to review applications, manage borrowers, and track repayments.
 
 ## Tech Stack
 
@@ -70,7 +70,7 @@ ALLOWED_CALLBACK_URLS=<our deployed callback URL(s)>
 
 ## Team
 
-**MIJOE** — 2026 DICT Hackathon
+**MCM** — 2026 DICT Hackathon
 
 ## License
 
