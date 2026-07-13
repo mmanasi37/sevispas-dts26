@@ -1,19 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle, Circle, Calendar } from "lucide-react";
+import { CheckCircle, Circle, Calendar, AlertCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
+import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment, type BorrowerDashboard } from "@/lib/api";
+import { DEMO_SEVISPASS_ID } from "@/lib/session";
+import { formatFullDate, formatShortDate } from "@/lib/format";
 
 export default function RepaymentSchedule() {
-  const repayments = [
-    { due: "January 30, 2024", amount: 500, status: "paid" },
-    { due: "February 13, 2024", amount: 500, status: "paid" },
-    { due: "February 27, 2024", amount: 500, status: "pending" },
-    { due: "March 12, 2024", amount: 500, status: "pending" },
-    { due: "March 26, 2024", amount: 500, status: "pending" },
-  ];
+  const [data, setData] = useState<BorrowerDashboard | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getBorrowerDashboard(DEMO_SEVISPASS_ID)
+      .then(setData)
+      .catch((err) => setError(err.message));
+  }, []);
+
+  if (error) {
+    return (
+      <div className="p-4 max-w-4xl mx-auto">
+        <div className="flex items-center gap-2 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm">
+          <AlertCircle className="h-4 w-4" />
+          Couldn&apos;t load repayment data: {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div className="p-4 max-w-4xl mx-auto text-sm text-gray-500">Loading repayment schedule...</div>;
+  }
+
+  const activeLoan = getActiveLoan(data.applications);
+  const repayments = activeLoan?.repayments ?? [];
+  const totalRepaid = sumAmount(repayments.filter((r) => r.status === "paid"));
+  const remaining = sumAmount(repayments.filter((r) => r.status !== "paid"));
+  const nextPayment = getNextPayment(repayments);
 
   return (
     <div className="p-4">
@@ -21,7 +47,7 @@ export default function RepaymentSchedule() {
         <div className="flex justify-end items-center mb-6">
           <Badge variant="outline" className="text-sm">
             <KinaIcon className="h-3 w-3 mr-1" />
-            Balance: K 2,500
+            Balance: K {remaining.toLocaleString()}
           </Badge>
         </div>
 
@@ -29,22 +55,26 @@ export default function RepaymentSchedule() {
           <CardHeader>
             <CardTitle>Repayment Schedule</CardTitle>
             <CardDescription>
-              Your fortnightly repayment tracker linked to your SevisPass ID
+              {activeLoan
+                ? `Fortnightly repayment tracker for loan #${activeLoan.reference}, linked to your SevisPass ID`
+                : "No loan repayments to track yet"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="mb-6 grid grid-cols-3 gap-4">
               <div className="bg-green-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-gray-600">Total Repaid</p>
-                <p className="text-2xl font-bold text-green-600">K 1,000</p>
+                <p className="text-2xl font-bold text-green-600">K {totalRepaid.toLocaleString()}</p>
               </div>
               <div className="bg-blue-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-gray-600">Remaining</p>
-                <p className="text-2xl font-bold text-blue-600">K 2,500</p>
+                <p className="text-2xl font-bold text-blue-600">K {remaining.toLocaleString()}</p>
               </div>
               <div className="bg-yellow-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-gray-600">Next Payment</p>
-                <p className="text-2xl font-bold text-yellow-600">Feb 27</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {nextPayment ? formatShortDate(nextPayment.due_date) : "—"}
+                </p>
               </div>
             </div>
 
@@ -57,13 +87,13 @@ export default function RepaymentSchedule() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {repayments.map((repayment, index) => (
-                  <TableRow key={index}>
+                {repayments.map((repayment) => (
+                  <TableRow key={repayment.id}>
                     <TableCell className="font-medium">
                       <Calendar className="h-4 w-4 inline mr-2" />
-                      {repayment.due}
+                      {formatFullDate(repayment.due_date)}
                     </TableCell>
-                    <TableCell>K {repayment.amount}</TableCell>
+                    <TableCell>K {repayment.amount.toLocaleString()}</TableCell>
                     <TableCell>
                       {repayment.status === "paid" ? (
                         <Badge className="bg-green-100 text-green-700">

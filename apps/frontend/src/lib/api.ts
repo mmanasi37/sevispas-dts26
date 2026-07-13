@@ -46,3 +46,21 @@ export async function getBorrowerDashboard(sevispassId: string): Promise<Borrowe
   }
   return res.json();
 }
+
+// The loan currently being paid off — the one with at least one non-paid repayment.
+// Falls back to the most recently submitted loan if every loan is fully repaid.
+export function getActiveLoan(applications: LoanApplication[]): LoanApplication | undefined {
+  return (
+    applications.find((app) => app.repayments.some((r) => r.status !== "paid")) ?? applications[0]
+  );
+}
+
+export function sumAmount(repayments: Repayment[]) {
+  return repayments.reduce((sum, r) => sum + r.amount, 0);
+}
+
+export function getNextPayment(repayments: Repayment[]): Repayment | undefined {
+  return repayments
+    .filter((r) => r.status !== "paid")
+    .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())[0];
+}

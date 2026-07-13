@@ -6,21 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Shield, TrendingUp, AlertCircle } from "lucide-react";
 import { getBorrowerDashboard, type BorrowerDashboard } from "@/lib/api";
-
-// No real session yet (SevisPass login isn't wired up) — hardcoded to the seeded demo borrower.
-const DEMO_SEVISPASS_ID = "SP-2024-001";
-
-function initials(firstName: string, lastName: string) {
-  return `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
-}
-
-function formatMonthYear(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", { month: "long", year: "numeric" });
-}
-
-function formatMonthShort(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", { month: "short", year: "numeric" });
-}
+import { DEMO_SEVISPASS_ID, initials } from "@/lib/session";
+import { formatMonthYear, formatMonthShort } from "@/lib/format";
 
 export default function BorrowerProfile() {
   const [data, setData] = useState<BorrowerDashboard | null>(null);

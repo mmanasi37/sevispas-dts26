@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,49 +13,92 @@ import {
   Activity,
   User,
   ArrowRight,
+  AlertCircle,
 } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
+import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment, type BorrowerDashboard } from "@/lib/api";
+import { DEMO_SEVISPASS_ID } from "@/lib/session";
+import { formatTerm, formatShortDate } from "@/lib/format";
+
+const quickActions = [
+  {
+    href: "/borrower/application",
+    label: "Apply for a New Loan",
+    description: "Submit a new loan request",
+    icon: FileText,
+  },
+  {
+    href: "/borrower/status",
+    label: "Track Application Status",
+    description: "See where your application stands",
+    icon: Activity,
+  },
+  {
+    href: "/borrower/repayment",
+    label: "View Repayment Schedule",
+    description: "Check upcoming and past payments",
+    icon: Calendar,
+  },
+  {
+    href: "/borrower/profile",
+    label: "View Profile",
+    description: "Your SevisPass identity & loan history",
+    icon: User,
+  },
+];
 
 export default function BorrowerDashboard() {
-  const stats = [
-    { label: "Active Loan Balance", value: "K 2,500", icon: KinaIcon },
-    { label: "Credit Score", value: "720", icon: TrendingUp },
-    { label: "Next Payment", value: "K 500 · Feb 27", icon: Calendar },
-    { label: "Repayment Rate", value: "98%", icon: CheckCircle },
-  ];
+  const [data, setData] = useState<BorrowerDashboard | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const quickActions = [
+  useEffect(() => {
+    getBorrowerDashboard(DEMO_SEVISPASS_ID)
+      .then(setData)
+      .catch((err) => setError(err.message));
+  }, []);
+
+  if (error) {
+    return (
+      <div className="p-4 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm">
+          <AlertCircle className="h-4 w-4" />
+          Couldn&apos;t load dashboard data: {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div className="p-4 max-w-7xl mx-auto text-sm text-gray-500">Loading dashboard...</div>;
+  }
+
+  const { borrower, applications } = data;
+  const activeLoan = getActiveLoan(applications);
+  const allRepayments = applications.flatMap((app) => app.repayments);
+  const paidRepayments = allRepayments.filter((r) => r.status === "paid");
+  const repaymentRate = allRepayments.length
+    ? Math.round((paidRepayments.length / allRepayments.length) * 100)
+    : 0;
+
+  const activeLoanBalance = activeLoan ? sumAmount(activeLoan.repayments.filter((r) => r.status !== "paid")) : 0;
+  const nextPayment = activeLoan ? getNextPayment(activeLoan.repayments) : undefined;
+
+  const stats = [
+    { label: "Active Loan Balance", value: `K ${activeLoanBalance.toLocaleString()}`, icon: KinaIcon },
+    { label: "Credit Score", value: String(borrower.credit_score), icon: TrendingUp },
     {
-      href: "/borrower/application",
-      label: "Apply for a New Loan",
-      description: "Submit a new loan request",
-      icon: FileText,
-    },
-    {
-      href: "/borrower/status",
-      label: "Track Application Status",
-      description: "See where your application stands",
-      icon: Activity,
-    },
-    {
-      href: "/borrower/repayment",
-      label: "View Repayment Schedule",
-      description: "Check upcoming and past payments",
+      label: "Next Payment",
+      value: nextPayment ? `K ${nextPayment.amount.toLocaleString()} · ${formatShortDate(nextPayment.due_date)}` : "None due",
       icon: Calendar,
     },
-    {
-      href: "/borrower/profile",
-      label: "View Profile",
-      description: "Your SevisPass identity & loan history",
-      icon: User,
-    },
+    { label: "Repayment Rate", value: `${repaymentRate}%`, icon: CheckCircle },
   ];
 
   return (
     <div className="p-4">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold">Welcome back, John</h1>
+          <h1 className="text-2xl font-bold">Welcome back, {borrower.first_name}</h1>
           <p className="text-gray-500">Here&apos;s an overview of your account</p>
         </div>
 
@@ -78,32 +122,44 @@ export default function BorrowerDashboard() {
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>Current Loan</CardTitle>
-                  <CardDescription>Application #MIJ-2024-001</CardDescription>
+                  <CardDescription>
+                    {activeLoan ? `Application #${activeLoan.reference}` : "No loans yet"}
+                  </CardDescription>
                 </div>
-                <Badge className="bg-green-100 text-green-700">Approved</Badge>
+                {activeLoan && (
+                  <Badge className="bg-green-100 text-green-700 capitalize">{activeLoan.status}</Badge>
+                )}
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 text-sm mb-4">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Amount</span>
-                  <span className="font-medium">K 5,000</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Term</span>
-                  <span className="font-medium">Short Term (5 fortnights)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Purpose</span>
-                  <span className="font-medium">Business</span>
-                </div>
-              </div>
-              <Link href="/borrower/status">
-                <Button variant="outline" className="w-full">
-                  View Full Status
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
+              {activeLoan ? (
+                <>
+                  <div className="space-y-2 text-sm mb-4">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Amount</span>
+                      <span className="font-medium">K {activeLoan.amount.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Term</span>
+                      <span className="font-medium">{formatTerm(activeLoan.term)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Purpose</span>
+                      <span className="font-medium capitalize">{activeLoan.purpose}</span>
+                    </div>
+                  </div>
+                  <Link href="/borrower/status">
+                    <Button variant="outline" className="w-full">
+                      View Full Status
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Link href="/borrower/application">
+                  <Button className="w-full">Apply for Your First Loan</Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
 
