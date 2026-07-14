@@ -1,19 +1,29 @@
 import 'dotenv/config';
-import { Pool } from 'pg';
-import { Kysely, PostgresDialect } from 'kysely';
+// import { Pool } from 'pg';
+import { createPool } from 'mysql2/promise';
+import { Kysely, MysqlDialect, PostgresDialect } from 'kysely';
 import { LibsqlDialect } from '@libsql/kysely-libsql';
 import { createClient } from '@libsql/client';
 import { type Database, type LoanApplicationStatusTable, type LoanApplicationTable } from './schema.ts';
 import type { LoanApplication, LoanApplicationStatus } from './types.ts';
 
-const pgDialect = new PostgresDialect({
-    pool: new Pool({
+// const pgDialect = new PostgresDialect({
+//     pool: new Pool({
+//         database: 'sevispass_db',
+//         host: 'localhost',
+//         port: 5432,
+//         user: 'db_admin',
+//         password: 'secr3t',
+//         // schema: 'system_v1'
+//     })
+// });
+
+export const mysqlDialect = new MysqlDialect({
+    pool: createPool({
         database: 'sevispass_db',
         host: 'localhost',
-        port: 5432,
-        user: 'db_admin',
+        user: 'root',
         password: 'secr3t',
-        // schema: 'system_v1'
     })
 });
 

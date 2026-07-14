@@ -37,7 +37,7 @@ export default function StaffDashboard() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
           {stats.map((stat) => (
-            <Card key={stat.label}>
+            <Card key={stat.label} className="shadow-none">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
                 <stat.icon className="h-4 w-4 text-gray-500" />
@@ -53,7 +53,7 @@ export default function StaffDashboard() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Recent Applications</CardTitle>
               <CardDescription>New applications awaiting review</CardDescription>
@@ -75,11 +75,11 @@ export default function StaffDashboard() {
                   </div>
                 ))}
               </div>
-              <Link href={"/staff/applications"} className={cn(buttonVariants('link'), "w-full mt-4")}>View All Applications</Link>
+              <Link href={"/staff/applications"} className={cn(buttonVariants({ variant: 'link' }), "w-full mt-4")}>View All Applications</Link>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Overdue Repayments</CardTitle>
               <CardDescription>Borrowers with overdue payments</CardDescription>

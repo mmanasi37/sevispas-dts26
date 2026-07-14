@@ -81,22 +81,25 @@ export async function cancelLoanApplication(loanApplicationId: number) {
         .where('status_name', '=', 'cancel')
         .select('id').executeTakeFirst();
 
-    const type = db.updateTable('LoanApplication')
-        .set({ 'loan_application_status_id': cancelStatusType?.id })
-        .where('id', '==', loanApplicationId)
-        .executeTakeFirst();
+    // const type = db.updateTable('LoanApplication')
+    //     .set({ 'loan_application_status_id': cancelStatusType?.id })
+    //     .where('id', '==', loanApplicationId)
+    //     .executeTakeFirst();
 
-    return type;
+    return cancelStatusType;
 }
 
 export async function applyLoan(application: NewLoanApplication) {
-    console.log(application)
-    const loan = await db.insertInto('LoanApplication')
-        .values(application)
-        .returning('LoanApplication.id')
-        .executeTakeFirst();
+    try {
+        const loan = await db.insertInto('LoanApplication')
+            .values(application)
+            .returning('LoanApplication.id')
+            .executeTakeFirstOrThrow();
 
-    return loan;
+        return loan;
+    } catch (error) {
+        throw error;
+    }
 }
 
 export function getLoanApplications() {

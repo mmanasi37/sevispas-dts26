@@ -8,8 +8,9 @@
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm -r test",
     "clean": "pnpm -r --parallel exec rm -rf dist",
-    "generate-sql": "dbml2sql docs/schema.dbml --postgres -o docs/schema.sql",
-    "generate-ts": "kysely-codegen --dialect postgres --input-file docs/schema.sql --output-file db.d.ts"
+    "generate:psql": "dbml2sql docs/schema.dbml --postgres -o docs/schema.sql",
+    "generate:sql": "dbml2sql docs/schema.dbml --mysql -o docs/schema.sql",
+    "generate:ts": "kysely-codegen --dialect postgres --input-file docs/schema.sql --output-file db.d.ts"
   },
   "engines": {
     "node": ">=22",

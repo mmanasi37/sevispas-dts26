@@ -1,11 +1,6 @@
-import { config } from 'dotenv';
-import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import dotenv from "dotenv";
 import { z } from "zod";
-
-// const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// config({ path: path.resolve(__dirname, '../.env') });
 
 type Environment = "development" | "test" | "staging" | "production";
 
@@ -26,8 +21,6 @@ const envFile = getEnvFile(environment!);
 const envVar = dotenv.config({
     path: path.resolve(process.cwd(), envFile),
 });
-
-// dotenv.config();
 
 // Define the environment schema using Zod
 const envSchema = z.object({

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle, XCircle, AlertCircle, RefreshCw } from "lucide-react";
 import { getBorrowerDashboard, type BorrowerDashboard } from "@/lib/api";
-import { DEMO_SEVISPASS_ID } from "@/lib/session";
+import { DEMO_SEVISPASS_ID } from "@/server/session";
 import { formatFullDate, formatTerm } from "@/lib/format";
 
 const statusConfig = {

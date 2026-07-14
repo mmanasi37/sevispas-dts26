@@ -134,33 +134,38 @@ export async function debitAccount(fromAccountNumber: number, toAccountNumber: n
 
     return approveLoan;
 }
+
+
 export async function createLoanApplication(borrowerId: number, input: {
     amount: number;
     term: string;
     purpose: string;
 }) {
     const { count } = await db
-        .selectFrom('loan_applications')
+        .selectFrom('LoanApplication')
         .select(({ fn }) => fn.count<number>('id').as('count'))
         .executeTakeFirstOrThrow();
 
     const reference = `MIJ-${new Date().getFullYear()}-${String(Number(count) + 1).padStart(3, '0')}`;
 
-    return await db.insertInto('loan_applications')
+    return await db.insertInto('LoanApplication')
         .values({
             reference,
             borrower_id: borrowerId,
-            amount: input.amount,
+            loan_amount: input.amount,
             term: input.term,
             purpose: input.purpose,
             status: 'pending',
+            loan_id: 1,
+            loan_officer_id: 1,
+            application_date: new Date(),
         })
         .returningAll()
         .executeTakeFirstOrThrow();
 }
 
 export async function getBorrowerLoanApplications(borrowerId: number) {
-    return await db.selectFrom('loan_applications')
+    return await db.selectFrom('LoanApplication')
         .where('borrower_id', '=', borrowerId)
         .selectAll()
         .orderBy('submitted_at', 'desc')
@@ -168,7 +173,7 @@ export async function getBorrowerLoanApplications(borrowerId: number) {
 }
 
 export async function getLoanRepayments(loanApplicationId: number) {
-    return await db.selectFrom('repayments')
+    return await db.selectFrom('LoanRepayment')
         .where('loan_application_id', '=', loanApplicationId)
         .selectAll()
         .orderBy('due_date', 'asc')

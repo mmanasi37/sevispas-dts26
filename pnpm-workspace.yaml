@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 allowBuilds:
   '@openthink/audit': set this to true or false
+  bcrypt: true
   esbuild: true
   msgpackr-extract: set this to true or false
   sharp: true

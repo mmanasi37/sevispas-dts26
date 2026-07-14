@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Shield, TrendingUp, AlertCircle } from "lucide-react";
 import { getBorrowerDashboard, type BorrowerDashboard } from "@/lib/api";
-import { DEMO_SEVISPASS_ID, initials } from "@/lib/session";
+import { DEMO_SEVISPASS_ID, initials } from "@/server/session";
 import { formatMonthYear, formatMonthShort } from "@/lib/format";
 
 export default function BorrowerProfile() {

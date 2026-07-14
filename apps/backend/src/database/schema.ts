@@ -29,35 +29,12 @@ export interface Database {
 export interface StaffTable {
     id: Generated<number>;
     staff_number: string | null;
-    first_name: string
-    last_name: string | null
-    gender: 'male' | 'female' | 'other' | null
+    first_name: string;
+    last_name: string | null;
+    gender: 'male' | 'female' | 'other' | null;
     phone_number: number | null;
     email: string | null;
     password: string;
-    // marital_status: 'single' | 'married' | 'divorced' | 'widowed' | null
-    // address: { city: string } | null
-    // age: number | null
-    // birthdate: ColumnType<Date | null, string | null | undefined, string | null>
-    // experience: { role: string }[] | null
-    // has_pets: Generated<'Y' | 'N'>
-    // middle_name: string | null
-    // nicknames: string[] | null
-    // nullable_column: string | null
-    // profile: {
-    //     addresses: { city: string }[]
-    //     website: { url: string }
-    // } | null
-    // updated_at: ColumnType<Date | null, string | null | undefined, string | null>
-    // // created_at: ColumnType<Date, string | undefined, never>
-    // created_at: GeneratedAlways<Date>
-    // deleted_at: ColumnType<Date | null, string | null | undefined, string | null>
-    metadata: JSONColumnType<{
-        login_at: string
-        ip: string | null
-        agent: string | null
-        plan: 'free' | 'premium'
-    }> | null
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
     deleted_at: Timestamp | null;
@@ -70,6 +47,7 @@ export interface BorrowerTable {
     first_name: string | null;
     last_name: string | null;
     date_of_birth: ColumnType<Date, Date | string, Date | string> | null;
+    marital_status: 'single' | 'married' | 'divorced' | 'widowed' | null;
     id_type_id: number | null;
     id_number: string | null;
     sevispass_id: string;
@@ -110,8 +88,8 @@ export interface LoanApplicationTable {
     loan_id: number;
     loan_officer_id: number;
     loan_amount: number;
-    loan_application_status_id: number;
     application_date: ColumnType<Date, Date | string, Date | string>;
+    term: string;
     borrower_id: number;
     reviewed_by: number | null;
     review_date: ColumnType<Date, Date | string, Date | string> | null;
@@ -121,8 +99,6 @@ export interface LoanApplicationTable {
     deleted_at: Timestamp | null;
     deleted_by: number | null;
     reference: string;
-    amount: number;
-    term: string;
     purpose: string;
     status: Generated<'pending' | 'approved' | 'rejected' | 'under_review'>;
     rejection_reason: string | null;
@@ -153,9 +129,9 @@ export interface LoanApplicationApprovalTable {
     loan_application_id: number | null;
     loan_status_type_id: number | null;
     is_active: boolean;
-    reviewed_by: number;
-    review_date: Date;
-    review_notes: string;
+    reviewed_by: number | null;
+    review_date: Date | null;
+    review_notes: string | null;
     is_reviewd: boolean;
     created_at: Timestamp;
     updated_at: Timestamp;

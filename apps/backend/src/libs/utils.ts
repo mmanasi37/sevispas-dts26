@@ -32,3 +32,24 @@ export const generateToken = (user: any) => {
 export const verifyToken = (token: string) => {
     return jwt.verify(token, env.JWT_SECRET);
 };
+
+export const handleDatabaseError = (error: any) => {
+    if (error.code === "SQLITE_CONSTRAINT") {
+        if (error.message.includes("UNIQUE constraint failed")) {
+            return {
+                status: 409,
+                message: "A record with this value already exists."
+            };
+        }
+
+        return {
+            status: 400,
+            message: "Database constraint violation."
+        };
+    }
+
+    return {
+        status: 500,
+        message: "Internal server error."
+    };
+};

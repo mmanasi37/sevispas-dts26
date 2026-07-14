@@ -1,11 +1,185 @@
-// import { getIronSessionData } from "@/server/actions";
+"use client";
 
-export default async function Profile() {
-    // const session = await getIronSessionData();
+import React, { useState } from "react";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Search, Filter, Eye } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-    // return <div>{session.username} </div>;
+// Dummy data for applications
+const dummyApplications = [
+    {
+        id: "APP-2024-001",
+        borrower: "Sarah M.",
+        amount: "K 3,000",
+        term: "6 Months",
+        purpose: "Education",
+        date: "2024-07-14",
+        status: "Pending",
+    },
+    {
+        id: "APP-2024-002",
+        borrower: "Michael K.",
+        amount: "K 5,000",
+        term: "12 Months",
+        purpose: "Business Expansion",
+        date: "2024-07-13",
+        status: "Review",
+    },
+    {
+        id: "APP-2024-003",
+        borrower: "David L.",
+        amount: "K 2,500",
+        term: "3 Months",
+        purpose: "Medical",
+        date: "2024-07-12",
+        status: "Approved",
+    },
+    {
+        id: "APP-2024-004",
+        borrower: "Emma W.",
+        amount: "K 1,000",
+        term: "1 Month",
+        purpose: "Emergency",
+        date: "2024-07-10",
+        status: "Rejected",
+    },
+    {
+        id: "APP-2024-005",
+        borrower: "James T.",
+        amount: "K 10,000",
+        term: "24 Months",
+        purpose: "Home Improvement",
+        date: "2024-07-09",
+        status: "Pending",
+    },
+];
+
+export default function ApplicationsPage() {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("All");
+
+    const filteredApplications = dummyApplications.filter((app) => {
+        const matchesSearch =
+            app.borrower.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            app.id.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === "All" || app.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case "Pending":
+                return <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50 font-normal">Pending</Badge>;
+            case "Review":
+                return <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 font-normal">Review</Badge>;
+            case "Approved":
+                return <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 font-normal">Approved</Badge>;
+            case "Rejected":
+                return <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50 font-normal">Rejected</Badge>;
+            default:
+                return <Badge variant="outline">{status}</Badge>;
+        }
+    };
 
     return (
-        <div>hello</div>
-    )
+        <div className="min-h-screen bg-gray-50 p-4">
+            <div className="max-w-7xl mx-auto space-y-4">
+                {/* Header Section */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+                    <div>
+                        <h1 className="text-2xl font-bold">Applications</h1>
+                        <p className="text-gray-500">View and manage all loan applications.</p>
+                    </div>
+                    <Button>Create Application</Button>
+                </div>
+
+                {/* Filters and Table in a minimal Card */}
+                <Card className="shadow-none">
+                    <CardHeader className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4">
+                        <div className="relative w-full sm:max-w-xs">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                                placeholder="Search by ID or Borrower..."
+                                className="pl-9 w-full bg-gray-50/50"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex w-full sm:w-auto items-center gap-2">
+                            <Filter className="h-4 w-4 text-gray-400" />
+                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger className="w-[160px] bg-gray-50/50">
+                                    <SelectValue placeholder="Filter by status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="All">All Statuses</SelectItem>
+                                    <SelectItem value="Pending">Pending</SelectItem>
+                                    <SelectItem value="Review">Review</SelectItem>
+                                    <SelectItem value="Approved">Approved</SelectItem>
+                                    <SelectItem value="Rejected">Rejected</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-0 border-t">
+                        <Table>
+                            <TableHeader className="bg-gray-50/50">
+                                <TableRow>
+                                    <TableHead className="pl-6">Application ID</TableHead>
+                                    <TableHead>Borrower</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Term</TableHead>
+                                    <TableHead>Date Submitted</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right pr-6">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredApplications.length > 0 ? (
+                                    filteredApplications.map((app) => (
+                                        <TableRow key={app.id}>
+                                            <TableCell className="pl-6 font-medium text-gray-900">{app.id}</TableCell>
+                                            <TableCell className="text-gray-600">{app.borrower}</TableCell>
+                                            <TableCell>{app.amount}</TableCell>
+                                            <TableCell className="text-gray-500">{app.term}</TableCell>
+                                            <TableCell className="text-gray-500">{app.date}</TableCell>
+                                            <TableCell>{getStatusBadge(app.status)}</TableCell>
+                                            <TableCell className="text-right pr-6">
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View Application">
+                                                    <Eye className="h-4 w-4 text-gray-500" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={7} className="h-24 text-center text-gray-500">
+                                            No applications found.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
 }

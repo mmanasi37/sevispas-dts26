@@ -1,87 +1,54 @@
+import { Borrower, BorrowerDashboard, ERepaymentStatus, LoanApplication, NewLoanApplicationInput, LoanRepayment } from "./types";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-export interface Repayment {
-  id: number;
-  loan_application_id: number;
-  due_date: string;
-  amount: number;
-  status: string;
-  paid_at: string | null;
-}
+async function createApi(url: string, options?: RequestInit) {
+  const opts = Object.assign({
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }, options);
+  const res = await fetch(`${API_URL}/api/${url}`, opts);
 
-export interface LoanApplication {
-  id: number;
-  reference: string;
-  borrower_id: number;
-  amount: number;
-  term: string;
-  purpose: string;
-  status: string;
-  rejection_reason: string | null;
-  submitted_at: string;
-  decided_at: string | null;
-  repayments: Repayment[];
-}
-
-export interface Borrower {
-  id: number;
-  sevispass_id: string;
-  first_name: string;
-  last_name: string;
-  email: string | null;
-  credit_score: number;
-  member_since: string;
-  created_at: string;
-}
-
-export interface BorrowerDashboard {
-  borrower: Borrower;
-  applications: LoanApplication[];
-}
-
-export async function getBorrowerDashboard(sevispassId: string): Promise<BorrowerDashboard> {
-  const res = await fetch(`${API_URL}/api/borrowers/${sevispassId}/dashboard`);
   if (!res.ok) {
-    throw new Error(`Failed to load borrower dashboard (${res.status})`);
+    throw new Error(`Failed to fetch data (${res.status})`);
   }
+
   return res.json();
 }
 
-export interface NewLoanApplicationInput {
-  amount: number;
-  term: string;
-  purpose: string;
+export async function getBorrowerDashboard(sevispassId: string): Promise<BorrowerDashboard> {
+  const api = await createApi(`/borrowers/${sevispassId}/dashboard`);
+  return api;
 }
 
 export async function createLoanApplication(
   sevispassId: string,
   input: NewLoanApplicationInput
 ): Promise<LoanApplication> {
-  const res = await fetch(`${API_URL}/api/borrowers/${sevispassId}/applications`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to submit application (${res.status})`);
+  try {
+    const res = await createApi(`/borrowers/${sevispassId}/applications`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+    return res;
+  } catch (error) {
+    console.error("Failed to submit application:", error);
+    throw error;
   }
-  return res.json();
 }
 
 // The loan currently being paid off — the one with at least one non-paid repayment.
 // Falls back to the most recently submitted loan if every loan is fully repaid.
 export function getActiveLoan(applications: LoanApplication[]): LoanApplication | undefined {
-  return (
-    applications.find((app) => app.repayments.some((r) => r.status !== "paid")) ?? applications[0]
-  );
+  return applications.find((app) => app.repayments.some((r) => r.status !== ERepaymentStatus.PAID)) ?? applications[0];
 }
 
-export function sumAmount(repayments: Repayment[]) {
+export function sumAmount(repayments: LoanRepayment[]) {
   return repayments.reduce((sum, r) => sum + r.amount, 0);
 }
 
-export function getNextPayment(repayments: Repayment[]): Repayment | undefined {
+export function getNextPayment(repayments: LoanRepayment[]): LoanRepayment | undefined {
   return repayments
-    .filter((r) => r.status !== "paid")
+    .filter((r) => r.status !== ERepaymentStatus.PAID)
     .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())[0];
 }

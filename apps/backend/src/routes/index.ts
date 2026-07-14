@@ -16,18 +16,6 @@ router.get('/', (req: Request, res: Response) => {
     });
 });
 
-// Staff: StaffTable;
-// Borrower: BorrowerTable;
-// Loan: LoanTable;
-// LoanApplication: LoanApplicationTable;
-// LoanStatus: LoanStatusTable;
-// LoanHistory: LoanHistoryTable;
-// LoanBorrower: LoanBorrowerTable;
-// Role: RoleTable;
-// Permission: PermissionTable;
-// RoleUser: RoleUserTable;
-// PermissionRole: PermissionRoleTable;
-
 router.post('/apply_loan', loansController.applyLoan);
 router.get('/loan_types', loansController.getLoanTypes);
 router.get('/loan_types/:loanTypeId', loansController.getLoanType);

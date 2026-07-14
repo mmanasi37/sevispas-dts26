@@ -1,173 +1,16 @@
 // Database: sevispass_db
 // Schema: system_v1
 
-Table User {
-  id bigint [pk, increment]
-  phone_number int
-  email varchar(100)
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
-Table AuthProvider {
-  id bigint [pk, increment]
-  phone_number int
-  email varchar(100)
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
-Table AuthToken {
-  id bigint [pk, increment]
-  user_id bigint [ref: > User.id]
-  auth_provider_id bigint [ref: > AuthProvider.id]
-  token varchar(500)
-  token_type varchar(50)
-  expires_at timestamp
-  is_revoked boolean
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
+// Records the staff details
 Table Staff {
-  id bigint [pk, increment]
-  user_id bigint [ref: > User.id]
+  id int [pk, increment]
   staff_number varchar(50)
   first_name varchar(100)
   last_name varchar(100)
-  role varchar(50)
-  department varchar(100)
   created_at timestamp
   updated_at timestamp
   deleted_at timestamp
-  deleted_by bigint
-}
-
-Table Borrower {
-  id bigint [pk, increment]
-  user_id bigint [ref: > User.id]
-  borrower_number varchar(50)
-  first_name varchar(100)
-  last_name varchar(100)
-  date_of_birth date
-  national_id varchar(50)
-  phone_number int
-  email varchar(100)
-  physical_address text
-  employment_status varchar(50)
-  employer varchar(100)
-  monthly_income decimal(10,2)
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
-Table Loan {
-  id bigint [pk, increment]
-  borrower_id bigint [ref: > Borrower.id]
-  loan_number varchar(50)
-  amount decimal(15,2)
-  interest_rate decimal(5,2)
-  term_months int
-  purpose text
-  applied_date date
-  approved_date date
-  disbursement_date date
-  created_by bigint [ref: > Staff.id]
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
-Table LoanApplication {
-  id bigint [pk, increment]
-  loan_id bigint [ref: > Loan.id]
-  borrower_id bigint [ref: > Borrower.id]
-  application_date date
-  application_status varchar(50)
-  reviewed_by bigint [ref: > Staff.id]
-  review_date date
-  review_notes text
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
-
-
-Table LoanStatus {
-  id bigint [pk, increment]
-  loan_id bigint [ref: > Loan.id]
-  status_code varchar(50)
-  status_name varchar(100)
-  status_description text
-  is_active boolean
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
-Table LoanHistory {
-  id bigint [pk, increment]
-  loan_id bigint [ref: > Loan.id]
-  status_id bigint [ref: > LoanStatus.id]
-  changed_by bigint [ref: > Staff.id]
-  old_status varchar(50)
-  new_status varchar(50)
-  change_date timestamp
-  change_notes text
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-}
-
-Table LoanBorrower {
-  id bigint [pk, increment]
-  loan_id bigint [ref: > Loan.id]
-  borrower_id bigint [ref: > Borrower.id]
-  is_primary boolean
-  relationship_type varchar(50)
-  created_at timestamp
-  updated_at timestamp
-  deleted_at timestamp
-  deleted_by bigint
-
-  Indexes {
-    loan_id [name: "loanborrower_loan_id_foreign"]
-    borrower_id [name: "loanborrower_borrower_id_foreign"]
-    deleted_by [name: "loanborrower_deleted_by_foreign"]
-  }
-}
-
-Table "site_documents" {
-  "id" char(36) [pk, not null]
-  "document_title" varchar(200) [not null]
-  "document_file_path" varchar(200) [not null]
-  "document_description" varchar(300)
-  "file_format" varchar(255) [not null]
-  "userId" bigint [not null]
-  "siteId" bigint [not null]
-  "created_at" timestamp
-  "updated_at" timestamp
-  "deleted_at" timestamp
-  "deleted_by" bigint
-
-  Indexes {
-    userId [name: "site_documents_userid_foreign"]
-    siteId [name: "site_documents_siteid_foreign"]
-    deleted_by [name: "site_documents_deleted_by_foreign"]
-  }
+  deleted_by int [ref: > Staff.id]
 }
 
 Table Role {
@@ -187,18 +30,172 @@ Table Permission {
 }
 
 // Pivot Tables
-Table RoleUser {
-  role_id bigint [ref: > Role.id]
-  user_id bigint [ref: > User.id]
+Table RoleStaff {
+  role_id int [ref: > Role.id]
+  staff_id int [ref: > Staff.id]
   created_at timestamp
   updated_at timestamp
   deleted_at timestamp
 }
 
 Table PermissionRole {
-  permission_id bigint [ref: > Permission.id]
-  role_id bigint [ref: > Role.id]
+  permission_id int [ref: > Permission.id]
+  role_id int [ref: > Role.id]
   created_at timestamp
   updated_at timestamp
-  deleted_at timestamp  
+  deleted_at timestamp
+}
+
+// Records types of IDs used when applying for loan
+// SevisPass will be used as one 
+Table IDType {
+  id int [pk, increment]
+  id_name varchar(100)
+  created_at timestamp
+  updated_at timestamp
+}
+
+// Records the borrower details
+Table Borrower {
+  id int [pk, increment]
+  borrower_number varchar(50)
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  date_of_birth date [not null]
+  id_type_id int [not null, ref: > IDType.id]
+  id_number varchar(50) [not null, unique]
+  sevispass_id varchar(200) [not null, unique]
+  credit_score int [not null, default: 0]
+  member_since date [not null]
+  phone_number varchar(20)
+  email varchar(100)
+  physical_address text
+  employment_status varchar(50)
+  employer_name varchar(100)
+  monthly_income decimal(10,2)
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by int [ref: > Staff.id]
+}
+
+Table AccountType {
+  id int [pk, increment]
+  name varchar(50)
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+// Create BorrowerAccount with foreign key to Borrower table
+Table BorrowerAccount {
+  id int [pk, increment]
+  account_name varchar(255) [not null]
+  account_number varchar(50) [not null, unique]
+  account_balance decimal(15, 2) [not null, default: 0.00]
+  account_owner_id int [not null, ref: > Borrower.id]
+  account_type_id int [not null, ref: > AccountType.id]
+  date_opened date [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+  deleted_at timestamp
+}
+
+// Records the loans offered by the bank
+Table Loan {
+  id int [pk, increment]
+  loan_name varchar(50)
+  loan_description text
+  min_amount decimal(15,2)
+  max_amount decimal(15,2)
+  min_term int
+  max_term int
+  interest_rate decimal(5,2)
+  created_by int [ref: > Staff.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+// Recrods the application of loans by borrower
+Table LoanApplication {
+  id int [pk, increment]
+  borrower_id int [not null, ref: > Borrower.id]
+  loan_id int [ref: > Loan.id]
+  loan_officer_id int [ref: > Staff.id]
+  loan_amount decimal(15,2)
+  application_date date
+  reference text [not null, unique]
+  term text [not null]
+  purpose text [not null]
+  status text [not null, default: 'pending']
+  rejection_reason text
+  submitted_at timestamp [default: `CURRENT_TIMESTAMP`]
+  decided_at timestamp
+  reviewed_by int [ref: > Staff.id]
+  review_date date
+  review_notes text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by int [ref: > Staff.id]
+}
+
+// Records the types of loan status
+Table LoanStatusType {
+  id int [pk, increment]
+  status_name varchar(100)
+  status_code varchar(50)
+  status_description text
+}
+
+// Records the status of the loan
+Table LoanApplicationStatus {
+  id int [pk, increment]
+  loan_application_id int [ref: > LoanApplication.id]
+  loan_status_type_id int [ref: > LoanStatusType.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+// Records the status of the loan
+Table LoanApplicationApproval {
+  id int [pk, increment]
+  loan_application_id int [ref: > LoanApplication.id]
+  reviewed_by int [ref: > Staff.id]
+  review_date date
+  review_notes text
+  is_reviewd boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+// Records the repayment of loans
+Table LoanRepayment {
+  id int [pk, increment]
+  loan_application_id int [not null, ref: > LoanApplication.id]
+  due_date date [not null]
+  next_due_date date [not null]
+  amount int [not null]
+  status text [not null, default: 'pending']
+  paid_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by int
+}
+
+// Records the documents provided by the borrower
+Table LoanDocument {
+  id int [pk, increment]
+  loan_application_id int [ref: > LoanApplication.id]
+  document_title varchar(200)
+  document_file_path varchar(200)
+  document_description varchar(200)
+  file_format varchar(10)
+  borrower_id int
+  uploaded_by int [ref: > Staff.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  deleted_by int [ref: > Staff.id]
 }

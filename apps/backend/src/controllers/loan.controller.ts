@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import * as loanRepo from '../repositories/LoanRepository.ts';
 import * as borrowerRepo from '../repositories/BorrowerRepository.ts';
 import * as staffRepo from '../repositories/StaffRepository.ts';
+import { handleDatabaseError } from "#/libs/utils.ts";
 
 export async function getLoanTypes(req: Request, res: Response) {
     const loans = await loanRepo.getLoanTypes();
@@ -39,24 +40,38 @@ export async function applyLoan(req: Request, res: Response) {
 
     const {
         loan_id,
-        loan_amount
+        loan_amount,
+        purpose
     } = borrowerInfo;
 
     const borrower_id = 1;
+    const count = 2;
     const loan_officer_id = 1; // will be determined when the application falls into the queue and an officer accepts the application for processing
-    const loan_application_status_id = 1;
     const application_date = new Date();
+    const reference = `MIJ-${new Date().getFullYear()}-${String(Number(count) + 1).padStart(3, '0')}`;
 
-    const loan = await loanRepo.applyLoan({
-        loan_id,
-        loan_officer_id,
-        borrower_id,
-        loan_amount,
-        loan_application_status_id,
-        application_date
-    });
+    const term = "4years";
 
-    res.json(loan);
+    try {
+        const loan = await loanRepo.applyLoan({
+            loan_id,
+            loan_officer_id,
+            borrower_id,
+            loan_amount,
+            application_date,
+            purpose,
+            reference,
+            term
+        });
+
+        res.json(loan);
+    } catch (error: any) {
+        const dbError = handleDatabaseError(error);
+
+        res.status(dbError.status).json({
+            error: dbError.message
+        });
+    }
 }
 
 export async function getLoanApplications(req: Request, res: Response) {

@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CheckCircle, Circle, Calendar, AlertCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment, type BorrowerDashboard } from "@/lib/api";
-import { DEMO_SEVISPASS_ID } from "@/lib/session";
+import { DEMO_SEVISPASS_ID } from "@/server/session";
 import { formatFullDate, formatShortDate } from "@/lib/format";
 
 export default function RepaymentSchedule() {
