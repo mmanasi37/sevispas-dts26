@@ -1,106 +1,74 @@
-import crypto from 'node:crypto';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-type SessionData = {
-  authenticated: string;
-}
+export type InitiateAuthResponse = {
+  qrCode: string;
+  sessionId: string;
+};
 
-class DigitalIdentityAuth {
-  serverUrl: any;
-  clientId: any;
-  clientSecret: any;
-  callbackUrl: any;
+type SessionStatus = {
+  sessionId: string;
+  authenticated: boolean;
+  hasRedirect: boolean;
+  redirect: string | null;
+};
 
-  constructor(config: { serverUrl: any; clientId: any; clientSecret: any; callbackUrl: any; }) {
-    this.serverUrl = config.serverUrl;
-    this.clientId = config.clientId;
-    this.clientSecret = config.clientSecret;
-    this.callbackUrl = config.callbackUrl;
-  }
+export type VerifiedUser = {
+  sub: string;
+  name?: string;
+  email?: string;
+  [key: string]: unknown;
+};
 
-  async initiateAuth() {
-    const response = await fetch(`${this.serverUrl}/api/auth/third-party/authorize`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Client-ID': this.clientId,
-        'X-Client-Secret': this.clientSecret
-      },
-      body: JSON.stringify({
-        callback_url: this.callbackUrl,
-        state: this.generateState(),
-        nonce: this.generateNonce()
-      })
-    });
+// Talks only to our own backend — never calls the SSO server directly, since
+// that would require shipping CLIENT_SECRET to the browser.
+export class DigitalIdentityAuth {
+  private pollHandle: ReturnType<typeof setInterval> | null = null;
 
+  async initiateAuth(): Promise<InitiateAuthResponse> {
+    const response = await fetch(`${API_URL}/auth/initiate`, { method: "POST" });
     if (!response.ok) {
-      throw new Error('Failed to initiate auth');
+      throw new Error("Failed to initiate auth");
     }
-
-    return await response.json();
+    return response.json();
   }
 
-  generateState() {
-    return crypto.randomUUID();
-  }
+  pollForCompletion(
+    sessionId: string,
+    onAuthenticated: (user: VerifiedUser) => void,
+    onError: (error: unknown) => void
+  ) {
+    this.stopPolling();
 
-  generateNonce() {
-    return crypto.randomUUID();
-  }
-
-  async pollForCompletion(sessionId: any) {
-    const pollInterval = setInterval(async () => {
+    this.pollHandle = setInterval(async () => {
       try {
-        const response = await fetch(
-          `${this.serverUrl}/api/session/status?session=${sessionId}`
-        );
-        const data: SessionData = await response.json();
-
-        if (data?.authenticated) {
-          clearInterval(pollInterval);
-          this.handleSuccess(data);
+        const statusRes = await fetch(`${API_URL}/api/auth/session-status?session=${sessionId}`);
+        if (!statusRes.ok) {
+          throw new Error(`Session status check failed (${statusRes.status})`);
         }
+
+        const status: SessionStatus = await statusRes.json();
+        if (!status.authenticated) return;
+
+        this.stopPolling();
+
+        const userRes = await fetch(`${API_URL}/api/auth/user?session=${sessionId}`);
+        if (!userRes.ok) {
+          throw new Error(`Fetching verified user failed (${userRes.status})`);
+        }
+
+        const data = await userRes.json();
+        onAuthenticated(data.user);
       } catch (error) {
-        clearInterval(pollInterval);
-        this.handleError(error);
+        this.stopPolling();
+        onError(error);
       }
     }, 2000);
   }
 
-  handleSuccess(data: any) {
-    // Redirect to your application's authenticated area
-    window.location.href = `/dashboard?session=${data.sessionId}`;
+  stopPolling() {
+    if (this.pollHandle) {
+      clearInterval(this.pollHandle);
+      this.pollHandle = null;
+    }
   }
-
-  handleError(error: unknown) {
-    console.error('Authentication failed:', error);
-    // Handle error (show user message, retry, etc.)
-  }
-}
-
-// Usage
-const auth = new DigitalIdentityAuth({
-  serverUrl: 'https://your-sso-server.com',
-  clientId: 'your-client-id',
-  clientSecret: 'your-client-secret',
-  callbackUrl: 'https://your-website.com/auth/callback'
-});
-
-// Start authentication
-async function startAuth() {
-  try {
-    const { qrCode, sessionId } = await auth.initiateAuth();
-    displayQRCode(qrCode);
-    auth.pollForCompletion(sessionId);
-  } catch (error) {
-    showError('Failed to start authentication');
-  }
-}
-
-function displayQRCode(qrCode: any) {
-  throw new Error('Function not implemented.');
-}
-
-
-function showError(arg0: string) {
-  throw new Error('Function not implemented.');
 }

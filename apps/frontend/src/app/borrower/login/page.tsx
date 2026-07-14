@@ -1,19 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Fingerprint, Shield, User, Lock } from "lucide-react";
+import { Fingerprint, Shield, User } from "lucide-react";
+import { DigitalIdentityAuth } from "@/lib/DigitalIdentityAuth";
 
 export default function BorrowerLogin() {
   const router = useRouter();
   const [loginMethod, setLoginMethod] = useState<"biometric" | "credential">("biometric");
   const [isLoading, setIsLoading] = useState(false);
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const authRef = useRef<DigitalIdentityAuth | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    authRef.current = new DigitalIdentityAuth();
+    return () => authRef.current?.stopPolling();
+  }, []);
+
+  const handleBiometricLogin = async () => {
+    setError(null);
+    setQrCode(null);
+    setIsLoading(true);
+
+    try {
+      const { qrCode, sessionId } = await authRef.current!.initiateAuth();
+      setQrCode(qrCode);
+
+      authRef.current!.pollForCompletion(
+        sessionId,
+        () => {
+          setIsLoading(false);
+          router.push("/borrower/dashboard");
+        },
+        () => {
+          setIsLoading(false);
+          setError("Verification failed. Please try again.");
+        }
+      );
+    } catch {
+      setIsLoading(false);
+      setError("Could not start identity verification. Please try again.");
+    }
+  };
+
+  const handleCredentialLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setTimeout(() => {
@@ -57,42 +92,58 @@ export default function BorrowerLogin() {
             </Button>
           </div>
 
-          <form onSubmit={handleLogin}>
-            {loginMethod === "biometric" ? (
-              <div className="space-y-4">
+          {loginMethod === "biometric" ? (
+            <div className="space-y-4">
+              {qrCode ? (
+                <div className="bg-blue-50 p-4 rounded-lg text-center">
+                  <div
+                    className="mx-auto w-[220px] h-[220px] [&_svg]:w-full [&_svg]:h-full"
+                    dangerouslySetInnerHTML={{ __html: qrCode }}
+                  />
+                  <p className="text-sm text-gray-600 mt-2">
+                    Scan this QR code with your SevisPass wallet
+                  </p>
+                </div>
+              ) : (
                 <div className="bg-blue-50 p-4 rounded-lg text-center">
                   <Fingerprint className="h-16 w-16 text-blue-600 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">
-                    Place your finger on the sensor or use facial recognition
+                    Verify your identity with SevisPass
                   </p>
                   <p className="text-xs text-gray-500 mt-2">
-                    This replaces physical passport/driver's license verification
+                    This replaces physical passport/driver&apos;s license verification
                   </p>
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Verifying..." : "Verify Identity"}
-                </Button>
+              )}
+              {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+              <Button
+                type="button"
+                className="w-full"
+                disabled={isLoading}
+                onClick={handleBiometricLogin}
+              >
+                {isLoading ? (qrCode ? "Waiting for scan..." : "Starting...") : "Verify Identity"}
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleCredentialLogin} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Email or SevisPass ID</label>
+                <Input type="text" placeholder="Enter your SevisPass ID" />
               </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Email or SevisPass ID</label>
-                  <Input type="text" placeholder="Enter your SevisPass ID" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Password</label>
-                  <Input type="password" placeholder="Enter your password" />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Authenticating..." : "Sign In"}
-                </Button>
+              <div>
+                <label className="text-sm font-medium">Password</label>
+                <Input type="password" placeholder="Enter your password" />
               </div>
-            )}
-          </form>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Authenticating..." : "Sign In"}
+              </Button>
+            </form>
+          )}
 
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Don't have a SevisPass yet?
+              Don&apos;t have a SevisPass yet?
             </p>
             <Button variant="link" className="text-blue-600">
               Self-enroll for SevisPass
