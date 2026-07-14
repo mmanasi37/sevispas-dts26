@@ -1,5 +1,5 @@
 import { db } from '../database/index.ts';
-import type { StaffUpdate, Staff, NewStaff } from '../types.ts';
+import type { StaffUpdate, Staff, NewStaff } from '../database/types.ts';
 
 
 // const result = await db

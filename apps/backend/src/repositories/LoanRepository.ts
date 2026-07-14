@@ -1,5 +1,5 @@
 import { db } from '../database/index.ts';
-import type { LoanUpdate, Loan, NewLoan, NewLoanApplication } from '../types.ts';
+import type { LoanUpdate, Loan, NewLoan, NewLoanApplication } from '../database/types.ts';
 
 export function getLoanTypes() {
     const types = db.selectFrom('Loan').selectAll().execute();

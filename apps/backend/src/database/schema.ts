@@ -5,11 +5,14 @@ import type {
 } from 'kysely';
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+export type DateTime = string;
 export type Decimal = ColumnType<number, number | string, number | string>;
 
 export interface Database {
-    AuthProvider: AuthProviderTable;
-    AuthToken: AuthTokenTable;
+    Role: RoleTable;
+    Permission: PermissionTable;
+    RoleStaff: RoleStaffTable;
+    PermissionRole: PermissionRoleTable;
     Staff: StaffTable;
     Borrower: BorrowerTable;
     Loan: LoanTable;
@@ -17,13 +20,10 @@ export interface Database {
     LoanApplicationStatus: LoanApplicationStatusTable;
     LoanStatusType: LoanStatusTypeTable;
     LoanDocument: LoanDocumentTable;
-    Role: RoleTable;
-    Permission: PermissionTable;
-    RoleStaff: RoleStaffTable;
-    PermissionRole: PermissionRoleTable;
+    LoanRepayment: LoanRepaymentTable;
+    LoanApplicationApproval: LoanApplicationApprovalTable;
     BorrowerAccount: BorrowerAccountTable;
     MainAccount: MainAccountTable;
-
 }
 
 export interface StaffTable {
@@ -34,7 +34,7 @@ export interface StaffTable {
     gender: 'male' | 'female' | 'other' | null
     phone_number: number | null;
     email: string | null;
-    role: string | null;
+    password: string;
     // marital_status: 'single' | 'married' | 'divorced' | 'widowed' | null
     // address: { city: string } | null
     // age: number | null
@@ -64,37 +64,17 @@ export interface StaffTable {
     deleted_by: number | null;
 }
 
-export interface AuthProviderTable {
-    id: Generated<number>;
-    phone_number: number | null;
-    email: string | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
-    deleted_at: Timestamp | null;
-    deleted_by: number | null;
-}
-
-export interface AuthTokenTable {
-    id: Generated<number>;
-    staff_id: number | null;
-    auth_provider_id: number | null;
-    token: string | null;
-    token_type: string | null;
-    expires_at: Timestamp | null;
-    is_revoked: boolean | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
-    deleted_at: Timestamp | null;
-    deleted_by: number | null;
-}
 export interface BorrowerTable {
     id: Generated<number>;
-    staff_id: number | null;
     borrower_number: string | null;
     first_name: string | null;
     last_name: string | null;
     date_of_birth: ColumnType<Date, Date | string, Date | string> | null;
-    national_id: string | null;
+    id_type_id: number | null;
+    id_number: string | null;
+    sevispass_id: string;
+    credit_score: Generated<number>;
+    member_since: string;
     phone_number: number | null;
     email: string | null;
     physical_address: string | null;
@@ -140,7 +120,16 @@ export interface LoanApplicationTable {
     updated_at: Timestamp | null;
     deleted_at: Timestamp | null;
     deleted_by: number | null;
+    reference: string;
+    amount: number;
+    term: string;
+    purpose: string;
+    status: Generated<'pending' | 'approved' | 'rejected' | 'under_review'>;
+    rejection_reason: string | null;
+    submitted_at: Generated<DateTime>;
+    decided_at: DateTime | null;
 }
+
 export interface LoanStatusTypeTable {
     id: Generated<number>;
     status_name: string;
@@ -170,6 +159,21 @@ export interface LoanApplicationApprovalTable {
     is_reviewd: boolean;
     created_at: Timestamp;
     updated_at: Timestamp;
+}
+
+export interface LoanRepaymentTable {
+    id: Generated<number>;
+    loan_application_id: number;
+    due_date: Timestamp;
+    amount: number;
+    status: Generated<string>;
+    // status: Generated<'pending' | 'paid' | 'overdue' | 'partially_paid'>;
+    paid_at: Timestamp | null;
+    // paid_at: DateTime | null;
+    created_at: Timestamp | null;
+    updated_at: Timestamp | null;
+    deleted_at: Timestamp | null;
+    deleted_by: number | null;
 }
 
 export interface LoanDocumentTable {
@@ -203,20 +207,29 @@ export interface PermissionTable {
     deleted_at: Timestamp | null;
 }
 
+// Pivot tables
 export interface RoleStaffTable {
-    permission_id: number | null;
-    staff_id: number | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
+    role_id: number;
+    staff_id: number;
+    created_at: Timestamp;
+    updated_at: Timestamp;
     deleted_at: Timestamp | null;
 }
 
 export interface PermissionRoleTable {
-    permission_id: number | null;
-    role_id: number | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
+    permission_id: number;
+    role_id: number;
+    created_at: Timestamp;
+    updated_at: Timestamp;
     deleted_at: Timestamp | null;
+}
+
+// Combined Database
+export interface Database {
+    Role: RoleTable;
+    Permission: PermissionTable;
+    RoleStaff: RoleStaffTable;
+    PermissionRole: PermissionRoleTable;
 }
 
 export interface AuditTable {

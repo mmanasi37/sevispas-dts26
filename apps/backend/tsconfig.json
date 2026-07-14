@@ -17,6 +17,9 @@
     "erasableSyntaxOnly": false,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "paths": {
+      "#/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*"]
 }

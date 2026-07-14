@@ -1,10 +1,10 @@
+import 'dotenv/config';
 import { Pool } from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
-import { FileMigrationProvider, Migrator } from 'kysely/migration';
+import { LibsqlDialect } from '@libsql/kysely-libsql';
+import { createClient } from '@libsql/client';
 import { type Database, type LoanApplicationStatusTable, type LoanApplicationTable } from './schema.ts';
-import type { LoanApplication, LoanApplicationStatus } from '../types.ts';
-import { createClient } from '@libsql/client'
-import { LibsqlDialect } from '@libsql/kysely-libsql'
+import type { LoanApplication, LoanApplicationStatus } from './types.ts';
 
 const pgDialect = new PostgresDialect({
     pool: new Pool({
@@ -17,12 +17,14 @@ const pgDialect = new PostgresDialect({
     })
 });
 
+export const libsqlClient = createClient({
+    url: process.env.TURSO_DATABASE_URL!,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+});
+
 const dialect = new LibsqlDialect({
-    client: createClient({
-        url: process.env.TURSO_DATABASE_URL!,
-        authToken: process.env.TURSO_AUTH_TOKEN,
-    }),
-})
+    client: libsqlClient,
+});
 
 export const db = new Kysely<Database>({
     dialect,

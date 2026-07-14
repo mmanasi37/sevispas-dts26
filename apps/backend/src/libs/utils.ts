@@ -1,4 +1,6 @@
+import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
+import { env } from '../env.ts';
 
 export function generateState() {
     return crypto.randomUUID();
@@ -22,3 +24,11 @@ export async function processVPToken(vpToken: any) {
         email: 'user@example.com'
     };
 }
+
+export const generateToken = (user: any) => {
+    return jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: '1h' });
+};
+
+export const verifyToken = (token: string) => {
+    return jwt.verify(token, env.JWT_SECRET);
+};

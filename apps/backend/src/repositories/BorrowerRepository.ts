@@ -1,14 +1,16 @@
 import { sql } from 'kysely';
 import { db } from '../database/index.ts';
-import type { BorrowerUpdate, Borrower, NewBorrower } from '../types.ts';
+import type { BorrowerUpdate, Borrower, NewBorrower } from '../database/types.ts';
 
 export async function findBorrowerById(id: number) {
     return await db.selectFrom('Borrower')
         .where('id', '=', id)
+        .selectAll()
+        .executeTakeFirst();
 }
 
 export async function findBorrowerBySevisPassId(sevispassId: string) {
-    return await db.selectFrom('borrowers')
+    return await db.selectFrom('Borrower')
         .where('sevispass_id', '=', sevispassId)
         .selectAll()
         .executeTakeFirst();

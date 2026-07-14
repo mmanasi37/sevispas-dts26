@@ -1,12 +1,11 @@
-import '../env.ts';
 import { db } from './index.ts';
 
 async function main() {
-    await db.deleteFrom('repayments').execute();
-    await db.deleteFrom('loan_applications').execute();
-    await db.deleteFrom('borrowers').execute();
+    await db.deleteFrom('LoanRepayment').execute();
+    await db.deleteFrom('LoanApplication').execute();
+    await db.deleteFrom('Borrower').execute();
 
-    const borrower = await db.insertInto('borrowers').values({
+    const borrower = await db.insertInto('Borrower').values({
         sevispass_id: 'SP-2024-001',
         first_name: 'John',
         last_name: 'Doe',
@@ -15,7 +14,7 @@ async function main() {
         member_since: '2023-06-01',
     }).returningAll().executeTakeFirstOrThrow();
 
-    const activeLoan = await db.insertInto('loan_applications').values({
+    const activeLoan = await db.insertInto('LoanApplication').values({
         reference: 'MIJ-2024-001',
         borrower_id: borrower.id,
         amount: 5000,
@@ -26,7 +25,7 @@ async function main() {
         decided_at: '2024-01-16T09:00:00Z',
     }).returningAll().executeTakeFirstOrThrow();
 
-    const pastLoan1 = await db.insertInto('loan_applications').values({
+    const pastLoan1 = await db.insertInto('LoanApplication').values({
         reference: 'MIJ-2023-014',
         borrower_id: borrower.id,
         amount: 2000,
@@ -37,7 +36,7 @@ async function main() {
         decided_at: '2023-10-02T09:00:00Z',
     }).returningAll().executeTakeFirstOrThrow();
 
-    const pastLoan2 = await db.insertInto('loan_applications').values({
+    const pastLoan2 = await db.insertInto('LoanApplication').values({
         reference: 'MIJ-2023-007',
         borrower_id: borrower.id,
         amount: 1500,
@@ -61,7 +60,7 @@ async function main() {
         { due_date: '2024-06-04', status: 'pending', paid_at: null },
     ];
     for (const r of activeLoanSchedule) {
-        await db.insertInto('repayments').values({
+        await db.insertInto('LoanRepayment').values({
             loan_application_id: activeLoan.id,
             due_date: r.due_date,
             amount: 500,
@@ -72,7 +71,7 @@ async function main() {
 
     const pastLoan1Schedule = ['2023-10-15', '2023-10-29', '2023-11-12', '2023-11-26'];
     for (const due_date of pastLoan1Schedule) {
-        await db.insertInto('repayments').values({
+        await db.insertInto('LoanRepayment').values({
             loan_application_id: pastLoan1.id,
             due_date,
             amount: 500,
@@ -83,7 +82,7 @@ async function main() {
 
     const pastLoan2Schedule = ['2023-06-15', '2023-06-29', '2023-07-13'];
     for (const due_date of pastLoan2Schedule) {
-        await db.insertInto('repayments').values({
+        await db.insertInto('LoanRepayment').values({
             loan_application_id: pastLoan2.id,
             due_date,
             amount: 500,
