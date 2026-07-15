@@ -6,9 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CheckCircle, Circle, Calendar, AlertCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
-import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment, type BorrowerDashboard } from "@/lib/api";
+import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment } from "@/lib/api";
 import { DEMO_SEVISPASS_ID } from "@/server/session";
 import { formatFullDate, formatShortDate } from "@/lib/format";
+import { BorrowerDashboard } from "@/lib/types";
 
 export default function RepaymentSchedule() {
   const [data, setData] = useState<BorrowerDashboard | null>(null);
@@ -73,7 +74,7 @@ export default function RepaymentSchedule() {
               <div className="bg-yellow-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-gray-600">Next Payment</p>
                 <p className="text-2xl font-bold text-yellow-600">
-                  {nextPayment ? formatShortDate(nextPayment.due_date) : "—"}
+                  {nextPayment ? formatShortDate(nextPayment.due_date.toString()) : "—"}
                 </p>
               </div>
             </div>

@@ -5,9 +5,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 async function createApi(url: string, options?: RequestInit) {
   const opts = Object.assign({
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+    },
   }, options);
-  const res = await fetch(`${API_URL}/api/${url}`, opts);
+  const res = await fetch(`${API_URL}/api${url}`, opts);
 
   if (!res.ok) {
     throw new Error(`Failed to fetch data (${res.status})`);
@@ -51,4 +54,24 @@ export function getNextPayment(repayments: LoanRepayment[]): LoanRepayment | und
   return repayments
     .filter((r) => r.status !== ERepaymentStatus.PAID)
     .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())[0];
+}
+
+export async function getApplications(): Promise<LoanApplication[]> {
+  try {
+    const api = await createApi(`/loans`);
+    return api;
+  } catch (error) {
+    console.error("Failed to fetch applications:", error);
+    throw error;
+  }
+}
+
+export async function getLoanRepayments(loanId: number): Promise<LoanRepayment[]> {
+  try {
+    const api = await createApi(`/loans/${loanId}/repayments`);
+    return api;
+  } catch (error) {
+    console.error("Failed to fetch loan repayments:", error);
+    throw error;
+  }
 }

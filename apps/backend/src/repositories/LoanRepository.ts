@@ -70,12 +70,6 @@ export async function deleteLoanType(id: number) {
         .executeTakeFirst()
 }
 
-// const tulokset = await sql<Loan>`
-//   SELECT id, nimi 
-//   FROM kayttajat 
-//   WHERE tila = 'aktiivinen'
-// `.execute(db)
-
 export async function cancelLoanApplication(loanApplicationId: number) {
     const cancelStatusType = await db.selectFrom('LoanStatusType')
         .where('status_name', '=', 'cancel')
@@ -112,10 +106,15 @@ export async function getLoanApplications() {
         return [];
     }
 
-    const loanIds = loanApplications.map(app => app.id);
+    const loanIds = loanApplications.map(app => app.id).filter(Boolean);
     const borrowerIds = loanApplications.map(app => app.borrower_id).filter(Boolean);
     const loanIdsForLoans = loanApplications.map(app => app.loan_id).filter(Boolean);
     const staffIds = loanApplications.map(app => app.loan_officer_id).filter(Boolean);
+
+    console.log("loanIds", loanIds);
+    console.log("borrowerIds", borrowerIds);
+    console.log("loanIdsForLoans", loanIdsForLoans);
+    console.log("staffIds", staffIds);
 
     // Fetch all related data in parallel
     const [statuses, loans, borrowers, staff] = await Promise.all([
@@ -192,4 +191,15 @@ export async function getLoanApplicationDocs() {
         .executeTakeFirst();
 
     return docs;
+}
+
+export async function getLoanApplicationRepayments(loanApplicationId: number) {
+    const repayments = await db.selectFrom('LoanRepayment')
+        .where('loan_application_id', '=', loanApplicationId)
+        .innerJoin('LoanApplication', 'LoanApplication.id', 'LoanRepayment.loan_application_id')
+        .innerJoin('Borrower', 'Borrower.id', 'LoanApplication.borrower_id')
+        .selectAll()
+        .execute();
+
+    return repayments;
 }

@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Shield, TrendingUp, AlertCircle } from "lucide-react";
-import { getBorrowerDashboard, type BorrowerDashboard } from "@/lib/api";
+import { getBorrowerDashboard } from "@/lib/api";
 import { DEMO_SEVISPASS_ID, initials } from "@/server/session";
 import { formatMonthYear, formatMonthShort } from "@/lib/format";
+import { BorrowerDashboard } from "@/lib/types";
 
 export default function BorrowerProfile() {
   const [data, setData] = useState<BorrowerDashboard | null>(null);
@@ -36,7 +37,7 @@ export default function BorrowerProfile() {
 
   const { borrower, applications } = data;
 
-  const totalBorrowed = applications.reduce((sum, app) => sum + app.amount, 0);
+  const totalBorrowed = applications.reduce((sum, app) => sum + app.loan_amount, 0);
   const allRepayments = applications.flatMap((app) => app.repayments);
   const paidRepayments = allRepayments.filter((r) => r.status === "paid");
   const repaymentRate = allRepayments.length
@@ -54,7 +55,7 @@ export default function BorrowerProfile() {
               <div className="text-center">
                 <Avatar className="h-24 w-24 mx-auto mb-4">
                   <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">
-                    {initials(borrower.first_name, borrower.last_name)}
+                    {initials(borrower.first_name!, borrower.last_name!)}
                   </AvatarFallback>
                 </Avatar>
                 <h2 className="text-xl font-bold">
@@ -102,14 +103,14 @@ export default function BorrowerProfile() {
                     .filter((r) => r.status === "paid")
                     .reduce((sum, r) => sum + r.amount, 0);
                   const isActive = loan.repayments.some((r) => r.status !== "paid");
-                  const progress = Math.round((repaid / loan.amount) * 100);
+                  const progress = Math.round((repaid / loan.loan_amount) * 100);
 
                   return (
                     <div key={loan.id} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="font-semibold">Loan #{index + 1}</p>
-                          <p className="text-sm text-gray-500">{formatMonthShort(loan.submitted_at)}</p>
+                          <p className="text-sm text-gray-500">{formatMonthShort(loan.submitted_at.toString())}</p>
                         </div>
                         <Badge variant={isActive ? "default" : "outline"}>
                           {isActive ? "Active" : "Completed"}
@@ -118,7 +119,7 @@ export default function BorrowerProfile() {
                       <div className="mt-2 flex gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Amount:</span>
-                          <span className="ml-1 font-semibold">K {loan.amount.toLocaleString()}</span>
+                          <span className="ml-1 font-semibold">K {loan.loan_amount.toLocaleString()}</span>
                         </div>
                         <div>
                           <span className="text-gray-500">Repaid:</span>

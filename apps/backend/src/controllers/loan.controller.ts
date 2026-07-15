@@ -212,6 +212,25 @@ export async function updateLoanApplication(req: Request, res: Response, next: N
     }
 }
 
+export async function getLoanApplicationRepayments(req: Request, res: Response, next: NextFunction) {
+    const loanId = parseInt(String(req.params.loanId));
+    try {
+        const repayments = await loanRepo.getLoanApplicationRepayments(loanId);
+
+        res.json(repayments);
+    } catch (error: any) {
+        const dbError = handleDatabaseError(error);
+
+        if (dbError) {
+            res.status(dbError.status).json({
+                error: dbError.error
+            });
+        }
+
+        next(error);
+    }
+}
+
 export async function submitLoanApplication(req: Request, res: Response, next: NextFunction) {
     const loanId = parseInt(String(req.params.loanId));
     try {

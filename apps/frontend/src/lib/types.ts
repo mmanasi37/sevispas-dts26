@@ -52,12 +52,9 @@ export interface NewLoanApplicationInput {
 export interface BorrowerDashboard {
   borrower: Borrower;
   loans: LoanApplication[];
+  applications: LoanApplication[];
   repayments: LoanRepayment[];
 }
-
-export type Timestamp = Date | string | number;
-export type DateTime = string | number;
-export type Decimal = number;
 
 export interface Staff {
   id: number;
@@ -68,9 +65,9 @@ export interface Staff {
   phone_number: number | null;
   email: string | null;
   password: string;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
   deleted_by: number | null;
 }
 
@@ -79,7 +76,7 @@ export interface Borrower {
   borrower_number: string | null;
   first_name: string | null;
   last_name: string | null;
-  date_of_birth: Timestamp | null;
+  date_of_birth: string | null;
   marital_status: TMaritalStatus;
   id_type_id: number | null;
   id_number: string | null;
@@ -90,11 +87,11 @@ export interface Borrower {
   email: string | null;
   physical_address: string | null;
   employment_status: TEmploymentStatus;
-  employer: string | null;
-  monthly_income: Decimal | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  employer_name: string | null;
+  monthly_income: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
   deleted_by: number | null;
   memberSince: string;
   creditScore: number;
@@ -106,17 +103,17 @@ export interface Loan {
   id: number;
   borrower_id: number | null;
   loan_number: string | null;
-  amount: Decimal | null;
-  interest_rate: Decimal | null;
+  amount: number | null;
+  interest_rate: number | null;
   term_months: number | null;
   purpose: string | null;
-  applied_date: Timestamp | null;
-  approved_date: Timestamp | null;
-  disbursement_date: Timestamp | null;
+  applied_date: string | null;
+  approved_date: string | null;
+  disbursement_date: string | null;
   created_by: number | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
   deleted_by: number | null;
 }
 
@@ -126,22 +123,23 @@ export interface LoanApplication {
   loan_id: number;
   loan_officer_id: number;
   loan_amount: number;
-  application_date: Timestamp;
+  application_date: string;
   term: string;
   borrower_id: number;
+  borrower: Borrower;
   reviewed_by: number | null;
-  review_date: Timestamp | null;
+  review_date: string | null;
   review_notes: string | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
   deleted_by: number | null;
   reference: string;
   purpose: string;
-  status: LoanApplicationStatus;
+  status: ELoanApplicationStatus;
   rejection_reason: string | null;
-  submitted_at: DateTime;
-  decided_at: DateTime | null;
+  submitted_at: string;
+  decided_at: string | null;
   repayments: LoanRepayment[];
 }
 
@@ -150,8 +148,8 @@ export interface LoanStatusType {
   status_name: string;
   status_code: string;
   status_description: string | null;
-  created_at: Timestamp;
-  updated_at: Timestamp;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface LoanApplicationStatus {
@@ -159,8 +157,8 @@ export interface LoanApplicationStatus {
   loan_application_id: number | null;
   loan_status_type_id: number | null;
   is_active: boolean | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface LoanApplicationApproval {
@@ -172,22 +170,54 @@ export interface LoanApplicationApproval {
   review_date: Date | null;
   review_notes: string | null;
   is_reviewd: boolean;
-  created_at: Timestamp;
-  updated_at: Timestamp;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface LoanRepayment {
   id: number;
+  loan_id: number;
   loan_application_id: number;
-  due_date: Timestamp;
-  next_due_date: Timestamp;
+  loan_application: LoanApplication;
+  borrower_id: number;
+  borrower: Borrower;
+  due_date: string;
+  next_due_date: string;
   amount: number;
   status: string;
-  paid_at: Timestamp | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  paid_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
   deleted_by: number | null;
+
+  loan_officer_id: number;
+  loan_amount: number;
+  application_date: string;
+  reference: string;
+  term: string;
+  purpose: string;
+  rejection_reason: string | null;
+  submitted_at: string;
+  decided_at: string | null;
+  reviewed_by: number | null;
+  review_date: string | null;
+  review_notes: string | null;
+  borrower_number: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
+  id_type_id: number;
+  id_number: string;
+  sevispass_id: string;
+  credit_score: number;
+  member_since: string;
+  phone_number: number;
+  email: string;
+  physical_address: string;
+  employment_status: string;
+  employer_name: string;
+  monthly_income: number;
 }
 
 export interface LoanDocument {
@@ -199,9 +229,9 @@ export interface LoanDocument {
   file_format: string;
   borrower_id: number;
   uploaded_by: number;
-  created_at: Timestamp;
-  updated_at: Timestamp;
-  deleted_at: Timestamp;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
   deleted_by: number;
 }
 
@@ -212,9 +242,9 @@ export interface BorrowerAccount {
   account_owner_id: number;
   account_type: string;
   date_opened: Date;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
   status: TAccountStatus;
 }
 
@@ -237,34 +267,34 @@ export interface BorrowerAccount {
 export interface Role {
   id: number;
   name: string | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
 }
 
 export interface Permission {
   id: number;
   name: string | null;
-  created_at: Timestamp | null;
-  updated_at: Timestamp | null;
-  deleted_at: Timestamp | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
 }
 
 // Pivot tables
 export interface RoleStaff {
   role_id: number;
   staff_id: number;
-  created_at: Timestamp;
-  updated_at: Timestamp;
-  deleted_at: Timestamp | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 export interface PermissionRole {
   permission_id: number;
   role_id: number;
-  created_at: Timestamp;
-  updated_at: Timestamp;
-  deleted_at: Timestamp | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 export interface Audit {

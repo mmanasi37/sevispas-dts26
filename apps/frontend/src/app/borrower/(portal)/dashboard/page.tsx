@@ -16,9 +16,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
-import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment, type BorrowerDashboard } from "@/lib/api";
+import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment } from "@/lib/api";
 import { DEMO_SEVISPASS_ID } from "@/server/session";
 import { formatTerm, formatShortDate } from "@/lib/format";
+import { BorrowerDashboard } from "@/lib/types";
 
 const quickActions = [
   {
@@ -47,7 +48,7 @@ const quickActions = [
   },
 ];
 
-export default function BorrowerDashboard() {
+export default function BorrowerDashboardPage() {
   const [data, setData] = useState<BorrowerDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -88,7 +89,7 @@ export default function BorrowerDashboard() {
     { label: "Credit Score", value: String(borrower.credit_score), icon: TrendingUp },
     {
       label: "Next Payment",
-      value: nextPayment ? `K ${nextPayment.amount.toLocaleString()} · ${formatShortDate(nextPayment.due_date)}` : "None due",
+      value: nextPayment ? `K ${nextPayment.amount.toLocaleString()} · ${formatShortDate(nextPayment.due_date.toString())}` : "None due",
       icon: Calendar,
     },
     { label: "Repayment Rate", value: `${repaymentRate}%`, icon: CheckCircle },
@@ -137,7 +138,7 @@ export default function BorrowerDashboard() {
                   <div className="space-y-2 text-sm mb-4">
                     <div className="flex justify-between">
                       <span className="text-gray-500">Amount</span>
-                      <span className="font-medium">K {activeLoan.amount.toLocaleString()}</span>
+                      <span className="font-medium">K {activeLoan.loan_amount.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Term</span>

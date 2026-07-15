@@ -6,15 +6,41 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Bell, AlertCircle, CheckCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
+import { useEffect, useState } from "react";
+import { getLoanRepayments } from "@/lib/api";
+import { LoanRepayment } from "@/lib/types";
 
 export default function RepaymentTracking() {
-  const repayments = [
-    { borrower: "Sarah M.", amount: 500, due: "Feb 27, 2024", status: "upcoming" },
-    { borrower: "Michael K.", amount: 750, due: "Feb 20, 2024", status: "overdue" },
-    { borrower: "David L.", amount: 300, due: "Feb 15, 2024", status: "paid" },
-    { borrower: "Mary P.", amount: 450, due: "Feb 10, 2024", status: "overdue" },
-    { borrower: "James R.", amount: 600, due: "Feb 28, 2024", status: "upcoming" },
-  ];
+  // const repayments = [
+  //   { borrower: "Sarah M.", amount: 500, due: "Feb 27, 2024", status: "upcoming" },
+  //   { borrower: "Michael K.", amount: 750, due: "Feb 20, 2024", status: "overdue" },
+  //   { borrower: "David L.", amount: 300, due: "Feb 15, 2024", status: "paid" },
+  //   { borrower: "Mary P.", amount: 450, due: "Feb 10, 2024", status: "overdue" },
+  //   { borrower: "James R.", amount: 600, due: "Feb 28, 2024", status: "upcoming" },
+  // ];
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [repayments, setRepayments] = useState<LoanRepayment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchLoanRepayments();
+  }, []);
+
+  const fetchLoanRepayments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getLoanRepayments(1);
+      setRepayments(data);
+    } catch (error: any) {
+      setError(error.message || "Failed to fetch applications");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -116,14 +142,14 @@ export default function RepaymentTracking() {
               <TableBody>
                 {repayments.map((repayment, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{repayment.borrower}</TableCell>
+                    <TableCell className="font-medium">{repayment.first_name} {repayment.last_name}</TableCell>
                     <TableCell>K {repayment.amount}</TableCell>
-                    <TableCell>{repayment.due}</TableCell>
+                    <TableCell>{repayment.due_date}</TableCell>
                     <TableCell>
                       <Badge variant={
                         repayment.status === "paid" ? "outline" :
-                        repayment.status === "overdue" ? "destructive" :
-                        "default"
+                          repayment.status === "overdue" ? "destructive" :
+                            "default"
                       }>
                         {repayment.status}
                       </Badge>

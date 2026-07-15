@@ -87,6 +87,20 @@ export const handleDatabaseError = (error: any) => {
         };
     }
 
+    if (error.code === "SQL_PARSE_ERROR") {
+        return {
+            status: 400,
+            error: "Invalid SQL syntax."
+        };
+    }
+
+    if (error.code === "SQLITE_MISMATCH") {
+        return {
+            status: 400,
+            error: "Data type mismatch."
+        };
+    }
+
     // return {
     //     status: 500,
     //     message: "Internal server error."

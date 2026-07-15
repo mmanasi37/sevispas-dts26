@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Table,
     TableBody,
@@ -21,67 +21,24 @@ import {
 } from "@/components/ui/select";
 import { Search, Filter, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-
-// Dummy data for applications
-const dummyApplications = [
-    {
-        id: "APP-2024-001",
-        borrower: "Sarah M.",
-        amount: "K 3,000",
-        term: "6 Months",
-        purpose: "Education",
-        date: "2024-07-14",
-        status: "Pending",
-    },
-    {
-        id: "APP-2024-002",
-        borrower: "Michael K.",
-        amount: "K 5,000",
-        term: "12 Months",
-        purpose: "Business Expansion",
-        date: "2024-07-13",
-        status: "Review",
-    },
-    {
-        id: "APP-2024-003",
-        borrower: "David L.",
-        amount: "K 2,500",
-        term: "3 Months",
-        purpose: "Medical",
-        date: "2024-07-12",
-        status: "Approved",
-    },
-    {
-        id: "APP-2024-004",
-        borrower: "Emma W.",
-        amount: "K 1,000",
-        term: "1 Month",
-        purpose: "Emergency",
-        date: "2024-07-10",
-        status: "Rejected",
-    },
-    {
-        id: "APP-2024-005",
-        borrower: "James T.",
-        amount: "K 10,000",
-        term: "24 Months",
-        purpose: "Home Improvement",
-        date: "2024-07-09",
-        status: "Pending",
-    },
-];
+import { LoanApplication } from "@/lib/types";
+import { getApplications } from "@/lib/api";
 
 export default function ApplicationsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
+    const [applications, setApplications] = useState<LoanApplication[]>([]);
 
-    const filteredApplications = dummyApplications.filter((app) => {
-        const matchesSearch =
-            app.borrower.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.id.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === "All" || app.status === statusFilter;
-        return matchesSearch && matchesStatus;
-    });
+    const filteredApplications = applications;
+
+    // const filteredApplications = applications.filter((app) => {
+    //     const matchesSearch =
+    //         app.borrower?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //         app.borrower?.last_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    //     // || app.id.includes(searchTerm.toLowerCase());
+    //     const matchesStatus = statusFilter === "All"// || app.status == statusFilter;
+    //     return matchesSearch && matchesStatus;
+    // });
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -97,6 +54,15 @@ export default function ApplicationsPage() {
                 return <Badge variant="outline">{status}</Badge>;
         }
     };
+
+    useEffect(() => {
+        const fetchApplications = async () => {
+            const applications = await getApplications();
+            console.log(applications);
+            setApplications(applications);
+        };
+        fetchApplications();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50 p-4">
@@ -156,10 +122,10 @@ export default function ApplicationsPage() {
                                     filteredApplications.map((app) => (
                                         <TableRow key={app.id}>
                                             <TableCell className="pl-6 font-medium text-gray-900">{app.id}</TableCell>
-                                            <TableCell className="text-gray-600">{app.borrower}</TableCell>
-                                            <TableCell>{app.amount}</TableCell>
+                                            <TableCell className="text-gray-600">{app.borrower.first_name} {app.borrower.last_name}</TableCell>
+                                            <TableCell>{app.loan_amount}</TableCell>
                                             <TableCell className="text-gray-500">{app.term}</TableCell>
-                                            <TableCell className="text-gray-500">{app.date}</TableCell>
+                                            <TableCell className="text-gray-500">{app.application_date.toString()}</TableCell>
                                             <TableCell>{getStatusBadge(app.status)}</TableCell>
                                             <TableCell className="text-right pr-6">
                                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View Application">

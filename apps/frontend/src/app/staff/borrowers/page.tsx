@@ -85,8 +85,8 @@ export default function BorrowerManagement() {
                     <TableCell>
                       <Badge variant={
                         borrower.status === "active" ? "default" :
-                        borrower.status === "completed" ? "outline" :
-                        "destructive"
+                          borrower.status === "completed" ? "outline" :
+                            "destructive"
                       }>
                         {borrower.status}
                       </Badge>

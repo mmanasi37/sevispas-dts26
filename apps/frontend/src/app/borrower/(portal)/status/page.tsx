@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle, XCircle, AlertCircle, RefreshCw } from "lucide-react";
-import { getBorrowerDashboard, type BorrowerDashboard } from "@/lib/api";
+import { getBorrowerDashboard } from "@/lib/api";
 import { DEMO_SEVISPASS_ID } from "@/server/session";
 import { formatFullDate, formatTerm } from "@/lib/format";
+import { BorrowerDashboard, ELoanApplicationStatus } from "@/lib/types";
 
 const statusConfig = {
   pending: {
@@ -83,7 +84,7 @@ export default function LoanStatus() {
     );
   }
 
-  const currentStatus = statusConfig[latest.status as keyof typeof statusConfig] ?? statusConfig.pending;
+  const currentStatus = statusConfig[latest.status as unknown as keyof typeof statusConfig] ?? statusConfig.pending;
 
   return (
     <div className="p-4">
@@ -116,11 +117,11 @@ export default function LoanStatus() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Submitted</span>
-                <span>{formatFullDate(latest.submitted_at)}</span>
+                <span>{formatFullDate(String(latest.submitted_at))}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Loan Amount</span>
-                <span>K {latest.amount.toLocaleString()}</span>
+                <span>K {latest.loan_amount}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Term</span>
@@ -132,7 +133,7 @@ export default function LoanStatus() {
               </div>
             </div>
 
-            {latest.status === "rejected" && (
+            {latest.status === ELoanApplicationStatus.REJECTED && (
               <div className="bg-red-50 p-4 rounded-lg border border-red-200">
                 <div className="flex items-start gap-2">
                   <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
@@ -146,7 +147,7 @@ export default function LoanStatus() {
               </div>
             )}
 
-            {latest.status === "approved" && (
+            {latest.status === ELoanApplicationStatus.APPROVED && (
               <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                 <p className="text-sm text-green-700">
                   Your loan has been approved! You can now view your repayment schedule.

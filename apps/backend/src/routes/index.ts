@@ -24,6 +24,7 @@ router.put('/loan_types/:loanTypeId', loansController.updateLoanType);
 router.get('/loans', loansController.getLoanApplications);
 router.get('/loans/:loanId', loansController.getLoanApplication);
 router.put('/loans/:loanId', loansController.updateLoanApplication);
+router.get('/loans/:loanId/repayments', loansController.getLoanApplicationRepayments);
 router.get('/loans/:loanId/status', loansController.getLoanApplicationStatus);
 router.post('/loans/:loanId/submit', loansController.submitLoanApplication);
 router.post('/loans/:loanId/cancel', loansController.cancelLoanApplication);
