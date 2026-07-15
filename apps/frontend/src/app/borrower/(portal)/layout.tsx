@@ -13,21 +13,18 @@ import {
   User,
   Shield,
   LogOut,
+  List,
 } from "lucide-react";
 import ChacheChat from "@/components/ChacheChat";
-import {
-  ButtonGroup,
-  ButtonGroupSeparator,
-  ButtonGroupText,
-} from "@/components/ui/button-group"
-import { Button } from "@/components/ui/button";
 import LocaleSelector from "@/components/LocaleSelector";
 
 const navItems = [
   { href: "/borrower/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/borrower/application", label: "Apply", icon: FileText },
+  { href: "/borrower/apply", label: "Apply", icon: FileText },
+  // { href: "/borrower/applications", label: "Applications", icon: FileText },
   { href: "/borrower/status", label: "Status", icon: Activity },
   { href: "/borrower/repayment", label: "Repayments", icon: Calendar },
+  // { href: "/borrower/loans_history", label: "Loans History", icon: List },
   { href: "/borrower/profile", label: "Profile", icon: User },
 ];
 

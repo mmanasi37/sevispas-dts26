@@ -12,8 +12,6 @@ const app: Application = express();
 const host = env.HOST;
 const port = env.PORT;
 
-const SSO_SERVER = env.OIDC4VP_SERVER_URL;
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
