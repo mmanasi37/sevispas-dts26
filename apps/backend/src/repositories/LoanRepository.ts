@@ -1,5 +1,6 @@
 import { db } from '../database/index.ts';
 import type { LoanUpdate, Loan, NewLoan, NewLoanApplication, LoanApplicationStatus, Borrower, Staff } from '../database/types.ts';
+import { borrower, loanApplicationStatus, loanApplicationStatuses, loanDocuments, loanOfficer, loanRepayments, loanType, reviewer } from '../database/helpers.ts';
 
 export function getLoanTypes() {
     const types = db.selectFrom('Loan').selectAll().execute();
@@ -98,72 +99,48 @@ export async function applyLoan(application: NewLoanApplication) {
 
 export async function getLoanApplications() {
     // Get all loan applications
-    const loanApplications = await db.selectFrom('LoanApplication')
-        .innerJoin('LoanApplicationStatus', 'LoanApplication.id', 'LoanApplicationStatus.loan_application_id')
-        .innerJoin('Loan', 'Loan.id', 'LoanApplication.loan_id')
-        .innerJoin('Borrower', 'Borrower.id', 'LoanApplication.borrower_id')
-        .innerJoin('LoanDocument', 'LoanApplication.id', 'LoanDocument.loan_application_id')
-        .innerJoin('LoanRepayment', 'LoanApplication.id', 'LoanRepayment.loan_application_id')
-        .innerJoin('Staff', 'Staff.id', 'LoanApplication.loan_officer_id')
-        .selectAll()
+    // const loanApplications = await db.selectFrom('LoanApplication')
+    //     .innerJoin('LoanApplicationStatus', 'LoanApplication.id', 'LoanApplicationStatus.loan_application_id')
+    //     .innerJoin('Loan', 'Loan.id', 'LoanApplication.loan_id')
+    //     .innerJoin('Borrower', 'Borrower.id', 'LoanApplication.borrower_id')
+    //     .innerJoin('LoanDocument', 'LoanApplication.id', 'LoanDocument.loan_application_id')
+    //     .innerJoin('LoanRepayment', 'LoanApplication.id', 'LoanRepayment.loan_application_id')
+    //     .innerJoin('Staff', 'Staff.id', 'LoanApplication.loan_officer_id')
+    //     .selectAll()
+    //     .execute();
+
+    const results = await db
+        .selectFrom('LoanApplication')
+        .selectAll('LoanApplication')
+        // .innerJoin('LoanApplicationStatus as status', 'status.id', 'status.loan_application_id')
+        // .innerJoin('LoanStatusType as status_type', 'status_type.id', 'status.loan_status_type_id')
+        .select((eb) => [
+            borrower(eb.ref('LoanApplication.borrower_id')),
+            loanType(eb.ref('LoanApplication.loan_id')),
+            loanApplicationStatus(eb.ref('LoanApplication.id')),
+            loanApplicationStatuses(eb.ref('LoanApplication.id')),
+            loanDocuments(eb.ref('LoanApplication.id')),
+            loanRepayments(eb.ref('LoanApplication.id')),
+            loanOfficer(eb.ref('LoanApplication.loan_officer_id')),
+            // reviewer(eb.ref('LoanApplication.reviewed_by'))
+        ])
         .execute();
 
-    // if (loanApplications.length === 0) {
-    //     return [];
-    // }
+    const parsedResult = results.map((row) => {
 
-    // const loanIds = loanApplications.map(app => app.id).filter(Boolean);
-    // const borrowerIds = loanApplications.map(app => app.borrower_id).filter(Boolean);
-    // const loanIdsForLoans = loanApplications.map(app => app.loan_id).filter(Boolean);
-    // const staffIds = loanApplications.map(app => app.loan_officer_id).filter(Boolean);
+        return {
+            ...row,
+            borrower: JSON.parse(row.borrower as unknown as string),
+            loan: JSON.parse(row.loan as unknown as string),
+            status_history: JSON.parse(row.status_history as unknown as string),
+            documents: JSON.parse(row.documents as unknown as string),
+            repayments: JSON.parse(row.repayments as unknown as string),
+            loan_officer: JSON.parse(row.loan_officer as unknown as string),
+            // reviewed_by: JSON.parse(row.reviewed_by as unknown as string),
+        }
+    })
 
-    // console.log("loanIds", loanIds);
-    // console.log("borrowerIds", borrowerIds);
-    // console.log("loanIdsForLoans", loanIdsForLoans);
-    // console.log("staffIds", staffIds);
-
-    // // Fetch all related data in parallel
-    // const [statuses, loans, borrowers, staff] = await Promise.all([
-    //     db.selectFrom('LoanApplicationStatus')
-    //         .where('loan_application_id', 'in', loanIds)
-    //         .orderBy('created_at', 'desc')
-    //         .execute() as Promise<LoanApplicationStatus[]>,
-
-    //     db.selectFrom('Loan')
-    //         .where('id', 'in', loanIdsForLoans)
-    //         .execute() as Promise<Loan[]>,
-
-    //     db.selectFrom('Borrower')
-    //         .where('id', 'in', borrowerIds)
-    //         .execute() as Promise<Borrower[]>,
-
-    //     db.selectFrom('Staff')
-    //         .where('id', 'in', staffIds)
-    //         .execute() as Promise<Staff[]>
-    // ]);
-
-    // // Create maps for quick lookups
-    // const statusMap = new Map<number, LoanApplicationStatus>();
-    // statuses.forEach(status => {
-    //     if (!statusMap.has(status.loan_application_id)) {
-    //         statusMap.set(status.loan_application_id, status);
-    //     }
-    // });
-
-    // const loanMap = new Map(loans.map(loan => [loan.id, loan]));
-    // const borrowerMap = new Map(borrowers.map(borrower => [borrower.id, borrower]));
-    // const staffMap = new Map(staff.map(member => [member.id, member]));
-
-    // // Combine all data
-    // const result = loanApplications.map(app => ({
-    //     ...app,
-    //     status: statusMap.get(app.id) || null,
-    //     loan: loanMap.get(app.loan_id) || null,
-    //     borrower: borrowerMap.get(app.borrower_id) || null,
-    //     staff: staffMap.get(app.loan_officer_id) || null
-    // }));
-
-    return loanApplications;
+    return parsedResult;
 }
 
 export async function getLoanApplication(applicationId: number) {
