@@ -30,11 +30,11 @@ export default function Reports() {
             <p className="text-gray-500">Impact data for Grand Final presentation</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" size={'sm'}>
               <Download className="h-4 w-4 mr-2" />
               Export Report
             </Button>
-            <Badge variant="outline" className="text-sm">
+            <Badge variant="outline">
               Grand Final Ready
             </Badge>
           </div>

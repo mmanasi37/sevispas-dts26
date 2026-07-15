@@ -53,7 +53,7 @@ export default function ApplicationsPage() {
             case "Rejected":
                 return <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50 font-normal">Rejected</Badge>;
             default:
-                return <Badge variant="outline">{status}</Badge>;
+                return <Badge variant="outline">Pending</Badge>;
         }
     };
 
@@ -122,7 +122,7 @@ export default function ApplicationsPage() {
                                     filteredApplications.map((app, i) => (
                                         <TableRow key={i}>
                                             <TableCell className="pl-6 font-medium text-gray-900">{app.reference}</TableCell>
-                                            <TableCell className="text-gray-600">{app.first_name} {app.last_name}</TableCell>
+                                            <TableCell className="text-gray-600">{app.borrower.first_name} {app.borrower.last_name}</TableCell>
                                             <TableCell>{app.loan_amount}</TableCell>
                                             <TableCell className="text-gray-500">{app.term}</TableCell>
                                             <TableCell className="text-gray-500">{app.application_date.toString()}</TableCell>

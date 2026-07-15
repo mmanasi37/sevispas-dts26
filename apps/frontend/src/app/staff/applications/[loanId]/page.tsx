@@ -125,7 +125,7 @@ export default function ApplicationsPage({ params }: { params: { loanId: string 
                                             <TableCell>{app.loan_amount}</TableCell>
                                             <TableCell className="text-gray-500">{app.term}</TableCell>
                                             <TableCell className="text-gray-500">{app.application_date.toString()}</TableCell>
-                                            <TableCell>{getStatusBadge(app.status)}</TableCell>
+                                            <TableCell>{getStatusBadge(app.status.id)}</TableCell>
                                             <TableCell className="text-right pr-6">
                                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View Application">
                                                     <Eye className="h-4 w-4 text-gray-500" />

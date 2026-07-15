@@ -111,7 +111,7 @@ export interface Borrower {
   repaymentRate: number;
   loans: LoanApplication[];
   amount: number;
-  status: string;
+  // status: string;
   risk: string;
 }
 
@@ -142,7 +142,7 @@ export interface LoanApplication {
   application_date: string;
   term: TLoanTerm;
   borrower_id: number;
-  // borrower: Borrower;
+  borrower: Borrower;
   reviewed_by: number | null;
   review_date: string | null;
   review_notes: string | null;
@@ -152,7 +152,7 @@ export interface LoanApplication {
   deleted_by: number | null;
   reference: string;
   purpose: string;
-  status: ELoanApplicationStatus;
+  status: TLoanApplicationStatus;
   rejection_reason: string | null;
   submitted_at: string;
   decided_at: string | null;

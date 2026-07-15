@@ -23,19 +23,19 @@ import useUser from "@/hooks/use-user";
 interface MenuAction {
     name: string;
     url: string;
-    icon: string;
+    icon: React.ReactNode;
 }
 interface MenuItem {
     name: string;
     url: string;
-    icon: string;
+    icon: React.ReactNode;
     action: MenuAction;
 }
 
 interface Menu {
     name: string;
     url: string;
-    icon: string;
+    icon: React.ReactNode;
     items?: MenuItem[];
 }
 

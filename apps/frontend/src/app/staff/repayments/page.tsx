@@ -155,7 +155,7 @@ export default function RepaymentTracking() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button size="sm" variant="ghost">Contact</Button>
+                      <Button size='sm'>Contact</Button>
                     </TableCell>
                   </TableRow>
                 ))}

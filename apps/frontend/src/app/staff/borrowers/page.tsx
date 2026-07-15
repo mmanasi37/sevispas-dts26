@@ -76,7 +76,7 @@ export default function BorrowerManagement() {
                   <TableHead>Borrower</TableHead>
                   <TableHead>Loans</TableHead>
                   <TableHead>Total Borrowed</TableHead>
-                  <TableHead>Status</TableHead>
+                  {/* <TableHead>Status</TableHead> */}
                   <TableHead>Risk</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -93,9 +93,9 @@ export default function BorrowerManagement() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{borrower?.loans}</TableCell>
+                    <TableCell>{borrower?.loans?.length}</TableCell>
                     <TableCell>K {borrower?.amount}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Badge variant={
                         borrower?.status === "active" ? "default" :
                           borrower?.status === "completed" ? "outline" :
@@ -103,7 +103,7 @@ export default function BorrowerManagement() {
                       }>
                         {borrower?.status}
                       </Badge>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       <Badge variant={borrower?.risk === "low" ? "outline" : borrower?.risk === "medium" ? "default" : "destructive"}>
                         {borrower?.risk === "high" && <AlertTriangle className="h-3 w-3 mr-1" />}
