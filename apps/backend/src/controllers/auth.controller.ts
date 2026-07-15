@@ -4,6 +4,16 @@ import bcrypt from 'bcrypt';
 import { db } from '../database/index.ts';
 import { env } from '../env.ts';
 import { generateState, generateNonce, verifyState, processVPToken, generateToken, verifyToken, handleDatabaseError } from '../libs/utils.ts';
+import { OIDC4VP_SERVER_URL, CLIENT_ID, CLIENT_SECRET, CALLBACK_URL, WEB_ORIGIN } from '../config.ts';
+
+function ssoHeaders() {
+    return {
+        'Content-Type': 'application/json',
+        Origin: WEB_ORIGIN,
+        'X-Client-ID': CLIENT_ID,
+        'X-Client-Secret': CLIENT_SECRET,
+    };
+}
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -151,35 +161,51 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 };
 
+// Called server-to-server by the SSO server once the wallet presents its
+// credential — not something a browser navigates to directly.
 export const callback = async (req: Request, res: Response) => {
-    const { vp_token, state } = req.body;
+    const { vp_token, state } = req.body ?? {};
+
+    // try {
+    //     const { token } = req.body;
+
+    //     const decoded = verifyToken(token);
+    //     const user = await db.selectFrom('Staff').where('id', '=', Number(decoded.id)).selectAll().executeTakeFirst();
+    //     if (!user) {
+    //         return res.status(404).json({ error: 'User not found' });
+    //     }
+    //     const newToken = generateToken(user);
+
+    //     // Verify state matches stored value
+    //     if (!verifyState(state)) {
+    //         return res.status(400).json({ error: 'Invalid state' });
+    //     }
+
+    //     // Process the VP token and extract user information
+    //     const userInfo = await processVPToken(vp_token);
+
+    //     // Create user session
+    //     req.session.user = userInfo;
+    //     res.json({ token: newToken, success: true, redirect: '/dashboard' });
+    // } catch (error: any) {
+    //     res.status(500).json({ error: 'Authentication failed', message: error.message });
+    // }
 
     try {
-        const { token } = req.body;
-
-        const decoded = verifyToken(token);
-        const user = await db.selectFrom('Staff').where('id', '=', Number(decoded.id)).selectAll().executeTakeFirst();
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        const newToken = generateToken(user);
-
-        // Verify state matches stored value
         if (!verifyState(state)) {
             return res.status(400).json({ error: 'Invalid state' });
         }
 
-        // Process the VP token and extract user information
-        const userInfo = await processVPToken(vp_token);
+        await processVPToken(vp_token);
 
-        // Create user session
-        req.session.user = userInfo;
-        res.json({ token: newToken, success: true, redirect: '/dashboard' });
-    } catch (error: any) {
-        res.status(500).json({ error: 'Authentication failed', message: error.message });
+        res.json({ success: true, redirect: '/dashboard' });
+    } catch (error) {
+        res.status(500).json({ error: 'Authentication failed' });
     }
 };
 
+// Kicks off the SevisPass OIDC4VP flow: gets a QR code + sessionId back for the
+// frontend to display and poll (see /api/auth/session-status, /api/auth/user).
 // Authentication endpoint
 export const initiate = async (req: Request, res: Response) => {
     try {
@@ -193,15 +219,52 @@ export const initiate = async (req: Request, res: Response) => {
             {
                 headers: {
                     'Content-Type': 'application/json',
+                    'Origin': WEB_ORIGIN,
                     'X-Client-ID': env.OIDC4VP_CLIENT_ID,
                     'X-Client-Secret': env.OIDC4VP_CLIENT_SECRET
                 }
             }
         );
 
-        res.json(response.data);
-    } catch (error: any) {
+        const { qrCode, sessionId } = response.data;
+        res.json({ qrCode, sessionId });
+    } catch (error) {
         res.status(500).json({ error: 'Authentication initiation failed' });
     }
 };
 
+
+// Proxies to the SSO server so the browser never sees CLIENT_SECRET.
+export const sessionStatus = async (req: Request, res: Response) => {
+    const session = req.query.session;
+    if (typeof session !== 'string') {
+        return res.status(400).json({ error: 'session query param is required' });
+    }
+
+    try {
+        const response = await axios.get(`${OIDC4VP_SERVER_URL}/api/session/status`, {
+            params: { session },
+            headers: ssoHeaders(),
+        });
+        res.json(response.data);
+    } catch {
+        res.status(502).json({ error: 'Failed to check session status' });
+    }
+};
+
+export const user = async (req: Request, res: Response) => {
+    const session = req.query.session;
+    if (typeof session !== 'string') {
+        return res.status(400).json({ error: 'session query param is required' });
+    }
+
+    try {
+        const response = await axios.get(`${OIDC4VP_SERVER_URL}/api/user`, {
+            params: { session },
+            headers: ssoHeaders(),
+        });
+        res.json(response.data);
+    } catch {
+        res.status(502).json({ error: 'Failed to fetch verified user' });
+    }
+}; 

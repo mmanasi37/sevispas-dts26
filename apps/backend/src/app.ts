@@ -5,8 +5,8 @@ import morgan from 'morgan';
 import cors from 'cors';
 import routes from './routes/index.ts';
 import { env } from './env.ts';
-import { handleError } from './libs/utils.ts';
 import { attachUser } from './middlewares/auth.middleware.ts';
+import authRoutes from './routes/auth.ts';
 
 const app: Application = express();
 const host = env.HOST;
@@ -29,12 +29,12 @@ app.use(express.json());
 //   }
 // }));
 app.use(morgan('combined'));
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
 // app.use(handleError);
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true }));
+app.use(express.json());
+
 app.use('/api', routes);
+app.use('/api/auth', authRoutes);
 
 const server = app.listen(port, host, () => {
   console.log(`Server is running at http://${host}:${port}`);
@@ -46,5 +46,3 @@ process.on('SIGTERM', () => {
     debug('HTTP server closed');
   });
 });
-
-export default app;
