@@ -95,9 +95,9 @@ export default function BorrowerLogin() {
           {loginMethod === "biometric" ? (
             <div className="space-y-4">
               {qrCode ? (
-                <div className="bg-blue-50 p-4 rounded-lg text-center">
+                <div className="bg-white p-4 rounded-lg text-center border border-gray-100">
                   <div
-                    className="mx-auto w-[220px] h-[220px] [&_svg]:w-full [&_svg]:h-full"
+                    className="mx-auto w-full max-w-[360px] aspect-square [&_svg]:w-full [&_svg]:h-full"
                     dangerouslySetInnerHTML={{ __html: qrCode }}
                   />
                   <p className="text-sm text-gray-600 mt-2">
