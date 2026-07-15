@@ -27,6 +27,8 @@ router.get('/loans/:loanId/repayments', loansController.getLoanApplicationRepaym
 router.get('/loans/:loanId/status', loansController.getLoanApplicationStatus);
 router.post('/loans/:loanId/submit', loansController.submitLoanApplication);
 router.post('/loans/:loanId/cancel', loansController.cancelLoanApplication);
+router.post('/loans/:loanId/approve', loansController.approveLoanApplication);
+router.post('/loans/:loanId/reject', loansController.rejectLoanApplication);
 
 // router.get('/roles', rolesController.findPeople);
 // router.get('/permissions', permissionsController.findPeople);

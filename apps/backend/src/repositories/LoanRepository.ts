@@ -99,65 +99,71 @@ export async function applyLoan(application: NewLoanApplication) {
 export async function getLoanApplications() {
     // Get all loan applications
     const loanApplications = await db.selectFrom('LoanApplication')
+        .innerJoin('LoanApplicationStatus', 'LoanApplication.id', 'LoanApplicationStatus.loan_application_id')
+        .innerJoin('Loan', 'Loan.id', 'LoanApplication.loan_id')
+        .innerJoin('Borrower', 'Borrower.id', 'LoanApplication.borrower_id')
+        .innerJoin('LoanDocument', 'LoanApplication.id', 'LoanDocument.loan_application_id')
+        .innerJoin('LoanRepayment', 'LoanApplication.id', 'LoanRepayment.loan_application_id')
+        .innerJoin('Staff', 'Staff.id', 'LoanApplication.loan_officer_id')
         .selectAll()
         .execute();
 
-    if (loanApplications.length === 0) {
-        return [];
-    }
+    // if (loanApplications.length === 0) {
+    //     return [];
+    // }
 
-    const loanIds = loanApplications.map(app => app.id).filter(Boolean);
-    const borrowerIds = loanApplications.map(app => app.borrower_id).filter(Boolean);
-    const loanIdsForLoans = loanApplications.map(app => app.loan_id).filter(Boolean);
-    const staffIds = loanApplications.map(app => app.loan_officer_id).filter(Boolean);
+    // const loanIds = loanApplications.map(app => app.id).filter(Boolean);
+    // const borrowerIds = loanApplications.map(app => app.borrower_id).filter(Boolean);
+    // const loanIdsForLoans = loanApplications.map(app => app.loan_id).filter(Boolean);
+    // const staffIds = loanApplications.map(app => app.loan_officer_id).filter(Boolean);
 
-    console.log("loanIds", loanIds);
-    console.log("borrowerIds", borrowerIds);
-    console.log("loanIdsForLoans", loanIdsForLoans);
-    console.log("staffIds", staffIds);
+    // console.log("loanIds", loanIds);
+    // console.log("borrowerIds", borrowerIds);
+    // console.log("loanIdsForLoans", loanIdsForLoans);
+    // console.log("staffIds", staffIds);
 
-    // Fetch all related data in parallel
-    const [statuses, loans, borrowers, staff] = await Promise.all([
-        db.selectFrom('LoanApplicationStatus')
-            .where('loan_application_id', 'in', loanIds)
-            .orderBy('created_at', 'desc')
-            .execute() as Promise<LoanApplicationStatus[]>,
+    // // Fetch all related data in parallel
+    // const [statuses, loans, borrowers, staff] = await Promise.all([
+    //     db.selectFrom('LoanApplicationStatus')
+    //         .where('loan_application_id', 'in', loanIds)
+    //         .orderBy('created_at', 'desc')
+    //         .execute() as Promise<LoanApplicationStatus[]>,
 
-        db.selectFrom('Loan')
-            .where('id', 'in', loanIdsForLoans)
-            .execute() as Promise<Loan[]>,
+    //     db.selectFrom('Loan')
+    //         .where('id', 'in', loanIdsForLoans)
+    //         .execute() as Promise<Loan[]>,
 
-        db.selectFrom('Borrower')
-            .where('id', 'in', borrowerIds)
-            .execute() as Promise<Borrower[]>,
+    //     db.selectFrom('Borrower')
+    //         .where('id', 'in', borrowerIds)
+    //         .execute() as Promise<Borrower[]>,
 
-        db.selectFrom('Staff')
-            .where('id', 'in', staffIds)
-            .execute() as Promise<Staff[]>
-    ]);
+    //     db.selectFrom('Staff')
+    //         .where('id', 'in', staffIds)
+    //         .execute() as Promise<Staff[]>
+    // ]);
 
-    // Create maps for quick lookups
-    const statusMap = new Map<number, LoanApplicationStatus>();
-    statuses.forEach(status => {
-        if (!statusMap.has(status.loan_application_id)) {
-            statusMap.set(status.loan_application_id, status);
-        }
-    });
+    // // Create maps for quick lookups
+    // const statusMap = new Map<number, LoanApplicationStatus>();
+    // statuses.forEach(status => {
+    //     if (!statusMap.has(status.loan_application_id)) {
+    //         statusMap.set(status.loan_application_id, status);
+    //     }
+    // });
 
-    const loanMap = new Map(loans.map(loan => [loan.id, loan]));
-    const borrowerMap = new Map(borrowers.map(borrower => [borrower.id, borrower]));
-    const staffMap = new Map(staff.map(member => [member.id, member]));
+    // const loanMap = new Map(loans.map(loan => [loan.id, loan]));
+    // const borrowerMap = new Map(borrowers.map(borrower => [borrower.id, borrower]));
+    // const staffMap = new Map(staff.map(member => [member.id, member]));
 
-    // Combine all data
-    const result = loanApplications.map(app => ({
-        ...app,
-        status: statusMap.get(app.id) || null,
-        loan: loanMap.get(app.loan_id) || null,
-        borrower: borrowerMap.get(app.borrower_id) || null,
-        staff: staffMap.get(app.loan_officer_id) || null
-    }));
+    // // Combine all data
+    // const result = loanApplications.map(app => ({
+    //     ...app,
+    //     status: statusMap.get(app.id) || null,
+    //     loan: loanMap.get(app.loan_id) || null,
+    //     borrower: borrowerMap.get(app.borrower_id) || null,
+    //     staff: staffMap.get(app.loan_officer_id) || null
+    // }));
 
-    return result;
+    return loanApplications;
 }
 
 export async function getLoanApplication(applicationId: number) {

@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "@/contexts/AppContext";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,8 @@ export default function RootLayout({
           <TooltipProvider>
             {children}
           </TooltipProvider>
+
+          <Toaster />
         </AppProvider>
       </body>
     </html>

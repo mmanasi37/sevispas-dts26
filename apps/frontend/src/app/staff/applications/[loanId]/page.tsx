@@ -10,7 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
     Select,
@@ -23,10 +23,8 @@ import { Search, Filter, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LoanApplication } from "@/lib/types";
 import { getApplications } from "@/lib/api";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
 
-export default function ApplicationsPage() {
+export default function ApplicationsPage({ params }: { params: { loanId: string } }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [applications, setApplications] = useState<LoanApplication[]>([]);
@@ -60,6 +58,7 @@ export default function ApplicationsPage() {
     useEffect(() => {
         const fetchApplications = async () => {
             const applications = await getApplications();
+            console.log(applications);
             setApplications(applications);
         };
         fetchApplications();
@@ -119,18 +118,18 @@ export default function ApplicationsPage() {
                             </TableHeader>
                             <TableBody>
                                 {filteredApplications.length > 0 ? (
-                                    filteredApplications.map((app, i) => (
-                                        <TableRow key={i}>
-                                            <TableCell className="pl-6 font-medium text-gray-900">{app.reference}</TableCell>
-                                            <TableCell className="text-gray-600">{app.first_name} {app.last_name}</TableCell>
+                                    filteredApplications.map((app) => (
+                                        <TableRow key={app.id}>
+                                            <TableCell className="pl-6 font-medium text-gray-900">{app.id}</TableCell>
+                                            <TableCell className="text-gray-600">{app.borrower.first_name} {app.borrower.last_name}</TableCell>
                                             <TableCell>{app.loan_amount}</TableCell>
                                             <TableCell className="text-gray-500">{app.term}</TableCell>
                                             <TableCell className="text-gray-500">{app.application_date.toString()}</TableCell>
                                             <TableCell>{getStatusBadge(app.status)}</TableCell>
                                             <TableCell className="text-right pr-6">
-                                                <Link href={`/staff/applications/${app.id}/review`} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), `h-8 w-8 p-0`)} title="View Application">
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View Application">
                                                     <Eye className="h-4 w-4 text-gray-500" />
-                                                </Link>
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))

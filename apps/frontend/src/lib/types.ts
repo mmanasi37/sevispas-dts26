@@ -87,18 +87,18 @@ export interface Staff {
 
 export interface Borrower {
   id: number;
-  borrower_number: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  date_of_birth: string | null;
+  borrower_number: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
   marital_status: TMaritalStatus;
-  id_type_id: number | null;
-  id_number: string | null;
+  id_type_id: number;
+  id_number: string;
   sevispass_id: string;
   credit_score: number;
   member_since: string;
   phone_number: number | null;
-  email: string | null;
+  email: string;
   physical_address: string | null;
   employment_status: TEmploymentStatus;
   employer_name: string | null;
@@ -107,10 +107,12 @@ export interface Borrower {
   updated_at: string | null;
   deleted_at: string | null;
   deleted_by: number | null;
-  memberSince: string;
-  creditScore: number;
   totalBorrowed: number;
   repaymentRate: number;
+  loans: LoanApplication[];
+  amount: number;
+  status: string;
+  risk: string;
 }
 
 export interface Loan {
@@ -140,7 +142,7 @@ export interface LoanApplication {
   application_date: string;
   term: TLoanTerm;
   borrower_id: number;
-  borrower: Borrower;
+  // borrower: Borrower;
   reviewed_by: number | null;
   review_date: string | null;
   review_notes: string | null;
@@ -155,6 +157,14 @@ export interface LoanApplication {
   submitted_at: string;
   decided_at: string | null;
   repayments: LoanRepayment[];
+}
+
+export type LoanApplicationWithRelations = LoanApplication & {
+  borrower: Borrower;
+  loan: Loan;
+  staff: Staff;
+  status: LoanApplicationStatus;
+  loanDocuments: LoanDocument[];
 }
 
 export interface LoanStatusType {

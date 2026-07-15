@@ -88,6 +88,26 @@ const menus: Menu[] = [
                     url: "/staff/applications/create",
                     icon: "string"
                 }
+            },
+            {
+                name: "Pending Reviews",
+                url: "/staff/applications/pending",
+                icon: "string",
+                action: {
+                    name: "Add Application",
+                    url: "/staff/applications/create",
+                    icon: "string"
+                }
+            },
+            {
+                name: "Reviews",
+                url: "/staff/review",
+                icon: "string",
+                action: {
+                    name: "All Reviews",
+                    url: "/staff/reviews",
+                    icon: "string",
+                }
             }
         ]
     },
@@ -113,23 +133,6 @@ const menus: Menu[] = [
                 action: {
                     name: "Add Report",
                     url: "/staff/reports/create",
-                    icon: "string"
-                }
-            }
-        ]
-    },
-    {
-        name: "Reviews",
-        url: "/staff/review",
-        icon: "string",
-        items: [
-            {
-                name: "All Reviews",
-                url: "/staff/reviews",
-                icon: "string",
-                action: {
-                    name: "Add Review",
-                    url: "/staff/reviews/create",
                     icon: "string"
                 }
             }
@@ -166,6 +169,9 @@ export function AppSidebar() {
                         </SidebarMenuAction>
                     </SidebarMenuItem>
                 </SidebarMenu> */}
+            </SidebarHeader>
+
+            <SidebarContent>
                 <SidebarMenu>
                     {menus.map((menu) => (
                         <SidebarMenuItem key={menu.name}>
@@ -178,10 +184,7 @@ export function AppSidebar() {
                         </SidebarMenuItem>
                     ))}
                 </SidebarMenu>
-            </SidebarHeader>
-
-            <SidebarContent>
-                <SidebarGroup>
+                {/* <SidebarGroup>
                     <SidebarGroupLabel>Applications</SidebarGroupLabel>
                     <SidebarGroupAction>
                         <Plus /> <span className="sr-only">Add Application</span>
@@ -199,7 +202,7 @@ export function AppSidebar() {
                             </SidebarMenuAction>
                         </SidebarMenuItem>
                     </SidebarGroupContent>
-                </SidebarGroup>
+                </SidebarGroup> */}
             </SidebarContent>
 
             <SidebarFooter>

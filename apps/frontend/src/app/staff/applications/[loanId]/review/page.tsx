@@ -8,10 +8,27 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { UserCheck, Shield, Calendar, Target, CheckCircle, XCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
+import { toast } from 'sonner';
+import { approveLoan, rejectLoan } from "@/lib/api";
 
-export default function ApplicationReview() {
+export default function ApplicationReview({ loanId }: { loanId: string }) {
+  const [decision, setDecision] = useState<"approve" | "reject" | null>(null);
   const [showReason, setShowReason] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+
+  const submitDecision = async () => {
+    try {
+      if (decision === "approve") {
+        await approveLoan(Number(loanId), rejectionReason);
+      } else {
+        await rejectLoan(Number(loanId), rejectionReason);
+      }
+      toast.success(`Application ${decision}`);
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to ${decision} application`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -104,7 +121,7 @@ export default function ApplicationReview() {
               <div className="flex gap-4">
                 <Button
                   className="flex-1 bg-green-600 hover:bg-green-700"
-                  onClick={() => setShowReason(!showReason)}
+                  onClick={() => { setDecision("approve"); setShowReason(false) }}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Approve
@@ -112,15 +129,15 @@ export default function ApplicationReview() {
                 <Button
                   variant="destructive"
                   className="flex-1"
-                  onClick={() => setShowReason(!showReason)}
+                  onClick={() => { setDecision("reject"); setShowReason(true) }}
                 >
                   <XCircle className="h-4 w-4 mr-2" />
                   Reject
                 </Button>
               </div>
 
-              {showReason && (
-                <Button className="w-full">Submit Decision</Button>
+              {decision && (
+                <Button className="w-full" onClick={submitDecision}>Submit Decision</Button>
               )}
             </CardContent>
           </Card>

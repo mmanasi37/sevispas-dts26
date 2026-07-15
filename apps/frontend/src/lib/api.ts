@@ -40,6 +40,16 @@ export async function createLoanApplication(
   }
 }
 
+export async function getBorrowers(): Promise<Borrower[]> {
+  try {
+    const api = await createApi(`/borrowers`);
+    return api;
+  } catch (error) {
+    console.error("Failed to fetch borrowers:", error);
+    throw error;
+  }
+}
+
 // The loan currently being paid off — the one with at least one non-paid repayment.
 // Falls back to the most recently submitted loan if every loan is fully repaid.
 export function getActiveLoan(applications: LoanApplication[]): LoanApplication | undefined {
@@ -75,3 +85,26 @@ export async function getLoanRepayments(loanId: number): Promise<LoanRepayment[]
     throw error;
   }
 }
+
+
+export const approveLoan = async (loanId: number, note?: string) => {
+  const res = await createApi(`/loans/${loanId}/approve`, {
+    method: "POST",
+    body: JSON.stringify({
+      note,
+    }),
+  });
+
+  return res;
+};
+
+export const rejectLoan = async (loanId: number, rejectionReason: string) => {
+  const res = await createApi(`/loans/${loanId}/reject`, {
+    method: "POST",
+    body: JSON.stringify({
+      rejectionReason,
+    }),
+  });
+
+  return res;
+};

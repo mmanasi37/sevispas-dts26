@@ -268,3 +268,41 @@ export async function cancelLoanApplication(req: Request, res: Response, next: N
         next(error);
     }
 }
+export async function approveLoanApplication(req: Request, res: Response, next: NextFunction) {
+    const loanId = parseInt(String(req.params.loanId));
+    try {
+        const types = await loanRepo.getLoanApplication(loanId);
+
+        res.json(types);
+    } catch (error: any) {
+        const dbError = handleDatabaseError(error);
+
+        if (dbError) {
+            res.status(dbError.status).json({
+                error: dbError.error
+            });
+        }
+
+        next(error);
+    }
+}
+
+export async function rejectLoanApplication(req: Request, res: Response, next: NextFunction) {
+    const loanId = parseInt(String(req.params.loanId));
+    try {
+        const types = await loanRepo.getLoanApplication(loanId);
+
+        res.json(types);
+    } catch (error: any) {
+        const dbError = handleDatabaseError(error);
+
+        if (dbError) {
+            res.status(dbError.status).json({
+                error: dbError.error
+            });
+        }
+
+        next(error);
+    }
+}
+
