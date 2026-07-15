@@ -1,7 +1,6 @@
 import type {
     ColumnType,
     Generated,
-    JSONColumnType,
 } from 'kysely';
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
@@ -43,21 +42,21 @@ export interface StaffTable {
 
 export interface BorrowerTable {
     id: Generated<number>;
-    borrower_number: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    date_of_birth: ColumnType<Date, Date | string, Date | string> | null;
+    borrower_number: string;
+    first_name: string;
+    last_name: string;
+    date_of_birth: Timestamp;
     marital_status: 'single' | 'married' | 'divorced' | 'widowed' | null;
-    id_type_id: number | null;
-    id_number: string | null;
+    id_type_id: number;
+    id_number: string;
     sevispass_id: string;
     credit_score: Generated<number>;
-    member_since: string;
+    member_since: Timestamp;
     phone_number: number | null;
     email: string | null;
     physical_address: string | null;
     employment_status: string | null;
-    employer: string | null;
+    employer_name: string | null;
     monthly_income: Decimal | null;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
@@ -67,16 +66,19 @@ export interface BorrowerTable {
 
 export interface LoanTable {
     id: Generated<number>;
-    borrower_id: number | null;
-    loan_number: string | null;
-    amount: Decimal | null;
-    interest_rate: Decimal | null;
-    term_months: number | null;
-    purpose: string | null;
-    applied_date: ColumnType<Date, Date | string, Date | string> | null;
-    approved_date: ColumnType<Date, Date | string, Date | string> | null;
-    disbursement_date: ColumnType<Date, Date | string, Date | string> | null;
-    created_by: number | null;
+    loan_name: string;
+    loan_description: string;
+    min_amount: Decimal;
+    max_amount: Decimal;
+    min_term: number;
+    max_term: number;
+    interest_rate: Decimal;
+    // term_months: number;
+    // purpose: string;
+    // applied_date: Timestamp;
+    // approved_date: Timestamp | null;
+    // disbursement_date: Timestamp | null;
+    created_by: number;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
     deleted_at: Timestamp | null;
@@ -88,11 +90,11 @@ export interface LoanApplicationTable {
     loan_id: number;
     loan_officer_id: number;
     loan_amount: number;
-    application_date: ColumnType<Date, Date | string, Date | string>;
+    application_date: Timestamp;
     term: string;
     borrower_id: number;
     reviewed_by: number | null;
-    review_date: ColumnType<Date, Date | string, Date | string> | null;
+    review_date: Timestamp | null;
     review_notes: string | null;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
@@ -100,7 +102,7 @@ export interface LoanApplicationTable {
     deleted_by: number | null;
     reference: string;
     purpose: string;
-    status: Generated<'pending' | 'approved' | 'rejected' | 'under_review'>;
+    // status: Generated<'pending' | 'approved' | 'rejected' | 'under_review'>;
     rejection_reason: string | null;
     submitted_at: Generated<DateTime>;
     decided_at: DateTime | null;
@@ -117,20 +119,20 @@ export interface LoanStatusTypeTable {
 
 export interface LoanApplicationStatusTable {
     id: Generated<number>;
-    loan_application_id: number | null;
-    loan_status_type_id: number | null;
-    is_active: boolean | null;
-    created_at: Timestamp | null;
-    updated_at: Timestamp | null;
+    loan_application_id: number;
+    loan_status_type_id: number;
+    is_active: boolean;
+    created_at: Timestamp;
+    updated_at: Timestamp;
 }
 
 export interface LoanApplicationApprovalTable {
     id: Generated<number>;
-    loan_application_id: number | null;
-    loan_status_type_id: number | null;
+    loan_application_id: number;
+    loan_status_type_id: number;
     is_active: boolean;
     reviewed_by: number | null;
-    review_date: Date | null;
+    review_date: Timestamp | null;
     review_notes: string | null;
     is_reviewd: boolean;
     created_at: Timestamp;
@@ -187,16 +189,16 @@ export interface PermissionTable {
 export interface RoleStaffTable {
     role_id: number;
     staff_id: number;
-    created_at: Timestamp;
-    updated_at: Timestamp;
+    created_at: Timestamp | null;
+    updated_at: Timestamp | null;
     deleted_at: Timestamp | null;
 }
 
 export interface PermissionRoleTable {
     permission_id: number;
     role_id: number;
-    created_at: Timestamp;
-    updated_at: Timestamp;
+    created_at: Timestamp | null;
+    updated_at: Timestamp | null;
     deleted_at: Timestamp | null;
 }
 

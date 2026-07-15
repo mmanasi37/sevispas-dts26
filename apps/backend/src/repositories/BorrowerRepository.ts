@@ -126,7 +126,7 @@ export async function debitAccount(fromAccountNumber: number, toAccountNumber: n
                 account_balance: sql`${sql.raw('account_balance')} + ${amount}`,
                 updated_at: new Date()
             })
-            .where('MainAccount.id', '=', toAccountNumber)
+            .where('id', '=', toAccountNumber)
             .executeTakeFirstOrThrow();
 
         return [borrowerAccountUpdated, mainAccount]
@@ -134,7 +134,6 @@ export async function debitAccount(fromAccountNumber: number, toAccountNumber: n
 
     return approveLoan;
 }
-
 
 export async function createLoanApplication(borrowerId: number, input: {
     amount: number;
@@ -155,7 +154,7 @@ export async function createLoanApplication(borrowerId: number, input: {
             loan_amount: input.amount,
             term: input.term,
             purpose: input.purpose,
-            status: 'pending',
+            // status: 'pending',
             loan_id: 1,
             loan_officer_id: 1,
             application_date: new Date(),

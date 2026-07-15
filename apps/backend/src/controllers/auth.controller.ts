@@ -3,7 +3,7 @@ import axios from 'axios';
 import bcrypt from 'bcrypt';
 import { db } from '../database/index.ts';
 import { env } from '../env.ts';
-import { generateState, generateNonce, verifyState, processVPToken, generateToken, verifyToken } from '../libs/utils.ts';
+import { generateState, generateNonce, verifyState, processVPToken, generateToken, verifyToken, handleDatabaseError } from '../libs/utils.ts';
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -21,9 +21,24 @@ export const login = async (req: Request, res: Response) => {
 
         const token = generateToken(user);
 
+        // Store user in session
+        req.session.user = {
+            sub: String(user.id),
+            name: `${user.first_name} ${user.last_name}`,
+            email: user.email!,
+            // first_name: user.first_name,
+            // last_name: user.last_name,
+            // role: user.role,
+            // isVerified: user.isVerified,
+        };
+
         res.json({ token, user });
     } catch (error: any) {
-        res.status(500).json({ error: 'Login failed', message: error.message });
+        const dbError = handleDatabaseError(error);
+
+        console.error('Login failed:', dbError);
+
+        res.status(401).json({ error: 'Invalid credentials' });
     }
 };
 
@@ -37,20 +52,49 @@ export const register = async (req: Request, res: Response) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await db.insertInto('Staff').values({ email, password: hashedPassword }).executeTakeFirst();
+        const newUser = await db.insertInto('Staff').values({
+            first_name: 'Admin',
+            last_name: 'User',
+            email,
+            password: hashedPassword,
+            created_at: new Date(),
+            updated_at: new Date()
+        }).executeTakeFirst();
         const token = generateToken(newUser);
 
         res.json({ token, user: newUser });
     } catch (error: any) {
+        const dbError = handleDatabaseError(error);
+
+        console.error('Registration failed:', dbError);
+
         res.status(500).json({ error: 'Registration failed', message: error.message });
     }
 };
 
 export const logout = async (req: Request, res: Response) => {
-    try {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Logout failed' });
+        }
         res.json({ success: true });
+    });
+};
+
+export const profile = async (req: Request, res: Response) => {
+    try {
+        const user = await db.selectFrom('Staff').where('id', '=', Number(req.session.user?.sub)).selectAll().executeTakeFirst();
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ user });
     } catch (error: any) {
-        res.status(500).json({ error: 'Logout failed', message: error.message });
+        const dbError = handleDatabaseError(error);
+
+        console.error('Profile failed:', dbError);
+
+        res.status(500).json({ error: 'Profile failed', message: error.message });
     }
 };
 
@@ -59,7 +103,7 @@ export const refresh = async (req: Request, res: Response) => {
         const { token } = req.body;
 
         const decoded = verifyToken(token);
-        const user = await db.selectFrom('Staff').where('id', '=', decoded.id).selectAll().executeTakeFirst();
+        const user = await db.selectFrom('Staff').where('id', '=', Number(decoded.id)).selectAll().executeTakeFirst();
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -93,7 +137,7 @@ export const resetPassword = async (req: Request, res: Response) => {
         const { token, password } = req.body;
 
         const decoded = verifyToken(token);
-        const user = await db.selectFrom('Staff').where('id', '=', decoded.id).selectAll().executeTakeFirst();
+        const user = await db.selectFrom('Staff').where('id', '=', Number(decoded.id)).selectAll().executeTakeFirst();
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -114,7 +158,7 @@ export const callback = async (req: Request, res: Response) => {
         const { token } = req.body;
 
         const decoded = verifyToken(token);
-        const user = await db.selectFrom('Staff').where('id', '=', decoded).selectAll().executeTakeFirst();
+        const user = await db.selectFrom('Staff').where('id', '=', Number(decoded.id)).selectAll().executeTakeFirst();
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }

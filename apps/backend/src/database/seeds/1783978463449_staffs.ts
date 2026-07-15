@@ -2,51 +2,92 @@ import type { Kysely } from 'kysely'
 import type { Database } from '../schema.ts';
 
 export async function seed(db: Kysely<Database>): Promise<void> {
-	await db.deleteFrom('LoanRepayment').execute();
+	await db.deleteFrom('Loan').execute();
 	await db.deleteFrom('LoanApplication').execute();
+	await db.deleteFrom('LoanApplicationApproval').execute();
+	await db.deleteFrom('LoanApplicationStatus').execute();
+	await db.deleteFrom('LoanStatusType').execute();
+	await db.deleteFrom('LoanRepayment').execute();
+	await db.deleteFrom('LoanDocument').execute();
+	await db.deleteFrom('BorrowerAccount').execute();
 	await db.deleteFrom('Borrower').execute();
+	await db.deleteFrom('Staff').execute();
+
+	const staff = await db.insertInto('Staff').values({
+		staff_number: 'STAFF-2024-003',
+		first_name: 'John',
+		last_name: 'Doe',
+		email: 'email@exmaple.com',
+		password: 'secr3t',
+		phone_number: 1234567890,
+		gender: 'female'
+	}).returningAll().executeTakeFirstOrThrow();
+
+	const loan = await db.insertInto('Loan').values({
+		loan_name: 'LOAN-2024-002',
+		loan_description: "This is a loan for business purposes",
+		max_amount: 10000,
+		min_amount: 1000,
+		max_term: 12,
+		min_term: 6,
+		interest_rate: 10,
+		created_by: staff.id,
+	}).returningAll().executeTakeFirstOrThrow();
 
 	const borrower = await db.insertInto('Borrower').values({
 		sevispass_id: 'SP-2024-001',
 		first_name: 'John',
 		last_name: 'Doe',
 		email: 'john.doe@example.com',
+		// gender: 'female',
+		date_of_birth: '1990-01-01',
+		id_type_id: 1,
+		id_number: '123456789',
 		credit_score: 720,
 		member_since: '2023-06-01',
+		borrower_number: 'BORROWER-2024-001',
 	}).returningAll().executeTakeFirstOrThrow();
 
 	const activeLoan = await db.insertInto('LoanApplication').values({
 		reference: 'MIJ-2024-001',
 		borrower_id: borrower.id,
-		amount: 5000,
+		loan_amount: 5000,
 		term: 'short',
 		purpose: 'business',
-		status: 'approved',
+		// status: 'approved',
 		submitted_at: '2024-01-15T10:30:00Z',
 		decided_at: '2024-01-16T09:00:00Z',
-		loan_application_status_id: 1,
+		loan_id: 1,
+		loan_officer_id: staff.id,
+		application_date: '2024-01-15T10:30:00Z',
 	}).returningAll().executeTakeFirstOrThrow();
 
 	const pastLoan1 = await db.insertInto('LoanApplication').values({
 		reference: 'MIJ-2023-014',
 		borrower_id: borrower.id,
-		amount: 2000,
+		loan_amount: 2000,
 		term: 'short',
 		purpose: 'business',
-		status: 'approved',
+		// status: 'approved',
 		submitted_at: '2023-10-01T09:00:00Z',
 		decided_at: '2023-10-02T09:00:00Z',
+		loan_id: 1,
+		loan_officer_id: staff.id,
+		application_date: '2023-10-01T09:00:00Z',
 	}).returningAll().executeTakeFirstOrThrow();
 
 	const pastLoan2 = await db.insertInto('LoanApplication').values({
 		reference: 'MIJ-2023-007',
 		borrower_id: borrower.id,
-		amount: 1500,
+		loan_amount: 1500,
 		term: 'short',
 		purpose: 'business',
-		status: 'approved',
+		// status: 'approved',
 		submitted_at: '2023-06-01T09:00:00Z',
 		decided_at: '2023-06-02T09:00:00Z',
+		loan_id: 1,
+		loan_officer_id: staff.id,
+		application_date: '2023-06-01T09:00:00Z',
 	}).returningAll().executeTakeFirstOrThrow();
 
 	const activeLoanSchedule: Array<{ due_date: string; status: string; paid_at: string | null }> = [
@@ -97,4 +138,5 @@ export async function seed(db: Kysely<Database>): Promise<void> {
 		borrower: borrower.sevispass_id,
 		loans: [activeLoan.reference, pastLoan1.reference, pastLoan2.reference],
 	});
+	process.exit(0);
 }

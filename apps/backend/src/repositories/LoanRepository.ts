@@ -1,5 +1,5 @@
 import { db } from '../database/index.ts';
-import type { LoanUpdate, Loan, NewLoan, NewLoanApplication } from '../database/types.ts';
+import type { LoanUpdate, Loan, NewLoan, NewLoanApplication, LoanApplicationStatus, Borrower, Staff } from '../database/types.ts';
 
 export function getLoanTypes() {
     const types = db.selectFrom('Loan').selectAll().execute();
@@ -30,21 +30,21 @@ export async function findLoanType(criteria: Partial<Loan>) {
         query = query.where('id', '=', criteria.id)
     }
 
-    if (criteria.approved_date) {
-        query = query.where('approved_date', '=', criteria.approved_date)
-    }
+    // if (criteria.approved_date) {
+    //     query = query.where('approved_date', '=', criteria.approved_date)
+    // }
 
-    if (criteria.applied_date !== undefined) {
-        query = query.where(
-            'applied_date',
-            criteria.applied_date === null ? 'is' : '=',
-            criteria.applied_date
-        )
-    }
+    // if (criteria.applied_date !== undefined) {
+    //     query = query.where(
+    //         'applied_date',
+    //         criteria.applied_date === null ? 'is' : '=',
+    //         criteria.applied_date
+    //     )
+    // }
 
-    if (criteria.disbursement_date) {
-        query = query.where('disbursement_date', '=', criteria.disbursement_date)
-    }
+    // if (criteria.disbursement_date) {
+    //     query = query.where('disbursement_date', '=', criteria.disbursement_date)
+    // }
 
     if (criteria.created_at) {
         query = query.where('created_at', '=', criteria.created_at)
@@ -102,16 +102,67 @@ export async function applyLoan(application: NewLoanApplication) {
     }
 }
 
-export function getLoanApplications() {
-    const types = db.selectFrom('LoanApplication')
+export async function getLoanApplications() {
+    // Get all loan applications
+    const loanApplications = await db.selectFrom('LoanApplication')
         .selectAll()
         .execute();
 
-    return types;
+    if (loanApplications.length === 0) {
+        return [];
+    }
+
+    const loanIds = loanApplications.map(app => app.id);
+    const borrowerIds = loanApplications.map(app => app.borrower_id).filter(Boolean);
+    const loanIdsForLoans = loanApplications.map(app => app.loan_id).filter(Boolean);
+    const staffIds = loanApplications.map(app => app.loan_officer_id).filter(Boolean);
+
+    // Fetch all related data in parallel
+    const [statuses, loans, borrowers, staff] = await Promise.all([
+        db.selectFrom('LoanApplicationStatus')
+            .where('loan_application_id', 'in', loanIds)
+            .orderBy('created_at', 'desc')
+            .execute() as Promise<LoanApplicationStatus[]>,
+
+        db.selectFrom('Loan')
+            .where('id', 'in', loanIdsForLoans)
+            .execute() as Promise<Loan[]>,
+
+        db.selectFrom('Borrower')
+            .where('id', 'in', borrowerIds)
+            .execute() as Promise<Borrower[]>,
+
+        db.selectFrom('Staff')
+            .where('id', 'in', staffIds)
+            .execute() as Promise<Staff[]>
+    ]);
+
+    // Create maps for quick lookups
+    const statusMap = new Map<number, LoanApplicationStatus>();
+    statuses.forEach(status => {
+        if (!statusMap.has(status.loan_application_id)) {
+            statusMap.set(status.loan_application_id, status);
+        }
+    });
+
+    const loanMap = new Map(loans.map(loan => [loan.id, loan]));
+    const borrowerMap = new Map(borrowers.map(borrower => [borrower.id, borrower]));
+    const staffMap = new Map(staff.map(member => [member.id, member]));
+
+    // Combine all data
+    const result = loanApplications.map(app => ({
+        ...app,
+        status: statusMap.get(app.id) || null,
+        loan: loanMap.get(app.loan_id) || null,
+        borrower: borrowerMap.get(app.borrower_id) || null,
+        staff: staffMap.get(app.loan_officer_id) || null
+    }));
+
+    return result;
 }
 
-export function getLoanApplication(applicationId: number) {
-    const types = db.selectFrom('LoanApplication')
+export async function getLoanApplication(applicationId: number) {
+    const types = await db.selectFrom('LoanApplication')
         .where('id', '=', applicationId)
         // .innerJoin('LoanApplicationStatus', 'LoanApplicationStatus.loan_application_id', 'LoanApplication.id')
         .selectAll()
@@ -120,8 +171,8 @@ export function getLoanApplication(applicationId: number) {
     return types;
 }
 
-export function getLoanApplicationStatus(applicationId: number) {
-    const status = db.selectFrom('LoanApplication')
+export async function getLoanApplicationStatus(applicationId: number) {
+    const status = await db.selectFrom('LoanApplication')
         .where('LoanApplication.id', '=', applicationId)
         .leftJoin('LoanApplicationStatus', 'LoanApplication.id', 'LoanApplicationStatus.loan_application_id')
         .selectAll()
@@ -135,8 +186,8 @@ export function getLoanApplicationStatus(applicationId: number) {
     return status;
 }
 
-export function getLoanApplicationDocs() {
-    const docs = db.selectFrom('LoanDocument')
+export async function getLoanApplicationDocs() {
+    const docs = await db.selectFrom('LoanDocument')
         .selectAll()
         .executeTakeFirst();
 

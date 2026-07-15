@@ -1,13 +1,11 @@
 import { db } from '../database/index.ts';
 import type { StaffUpdate, Staff, NewStaff } from '../database/types.ts';
 
-
 // const result = await db
 //     .selectFrom('Staff')
 //     // .innerJoin('Staffs as u', 'u.id', 'p.author_id')
 //     // .select(['p.title', 'u.name as author_name'])
 //     .execute();
-
 
 export async function findStaffById(id: number) {
     return await db.selectFrom('Staff')
