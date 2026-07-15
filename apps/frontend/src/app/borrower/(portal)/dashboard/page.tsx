@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment } from "@/lib/api";
-import { DEMO_SEVISPASS_ID } from "@/server/session";
+
+import { DEMO_SEVISPASS_ID } from "@/lib/utils";
 import { formatTerm, formatShortDate } from "@/lib/format";
 import { BorrowerDashboard } from "@/lib/types";
 

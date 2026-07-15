@@ -1,26 +1,35 @@
-"use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Users, FileText, Clock, DollarSign } from "lucide-react";
+import { Users, FileText, Clock } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { KinaIcon } from "@/components/ui/kina-icon";
+import { getLoansWithOverduePayments, getNewLoans, getPendingLoans, getActiveLoans, getRecentLoans } from "@/lib/api";
 
-export default function StaffDashboard() {
+export default async function StaffDashboard() {
+  const [recentLoans, newLoans, pendingLoans, activeLoans, loansWithOverduePayments] = await Promise.all([
+    getRecentLoans(),
+    getNewLoans(),
+    getPendingLoans(),
+    getActiveLoans(),
+    getLoansWithOverduePayments()
+  ]);
+
   const stats = [
-    { label: "New Applications", value: "24", icon: FileText, change: "+12%", trend: "up" },
-    { label: "Pending Approvals", value: "18", icon: Clock, change: "-3%", trend: "down" },
-    { label: "Active Loans", value: "142", icon: KinaIcon, change: "+8%", trend: "up" },
-    { label: "Overdue Repayments", value: "7", icon: Users, change: "-2%", trend: "down" },
+    { label: "New Applications", value: newLoans.count, icon: FileText, change: newLoans.change, trend: newLoans.trend },
+    { label: "Pending Approvals", value: pendingLoans.count, icon: Clock, change: pendingLoans.change, trend: pendingLoans.trend },
+    { label: "Active Loans", value: activeLoans.count, icon: KinaIcon, change: activeLoans.change, trend: activeLoans.trend },
+    { label: "Overdue Repayments", value: loansWithOverduePayments.count, icon: Users, change: loansWithOverduePayments.change, trend: loansWithOverduePayments.trend },
   ];
 
-  const recentApplications = [
-    { id: "APP-2024-01", borrower: "Sarah M.", amount: "K 3,000", date: "2 hours ago", status: "pending" },
-    { id: "APP-2024-02", borrower: "Michael K.", amount: "K 5,000", date: "4 hours ago", status: "review" },
-    { id: "APP-2024-03", borrower: "David L.", amount: "K 2,500", date: "Yesterday", status: "pending" },
-  ];
+  const recentApplications = recentLoans.map((loan: any) => ({
+    id: loan.id,
+    borrower: loan.borrower,
+    amount: loan.amount,
+    date: loan.date,
+    status: loan.status,
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -70,7 +79,7 @@ export default function StaffDashboard() {
                       <Badge variant={app.status === "pending" ? "outline" : "default"}>
                         {app.status}
                       </Badge>
-                      <Button size="sm" variant="ghost">Review</Button>
+                      <Link href={`/staff/applications/${app.id}/review`} className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>Review</Link>
                     </div>
                   </div>
                 ))}

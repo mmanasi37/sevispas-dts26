@@ -1,6 +1,9 @@
 import { Borrower, BorrowerDashboard, ERepaymentStatus, LoanApplication, NewLoanApplicationInput, LoanRepayment } from "./types";
+import { sleep } from "./utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+
+export const fetcher = (...args: any) => fetch(...args).then(res => res.json())
 
 async function createApi(url: string, options?: RequestInit) {
   const opts = Object.assign({
@@ -108,3 +111,83 @@ export const rejectLoan = async (loanId: number, rejectionReason: string) => {
 
   return res;
 };
+
+export async function getRecentLoans(): Promise<any[]> {
+  try {
+    // const api = await createApi(`/loans/recent`);
+    // return api;
+    await sleep(2000);
+    return [
+      { id: "APP-2024-01", borrower: "Sarah M.", amount: "K 3,000", date: "2 hours ago", status: "pending" },
+      { id: "APP-2024-02", borrower: "Michael K.", amount: "K 5,000", date: "4 hours ago", status: "review" },
+      { id: "APP-2024-03", borrower: "David L.", amount: "K 2,500", date: "Yesterday", status: "pending" },
+    ];
+  } catch (error) {
+    console.error("Failed to fetch new loans:", error);
+    throw error;
+  }
+}
+
+export async function getNewLoans(): Promise<any> {
+  try {
+    // const api = await createApi(`/loans/new`);
+    // return api;
+    await sleep(2000);
+    return {
+      count: 24,
+      change: "+12%",
+      trend: "up",
+    };
+  } catch (error) {
+    console.error("Failed to fetch new loans:", error);
+    throw error;
+  }
+}
+
+export async function getPendingLoans(): Promise<any> {
+  try {
+    // const api = await createApi(`/loans/pending`);
+    // return api;
+    await sleep(2000);
+    return {
+      count: 24,
+      change: "+12%",
+      trend: "up",
+    };
+  } catch (error) {
+    console.error("Failed to fetch pending loans:", error);
+    throw error;
+  }
+}
+
+export async function getActiveLoans(): Promise<any> {
+  try {
+    // const api = await createApi(`/loans/active`);
+    // return api;
+    await sleep(2000);
+    return {
+      count: 24,
+      change: "+12%",
+      trend: "up",
+    };
+  } catch (error) {
+    console.error("Failed to fetch active loans:", error);
+    throw error;
+  }
+}
+
+export async function getLoansWithOverduePayments(): Promise<any> {
+  try {
+    // const api = await createApi(`/loans/overdue`);
+    // return api;
+    await sleep(2000);
+    return {
+      count: 24,
+      change: "+12%",
+      trend: "up",
+    };
+  } catch (error) {
+    console.error("Failed to fetch loans with overdue payments:", error);
+    throw error;
+  }
+}

@@ -1,5 +1,7 @@
 import { AppContext } from "@/contexts/AppContext";
 import { useContext } from "react";
+import useSWR from "swr";
+import { fetcher } from "@/lib/api";
 
 const useUser = () => {
     const context = useContext(AppContext);
@@ -13,3 +15,13 @@ const useUser = () => {
 }
 
 export default useUser;
+
+function useUser2(id: string) {
+    const { data, error, isLoading } = useSWR(`/api/user/${id}`, fetcher);
+
+    return {
+        user: data,
+        isLoading,
+        isError: error
+    }
+}

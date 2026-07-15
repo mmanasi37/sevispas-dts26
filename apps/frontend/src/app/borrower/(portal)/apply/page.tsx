@@ -11,9 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { createLoanApplication } from "@/lib/api";
-import { DEMO_SEVISPASS_ID } from "@/server/session";
 import useLanguage from "@/hooks/use-language";
 import { ELoanTerm, TLoanTerm } from "@/lib/types";
+import { DEMO_SEVISPASS_ID } from "@/lib/utils";
 
 export default function LoanApplication() {
   const router = useRouter();

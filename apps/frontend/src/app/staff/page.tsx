@@ -1,16 +1,14 @@
-// import { getIronSessionData } from "@/server/actions";
+import { getSessionData } from "@/server/session";
+import { redirect } from "next/navigation";
 
-export default async function Page({ children }: { children: React.ReactNode }) {
-    // const session = await getIronSessionData();
+export default async function Page() {
+    const session = await getSessionData();
 
-    // return <div>{session.username} </div>;
+    console.log(session)
 
-    return (
-        <div className="min-h-screen bg-gray-50 p-4">
-            <div className="max-w-7xl mx-auto">
-                hello
-                {children}
-            </div>
-        </div>
-    )
+    if (!session.isLoggedIn) {
+        redirect('/staff/login');
+    }
+
+    return redirect('/staff/dashboard');
 }

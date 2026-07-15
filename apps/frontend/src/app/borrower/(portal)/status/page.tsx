@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle, XCircle, AlertCircle, RefreshCw } from "lucide-react";
 import { getBorrowerDashboard } from "@/lib/api";
-import { DEMO_SEVISPASS_ID } from "@/server/session";
+
+import { DEMO_SEVISPASS_ID } from "@/lib/utils";
 import { formatFullDate, formatTerm } from "@/lib/format";
 import { BorrowerDashboard, ELoanApplicationStatus } from "@/lib/types";
 

@@ -6,9 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Shield, TrendingUp, AlertCircle } from "lucide-react";
 import { getBorrowerDashboard } from "@/lib/api";
-import { DEMO_SEVISPASS_ID, initials } from "@/server/session";
-import { formatMonthYear, formatMonthShort } from "@/lib/format";
 import { BorrowerDashboard } from "@/lib/types";
+import { DEMO_SEVISPASS_ID, initials } from "@/lib/utils";
+import { formatMonthShort, formatMonthYear } from "@/lib/format";
 
 export default function BorrowerProfile() {
   const [data, setData] = useState<BorrowerDashboard | null>(null);

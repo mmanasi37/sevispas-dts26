@@ -43,12 +43,6 @@ export type TLoanApplicationStatus = `${ELoanApplicationStatus}`;
 export type TLoanTerm = `${ELoanTerm}`;
 export type TAccountStatus = `${EBorrowerStatus}`;
 
-export interface UserSession {
-  username: string;
-  password: string;
-  cookieName: string;
-}
-
 export interface User {
   id: string;
   name: string;
