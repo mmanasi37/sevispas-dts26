@@ -3,16 +3,19 @@ import * as authController from '../controllers/auth.controller.ts';
 
 const router: Router = Router();
 
-router.post('/login', authController.login);
-router.post('/register', authController.register);
-router.post('/logout', authController.logout);
-router.post('/refresh', authController.refresh);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
-router.post('/callback', authController.callback);
-router.post('/initiate', authController.initiate);
+// Systems route
+router.post('/auth/login', authController.login);
+router.post('/auth/register', authController.register);
+router.post('/auth/logout', authController.logout);
+router.post('/auth/refresh', authController.refresh);
+router.post('/auth/forgot-password', authController.forgotPassword);
+router.post('/auth/reset-password', authController.resetPassword);
+
+// SevisPass routes
+router.post('/auth/callback', authController.callback);
+router.post('/auth/initiate', authController.initiate);
 // Proxies to the SSO server so the browser never sees CLIENT_SECRET.
-router.get('/sessionstatus', authController.sessionStatus);
-router.get('/user', authController.user);
+router.get('/auth/session-status', authController.sessionStatus);
+router.get('/auth/user', authController.user);
 
 export default router;

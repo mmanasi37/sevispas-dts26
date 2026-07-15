@@ -4,10 +4,12 @@ import * as rolesController from '../controllers/staff.controller.ts';
 import * as permissionsController from '../controllers/staff.controller.ts';
 import borrower from './borrower.ts';
 import staff from './staff.ts';
+import authRoutes from './auth.ts';
 
 const router: Router = Router();
 router.use(borrower);
 router.use(staff);
+router.use(authRoutes);
 
 router.get('/', (req: Request, res: Response) => {
     res.json({

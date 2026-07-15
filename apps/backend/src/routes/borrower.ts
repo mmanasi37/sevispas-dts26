@@ -1,13 +1,12 @@
 import { Router, type NextFunction, type Request, type Response } from 'express';
 import * as borrowerController from '../controllers/borrower.controller.ts';
 import * as borrowerRepo from '../repositories/BorrowerRepository.ts';
-import * as loansController from '../controllers/loan.controller.ts';
 import { handleDatabaseError } from '../libs/utils.ts';
 
 const router: Router = Router();
 
 router.get('/borrowers', borrowerController.getBorrowers);
-router.post('/borrowers', borrowerController.getBorrowers);
+router.post('/borrowers', borrowerController.createBorrower);
 // router.get('/borrowers/:borrowerId', borrowerController.getBorrower);
 router.get('/borrowers/:sevispassId', async (req: Request, res: Response, next: NextFunction) => {
     const sevispassId = String(req.params.sevispassId);

@@ -13,3 +13,9 @@ export async function getBorrower(req: Request, res: Response) {
 
     res.json(borrower);
 }
+
+export async function createBorrower(req: Request, res: Response) {
+    const borrower = await borrowerRepo.createBorrower(req.body);
+
+    res.json(borrower);
+}

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
 import { env } from '../env.ts';
+import { AxiosError } from 'axios';
 
 const STATE_TTL_MS = 10 * 60 * 1000;
 
@@ -138,6 +139,13 @@ export function handleError(error: any) {
     const hasDatabaseError = handleDatabaseError(error);
     if (hasDatabaseError) {
         return hasDatabaseError;
+    }
+
+    if (error instanceof AxiosError) {
+        return {
+            status: error.response?.status,
+            error: error.response?.data
+        }
     }
 
     // Validation errors - Zod
