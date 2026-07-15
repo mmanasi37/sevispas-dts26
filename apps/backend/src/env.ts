@@ -45,9 +45,9 @@ const envSchema = z.object({
     JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
 
     OIDC4VP_SERVER_URL: z.string(),
-    OIDC4VP_CLIENT_ID: z.string(),
-    OIDC4VP_CLIENT_SECRET: z.string(),
-    OIDC4VP_CALLBACK_URL: z.string(),
+    CLIENT_ID: z.string(),
+    CLIENT_SECRET: z.string(),
+    CALLBACK_URL: z.string(),
 
     SESSION_SECRET: z.string(),
 

@@ -105,7 +105,7 @@ export default function BorrowerDashboardPage() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
           {stats.map((stat) => (
-            <Card key={stat.label}>
+            <Card className="shadow-none" key={stat.label}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
                 <stat.icon className="h-4 w-4 text-gray-500" />
@@ -118,7 +118,7 @@ export default function BorrowerDashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
@@ -164,7 +164,7 @@ export default function BorrowerDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
               <CardDescription>Jump to what you need</CardDescription>

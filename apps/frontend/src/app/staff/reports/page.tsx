@@ -42,7 +42,7 @@ export default function Reports() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
           {reports.map((report) => (
-            <Card key={report.metric}>
+            <Card className="shadow-none" key={report.metric}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{report.metric}</CardTitle>
                 <TrendingUp className="h-4 w-4 text-green-600" />
@@ -56,7 +56,7 @@ export default function Reports() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
@@ -92,7 +92,7 @@ export default function Reports() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PieChart className="h-4 w-4" />
@@ -146,7 +146,7 @@ export default function Reports() {
                   <div>
                     <p className="font-semibold text-green-700">Grand Final Impact</p>
                     <p className="text-sm text-green-600">
-                      142 active borrowers • 81% repayment rate • K 245,000 disbursed • 
+                      142 active borrowers • 81% repayment rate • K 245,000 disbursed •
                       Building financial inclusion through digital identity
                     </p>
                   </div>

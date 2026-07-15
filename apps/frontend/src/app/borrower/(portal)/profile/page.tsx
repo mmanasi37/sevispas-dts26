@@ -50,7 +50,7 @@ export default function BorrowerProfile() {
         <h1 className="text-2xl font-bold mb-6">My Profile</h1>
 
         <div className="grid gap-6 md:grid-cols-3">
-          <Card className="md:col-span-1">
+          <Card className="shadow-none md:col-span-1">
             <CardContent className="pt-6">
               <div className="text-center">
                 <Avatar className="h-24 w-24 mx-auto mb-4">
@@ -89,7 +89,7 @@ export default function BorrowerProfile() {
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2">
+          <Card className="shadow-none md:col-span-2">
             <CardHeader>
               <CardTitle>Loan History</CardTitle>
               <CardDescription>

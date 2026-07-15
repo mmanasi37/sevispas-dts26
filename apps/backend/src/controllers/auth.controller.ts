@@ -9,11 +9,24 @@ import { OIDC4VP_SERVER_URL, CLIENT_ID, CLIENT_SECRET, CALLBACK_URL, WEB_ORIGIN 
 function ssoHeaders() {
     return {
         'Content-Type': 'application/json',
-        Origin: WEB_ORIGIN,
+        'Origin': WEB_ORIGIN,
         'X-Client-ID': CLIENT_ID,
         'X-Client-Secret': CLIENT_SECRET,
     };
 }
+
+type UserInfo = {
+    user: {
+        "sub": "did:example:123",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "ageOver18": true,
+        "validUntil": "2025-12-31T23:59:59Z",
+        "credentials": []
+    },
+    sessionId: "abc123def456",
+    fieldMappings: {}
+};
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -198,7 +211,12 @@ export const callback = async (req: Request, res: Response) => {
 
         await processVPToken(vp_token);
 
-        res.json({ success: true, redirect: '/dashboard' });
+        res.json({
+            success: true,
+            sessionId: "",
+            accessToken: "",
+            redirect: '/dashboard'
+        });
     } catch (error) {
         res.status(500).json({ error: 'Authentication failed' });
     }
@@ -212,7 +230,7 @@ export const initiate = async (req: Request, res: Response) => {
         const response = await axios.post(
             `${env.OIDC4VP_SERVER_URL}/api/auth/third-party/authorize`,
             {
-                callback_url: env.OIDC4VP_CALLBACK_URL,
+                callback_url: env.CALLBACK_URL,
                 state: generateState(),
                 nonce: generateNonce()
             },
@@ -220,8 +238,8 @@ export const initiate = async (req: Request, res: Response) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Origin': WEB_ORIGIN,
-                    'X-Client-ID': env.OIDC4VP_CLIENT_ID,
-                    'X-Client-Secret': env.OIDC4VP_CLIENT_SECRET
+                    'X-Client-ID': env.CLIENT_ID,
+                    'X-Client-Secret': env.CLIENT_SECRET
                 }
             }
         );
@@ -263,7 +281,9 @@ export const user = async (req: Request, res: Response) => {
             params: { session },
             headers: ssoHeaders(),
         });
+
         res.json(response.data);
+
     } catch {
         res.status(502).json({ error: 'Failed to fetch verified user' });
     }

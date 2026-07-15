@@ -15,6 +15,13 @@ import {
   LogOut,
 } from "lucide-react";
 import ChacheChat from "@/components/ChacheChat";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from "@/components/ui/button-group"
+import { Button } from "@/components/ui/button";
+import LocaleSelector from "@/components/LocaleSelector";
 
 const navItems = [
   { href: "/borrower/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -64,6 +71,8 @@ export default function BorrowerPortalLayout({
                 );
               })}
             </nav>
+
+            <LocaleSelector />
 
             <div className="flex items-center gap-3 shrink-0">
               <Avatar className="h-8 w-8">

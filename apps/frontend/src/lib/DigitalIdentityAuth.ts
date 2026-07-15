@@ -19,13 +19,11 @@ export type VerifiedUser = {
   [key: string]: unknown;
 };
 
-// Talks only to our own backend — never calls the SSO server directly, since
-// that would require shipping CLIENT_SECRET to the browser.
 export class DigitalIdentityAuth {
   private pollHandle: ReturnType<typeof setInterval> | null = null;
 
   async initiateAuth(): Promise<InitiateAuthResponse> {
-    const response = await fetch(`${API_URL}/auth/initiate`, { method: "POST" });
+    const response = await fetch(`${API_URL}/api/auth/initiate`, { method: "POST" });
     if (!response.ok) {
       throw new Error("Failed to initiate auth");
     }

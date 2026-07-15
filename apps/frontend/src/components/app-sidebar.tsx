@@ -17,16 +17,129 @@ import {
 import { useSidebar } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { ChevronDown, Home, Plus, User2 } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
-import { Fragment } from "react/jsx-runtime";
+import Link from "next/link";
+import useUser from "@/hooks/use-user";
 
-const projects: any[] = [{
-    name: "Project 1",
-    url: "string",
-    icon: "string"
-}]
+interface MenuAction {
+    name: string;
+    url: string;
+    icon: string;
+}
+interface MenuItem {
+    name: string;
+    url: string;
+    icon: string;
+    action: MenuAction;
+}
+
+interface Menu {
+    name: string;
+    url: string;
+    icon: string;
+    items?: MenuItem[];
+}
+
+const menus: Menu[] = [
+    {
+        name: "Home",
+        url: "/staff",
+        icon: "string",
+        items: [
+            {
+                name: "Project 1",
+                url: "string",
+                icon: "string",
+                action: {
+                    name: "Add Project",
+                    url: "string",
+                    icon: "string"
+                }
+            }
+        ]
+    },
+    {
+        name: "Dashboard",
+        url: "/staff/dashboard",
+        icon: "string",
+        items: [
+            {
+                name: "Project 1",
+                url: "string",
+                icon: "string",
+                action: {
+                    name: "Add Project",
+                    url: "string",
+                    icon: "string"
+                }
+            }
+        ]
+    },
+    {
+        name: "Loan Applications",
+        url: "/staff/applications",
+        icon: "string",
+        items: [
+            {
+                name: "All Applications",
+                url: "/staff/applications",
+                icon: "string",
+                action: {
+                    name: "Add Application",
+                    url: "/staff/applications/create",
+                    icon: "string"
+                }
+            }
+        ]
+    },
+    {
+        name: "Borrowers",
+        url: "/staff/borrowers",
+        icon: "string",
+    },
+    {
+        name: "Repayments",
+        url: "/staff/repayments",
+        icon: "string",
+    },
+    {
+        name: "Reports",
+        url: "/staff/reports",
+        icon: "string",
+        items: [
+            {
+                name: "All Reports",
+                url: "/staff/reports",
+                icon: "string",
+                action: {
+                    name: "Add Report",
+                    url: "/staff/reports/create",
+                    icon: "string"
+                }
+            }
+        ]
+    },
+    {
+        name: "Reviews",
+        url: "/staff/review",
+        icon: "string",
+        items: [
+            {
+                name: "All Reviews",
+                url: "/staff/reviews",
+                icon: "string",
+                action: {
+                    name: "Add Review",
+                    url: "/staff/reviews/create",
+                    icon: "string"
+                }
+            }
+        ]
+    }
+];
 
 export function AppSidebar() {
+    const { user } = useUser();
+
     const {
         state,
         open,
@@ -40,23 +153,6 @@ export function AppSidebar() {
     return (
         <Sidebar>
             <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger>
-                                <SidebarMenuButton>
-                                    Select Workspace
-                                    <ChevronDown className="ml-auto" />
-                                </SidebarMenuButton>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-                                <DropdownMenuItem>
-                                    <span>Acme Inc</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </SidebarMenuItem>
-                </SidebarMenu>
                 {/* <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton>
@@ -71,12 +167,12 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                 </SidebarMenu> */}
                 <SidebarMenu>
-                    {projects.map((project) => (
-                        <SidebarMenuItem key={project.name}>
+                    {menus.map((menu) => (
+                        <SidebarMenuItem key={menu.name}>
                             <SidebarMenuButton>
-                                <a href={project.url}>
-                                    <project.icon />
-                                    <span>{project.name}</span>
+                                <a href={menu.url}>
+                                    <menu.icon />
+                                    <span>{menu.name}</span>
                                 </a>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -86,32 +182,31 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
+                    <SidebarGroupLabel>Applications</SidebarGroupLabel>
                     <SidebarGroupAction>
-                        <Plus /> <span className="sr-only">Add Project</span>
+                        <Plus /> <span className="sr-only">Add Application</span>
                     </SidebarGroupAction>
-                    <SidebarGroupContent></SidebarGroupContent>
+                    <SidebarGroupContent>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton>
+                                <Link href="#">
+                                    <Home />
+                                    <span>Home</span>
+                                </Link>
+                            </SidebarMenuButton>
+                            <SidebarMenuAction>
+                                <Plus /> <span className="sr-only">Add Project</span>
+                            </SidebarMenuAction>
+                        </SidebarMenuItem>
+                    </SidebarGroupContent>
                 </SidebarGroup>
-                <Collapsible defaultOpen className="group/collapsible">
-                    <SidebarGroup>
-                        <SidebarGroupLabel>
-                            <CollapsibleTrigger>
-                                Help
-                                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                            </CollapsibleTrigger>
-                        </SidebarGroupLabel>
-                        <CollapsibleContent>
-                            <SidebarGroupContent />
-                        </CollapsibleContent>
-                    </SidebarGroup>
-                </Collapsible>
             </SidebarContent>
-            
+
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton>
-                            <User2 /> Username
+                            <User2 /> {user?.name}
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

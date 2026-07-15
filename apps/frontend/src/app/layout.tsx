@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppProvider } from "@/contexts/AppContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <TooltipProvider>
-          {children}
-        </TooltipProvider>
+        <AppProvider>
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
+        </AppProvider>
       </body>
     </html>
   )

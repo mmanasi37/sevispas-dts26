@@ -63,7 +63,7 @@ export default function RepaymentTracking() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle className="text-lg">This Fortnight's Overview</CardTitle>
               <CardDescription>Repayments due in the current period</CardDescription>
@@ -95,7 +95,7 @@ export default function RepaymentTracking() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-none">
             <CardHeader>
               <CardTitle className="text-lg">Automated Alerts</CardTitle>
               <CardDescription>System-generated follow-up notifications</CardDescription>
@@ -123,7 +123,7 @@ export default function RepaymentTracking() {
           </Card>
         </div>
 
-        <Card className="mt-6">
+        <Card className="shadow-none mt-6">
           <CardHeader>
             <CardTitle>All Fortnightly Repayments</CardTitle>
             <CardDescription>Complete repayment schedule for all active loans</CardDescription>

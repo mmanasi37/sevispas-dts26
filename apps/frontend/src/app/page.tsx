@@ -14,7 +14,7 @@ export default function Home() {
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <Link href="/borrower/login">
-            <Card className="hover:shadow-xl transition-shadow cursor-pointer h-full">
+            <Card className="shadow-none cursor-pointer h-full">
               <CardHeader>
                 <CardTitle className="text-2xl">Borrower Portal</CardTitle>
                 <CardDescription>
@@ -35,7 +35,7 @@ export default function Home() {
           </Link>
 
           <Link href="/staff/dashboard">
-            <Card className="hover:shadow-xl transition-shadow cursor-pointer h-full">
+            <Card className="shadow-none cursor-pointer h-full">
               <CardHeader>
                 <CardTitle className="text-2xl">Staff Portal</CardTitle>
                 <CardDescription>

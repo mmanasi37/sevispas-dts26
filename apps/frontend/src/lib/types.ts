@@ -22,12 +22,26 @@ export enum EBorrowerStatus {
   INACTIVE = 'inactive',
 }
 
-export type TMaritalStatus = 'single' | 'married' | 'divorced' | 'widowed' | null;
-export type TEmploymentStatus = 'employed' | 'unemployed' | 'self-employed' | 'retired' | null;
-export type TRepaymentStatus = ERepaymentStatus;
-export type TLoanApplicationStatus = ELoanApplicationStatus;
-export type TLoanTerm = ELoanTerm;
-export type TAccountStatus = EBorrowerStatus;
+export enum EMaritalStatus {
+  SINGLE = 'single',
+  MARRIED = 'married',
+  DIVORCED = 'divorced',
+  WIDOWED = 'widowed',
+}
+
+export enum EEmploymentStatus {
+  EMPLOYED = 'employed',
+  UNEMPLOYED = 'unemployed',
+  SELF_EMPLOYED = 'self-employed',
+  RETIRED = 'retired',
+}
+
+export type TMaritalStatus = `${EMaritalStatus}` | null;
+export type TEmploymentStatus = `${EEmploymentStatus}` | null;
+export type TRepaymentStatus = `${ERepaymentStatus}`;
+export type TLoanApplicationStatus = `${ELoanApplicationStatus}`;
+export type TLoanTerm = `${ELoanTerm}`;
+export type TAccountStatus = `${EBorrowerStatus}`;
 
 export interface UserSession {
   username: string;
@@ -45,7 +59,7 @@ export interface User {
 
 export interface NewLoanApplicationInput {
   amount: number;
-  term: string;
+  term: TLoanTerm;
   purpose: string;
 }
 
@@ -124,7 +138,7 @@ export interface LoanApplication {
   loan_officer_id: number;
   loan_amount: number;
   application_date: string;
-  term: string;
+  term: TLoanTerm;
   borrower_id: number;
   borrower: Borrower;
   reviewed_by: number | null;

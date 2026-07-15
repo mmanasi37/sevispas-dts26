@@ -52,7 +52,7 @@ export default function RepaymentSchedule() {
           </Badge>
         </div>
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Repayment Schedule</CardTitle>
             <CardDescription>

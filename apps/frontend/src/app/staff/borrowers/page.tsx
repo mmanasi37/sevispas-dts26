@@ -38,7 +38,7 @@ export default function BorrowerManagement() {
           </div>
         </div>
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <div className="flex gap-4 items-center">
               <div className="relative flex-1">

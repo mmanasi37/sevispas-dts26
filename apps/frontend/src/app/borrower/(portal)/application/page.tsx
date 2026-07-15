@@ -2,65 +2,28 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { UserCheck, Globe, Shield, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { UserCheck, Globe, Shield, AlertCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { createLoanApplication } from "@/lib/api";
 import { DEMO_SEVISPASS_ID } from "@/server/session";
+import useLanguage from "@/hooks/use-language";
+import { ELoanTerm, TLoanTerm } from "@/lib/types";
 
 export default function LoanApplication() {
   const router = useRouter();
-  const [language, setLanguage] = useState<"en" | "tp">("en");
+  const { t } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [amount, setAmount] = useState("");
-  const [term, setTerm] = useState("");
+  const [term, setTerm] = useState<TLoanTerm>(ELoanTerm.SHORT);
   const [purpose, setPurpose] = useState("");
-
-  const content = {
-    en: {
-      title: "Loan Application",
-      subtitle: "Apply for a new loan",
-      verified: "Identity Verified via SevisPass",
-      amount: "Loan Amount (Kina)",
-      term: "Loan Term",
-      purpose: "Loan Purpose",
-      shortTerm: "Short Term (up to 5 fortnights)",
-      longTerm: "Long Term (up to 10 fortnights)",
-      business: "Business",
-      education: "Education",
-      housing: "Housing",
-      medical: "Medical",
-      other: "Other",
-      submit: "Submit Application",
-      noDocs: "No additional ID documents needed - SevisPass verified your identity",
-    },
-    tp: {
-      title: "Aplikasyon Long Dinau",
-      subtitle: "Aplikim long wanpela nupela dinau",
-      verified: "Identiti i verifai long SevisPass",
-      amount: "Amoun long Dinau (Kina)",
-      term: "Taim bilong Dinau",
-      purpose: "As bilong Dinau",
-      shortTerm: "Taim sot (inap long 5 wik)",
-      longTerm: "Taim longpela (inap long 10 wik)",
-      business: "Binis",
-      education: "Skul",
-      housing: "Haus",
-      medical: "Marasin",
-      other: "Narapela",
-      submit: "Salim Aplikesen",
-      noDocs: "I no gat narapela dokument i nidim - SevisPass i verifai pinis identiti bilong yu",
-    },
-  };
-
-  const t = content[language];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,28 +45,13 @@ export default function LoanApplication() {
   return (
     <div className="p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="flex justify-end items-center mb-6">
+        {/* <div className="flex justify-end items-center mb-6">
           <div className="flex gap-2">
-            <Button
-              variant={language === "en" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setLanguage("en")}
-            >
-              <Globe className="h-4 w-4 mr-1" />
-              English
-            </Button>
-            <Button
-              variant={language === "tp" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setLanguage("tp")}
-            >
-              <Globe className="h-4 w-4 mr-1" />
-              Tok Pisin
-            </Button>
+            <LocaleSelector />
           </div>
-        </div>
+        </div> */}
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
@@ -136,13 +84,13 @@ export default function LoanApplication() {
 
               <div className="space-y-2">
                 <Label htmlFor="term">{t.term}</Label>
-                <Select value={term} onValueChange={setTerm} required>
+                <Select value={term} onValueChange={(value) => setTerm(value as TLoanTerm)} required>
                   <SelectTrigger id="term">
                     <SelectValue placeholder="Select term" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="short">{t.shortTerm}</SelectItem>
-                    <SelectItem value="long">{t.longTerm}</SelectItem>
+                    <SelectItem value={ELoanTerm.SHORT}>{t.shortTerm}</SelectItem>
+                    <SelectItem value={ELoanTerm.LONG}>{t.longTerm}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

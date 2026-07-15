@@ -59,7 +59,7 @@ export default function BorrowerLogin() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <Card className="shadow-none w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Shield className="h-12 w-12 text-blue-600" />

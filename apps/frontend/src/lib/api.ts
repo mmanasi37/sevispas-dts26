@@ -7,7 +7,7 @@ async function createApi(url: string, options?: RequestInit) {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+      // "Authorization": `Bearer ${sessionStorage.getItem("token")}`
     },
   }, options);
   const res = await fetch(`${API_URL}/api${url}`, opts);

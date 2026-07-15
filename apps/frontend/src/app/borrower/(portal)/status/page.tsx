@@ -72,7 +72,7 @@ export default function LoanStatus() {
   if (!latest) {
     return (
       <div className="p-4 max-w-2xl mx-auto">
-        <Card>
+        <Card className="shadow-none">
           <CardContent className="pt-6 text-center text-sm text-gray-500">
             You haven&apos;t applied for a loan yet.
             <Button className="mt-4 w-full" onClick={() => (window.location.href = "/borrower/application")}>
@@ -95,7 +95,7 @@ export default function LoanStatus() {
           </Button>
         </div>
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Loan Application Status</CardTitle>
             <CardDescription>Real-time tracking of your application</CardDescription>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
+import useLanguage from "@/hooks/use-language";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -50,7 +51,7 @@ export default function ChacheChat() {
       const decoder = new TextDecoder();
 
       let assistantText = "";
-      for (;;) {
+      for (; ;) {
         const { done, value } = await reader.read();
         if (done) break;
         assistantText += decoder.decode(value, { stream: true });
@@ -87,7 +88,7 @@ export default function ChacheChat() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] h-[32rem] max-h-[calc(100vh-6rem)] shadow-2xl z-50 flex flex-col p-0 gap-0">
+    <Card className="shadow-none fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] h-[32rem] max-h-[calc(100vh-6rem)] shadow-2xl z-50 flex flex-col p-0 gap-0">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b">
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
@@ -109,9 +110,8 @@ export default function ChacheChat() {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
-                m.role === "user" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
-              }`}
+              className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${m.role === "user" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
+                }`}
             >
               {m.content || (isStreaming && i === messages.length - 1 ? "…" : "")}
             </div>
