@@ -3,7 +3,7 @@ import { sleep } from "./utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-export const fetcher = (...args: any) => fetch(...args).then(res => res.json())
+export const fetcher = (url: string, options?: RequestInit) => fetch(url, options).then(res => res.json())
 
 async function createApi(url: string, options?: RequestInit) {
   const opts = Object.assign({

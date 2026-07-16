@@ -97,7 +97,7 @@ export default function LoanApplication() {
 
               <div className="space-y-2">
                 <Label htmlFor="purpose">{t.purpose}</Label>
-                <Select value={purpose} onValueChange={setPurpose} required>
+                <Select value={purpose} onValueChange={(value) => setPurpose(value as string)} required>
                   <SelectTrigger id="purpose">
                     <SelectValue placeholder="Select purpose" />
                   </SelectTrigger>

@@ -26,7 +26,7 @@ import { getApplications } from "@/lib/api";
 
 export default function ApplicationsPage({ params }: { params: { loanId: string } }) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("All");
+    const [statusFilter, setStatusFilter] = useState<string | null>("All");
     const [applications, setApplications] = useState<LoanApplication[]>([]);
 
     const filteredApplications = applications;
@@ -89,7 +89,7 @@ export default function ApplicationsPage({ params }: { params: { loanId: string 
                         </div>
                         <div className="flex w-full sm:w-auto items-center gap-2">
                             <Filter className="h-4 w-4 text-gray-400" />
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as string)}>
                                 <SelectTrigger className="w-[160px] bg-gray-50/50">
                                     <SelectValue placeholder="Filter by status" />
                                 </SelectTrigger>
@@ -125,7 +125,7 @@ export default function ApplicationsPage({ params }: { params: { loanId: string 
                                             <TableCell>{app.loan_amount}</TableCell>
                                             <TableCell className="text-gray-500">{app.term}</TableCell>
                                             <TableCell className="text-gray-500">{app.application_date.toString()}</TableCell>
-                                            <TableCell>{getStatusBadge(app.status.id)}</TableCell>
+                                            <TableCell>{getStatusBadge(app.status)}</TableCell>
                                             <TableCell className="text-right pr-6">
                                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="View Application">
                                                     <Eye className="h-4 w-4 text-gray-500" />

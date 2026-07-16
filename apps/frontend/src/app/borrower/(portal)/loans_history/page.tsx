@@ -90,7 +90,7 @@ export default function ApplicationsPage() {
                         </div>
                         <div className="flex w-full sm:w-auto items-center gap-2">
                             <Filter className="h-4 w-4 text-gray-400" />
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as string)}>
                                 <SelectTrigger className="w-[160px] bg-gray-50/50">
                                     <SelectValue placeholder="Filter by status" />
                                 </SelectTrigger>

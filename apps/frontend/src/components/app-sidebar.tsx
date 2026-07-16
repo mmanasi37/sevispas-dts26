@@ -16,26 +16,26 @@ import {
 } from "@/components/ui/sidebar"
 import { useSidebar } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { ChevronDown, Home, Plus, User2 } from "lucide-react";
+import { ChartBarIcon, ChevronDownIcon, CoinsIcon, HomeIcon, LayoutDashboardIcon, NotebookTextIcon, PlusIcon, User2Icon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import useUser from "@/hooks/use-user";
 
 interface MenuAction {
     name: string;
     url: string;
-    icon: React.ReactNode;
+    icon: any;
 }
 interface MenuItem {
     name: string;
     url: string;
-    icon: React.ReactNode;
+    icon: any;
     action: MenuAction;
 }
 
 interface Menu {
     name: string;
     url: string;
-    icon: React.ReactNode;
+    icon: any;
     items?: MenuItem[];
 }
 
@@ -43,7 +43,7 @@ const menus: Menu[] = [
     {
         name: "Home",
         url: "/staff",
-        icon: "string",
+        icon: HomeIcon,
         items: [
             {
                 name: "Project 1",
@@ -60,7 +60,7 @@ const menus: Menu[] = [
     {
         name: "Dashboard",
         url: "/staff/dashboard",
-        icon: "string",
+        icon: LayoutDashboardIcon,
         items: [
             {
                 name: "Project 1",
@@ -77,7 +77,7 @@ const menus: Menu[] = [
     {
         name: "Loan Applications",
         url: "/staff/applications",
-        icon: "string",
+        icon: NotebookTextIcon,
         items: [
             {
                 name: "All Applications",
@@ -114,17 +114,17 @@ const menus: Menu[] = [
     {
         name: "Borrowers",
         url: "/staff/borrowers",
-        icon: "string",
+        icon: UsersIcon,
     },
     {
         name: "Repayments",
         url: "/staff/repayments",
-        icon: "string",
+        icon: CoinsIcon,
     },
     {
         name: "Reports",
         url: "/staff/reports",
-        icon: "string",
+        icon: ChartBarIcon,
         items: [
             {
                 name: "All Reports",
@@ -209,7 +209,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton>
-                            <User2 /> {user?.name}
+                            <User2Icon /> {user?.name}
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
