@@ -8,13 +8,11 @@ import { AppProvider } from "@/contexts/AppContext";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
-const merriweatherHeading = Merriweather({subsets:['latin'],variable:'--font-heading'});
+const merriweatherHeading = Merriweather({ subsets: ['latin'], variable: '--font-heading' });
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
-const notoSans = Noto_Sans({subsets:['latin'],variable:'--font-sans'});
-
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: "MIJOE - Microfinance Platform",
@@ -27,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn( notoSans.variable, "font-mono", jetbrainsMono.variable, merriweatherHeading.variable)}>
+    <html lang="en" className={cn(jetbrainsMono.variable, merriweatherHeading.variable, "font-sans", inter.variable)}>
       <body className={inter.className}>
         <AppProvider>
           <TooltipProvider>
