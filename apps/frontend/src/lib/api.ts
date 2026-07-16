@@ -13,7 +13,7 @@ async function createApi(url: string, options?: RequestInit) {
       // "Authorization": `Bearer ${sessionStorage.getItem("token")}`
     },
   }, options);
-  const res = await fetch(`${API_URL}${url}`, opts);
+  const res = await fetch(`${API_URL}/api${url}`, opts);
 
   if (!res.ok) {
     throw new Error(`Failed to fetch data (${res.status})`);
