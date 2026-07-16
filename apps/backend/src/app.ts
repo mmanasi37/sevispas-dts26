@@ -30,7 +30,7 @@ app.use(morgan('combined'));
 app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true }));
 app.use(express.json());
 
-app.use('/api', routes);
+app.use(routes);
 
 const server = app.listen(port, host, () => {
   console.log(`Server is running at http://${host}:${port}`);

@@ -23,7 +23,7 @@ export class DigitalIdentityAuth {
   private pollHandle: ReturnType<typeof setInterval> | null = null;
 
   async initiateAuth(): Promise<InitiateAuthResponse> {
-    const response = await fetch(`${API_URL}/api/auth/initiate`, { method: "POST" });
+    const response = await fetch(`${API_URL}/auth/initiate`, { method: "POST" });
     if (!response.ok) {
       throw new Error("Failed to initiate auth");
     }
@@ -39,7 +39,7 @@ export class DigitalIdentityAuth {
 
     this.pollHandle = setInterval(async () => {
       try {
-        const statusRes = await fetch(`${API_URL}/api/auth/session-status?session=${sessionId}`);
+        const statusRes = await fetch(`${API_URL}/auth/session-status?session=${sessionId}`);
         if (!statusRes.ok) {
           throw new Error(`Session status check failed (${statusRes.status})`);
         }
@@ -49,7 +49,7 @@ export class DigitalIdentityAuth {
 
         this.stopPolling();
 
-        const userRes = await fetch(`${API_URL}/api/auth/user?session=${sessionId}`);
+        const userRes = await fetch(`${API_URL}/auth/user?session=${sessionId}`);
         if (!userRes.ok) {
           throw new Error(`Fetching verified user failed (${userRes.status})`);
         }
