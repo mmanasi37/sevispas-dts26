@@ -4,43 +4,49 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Bell, AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { useEffect, useState } from "react";
-import { getLoanRepayments } from "@/lib/api";
-import { LoanRepayment } from "@/lib/types";
+import { getApplications } from "@/lib/api";
+import { formatFullDate } from "@/lib/format";
+
+interface RepaymentRow {
+  id: number;
+  first_name: string;
+  last_name: string;
+  amount: number;
+  due_date: string;
+  status: string;
+}
 
 export default function RepaymentTracking() {
-  // const repayments = [
-  //   { borrower: "Sarah M.", amount: 500, due: "Feb 27, 2024", status: "upcoming" },
-  //   { borrower: "Michael K.", amount: 750, due: "Feb 20, 2024", status: "overdue" },
-  //   { borrower: "David L.", amount: 300, due: "Feb 15, 2024", status: "paid" },
-  //   { borrower: "Mary P.", amount: 450, due: "Feb 10, 2024", status: "overdue" },
-  //   { borrower: "James R.", amount: 600, due: "Feb 28, 2024", status: "upcoming" },
-  // ];
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [repayments, setRepayments] = useState<LoanRepayment[]>([]);
+  const [repayments, setRepayments] = useState<RepaymentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchLoanRepayments();
+    getApplications()
+      .then((applications) => {
+        const allRepayments = applications.flatMap((app) =>
+          app.repayments.map((r) => ({
+            id: r.id,
+            first_name: app.borrower.first_name,
+            last_name: app.borrower.last_name,
+            amount: Number(r.amount),
+            due_date: r.due_date,
+            status: r.status,
+          }))
+        );
+        setRepayments(allRepayments);
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to fetch repayments"))
+      .finally(() => setLoading(false));
   }, []);
 
-  const fetchLoanRepayments = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getLoanRepayments(1);
-      setRepayments(data);
-    } catch (error: any) {
-      setError(error.message || "Failed to fetch applications");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const paidTotal = repayments.filter((r) => r.status === "paid").reduce((sum, r) => sum + r.amount, 0);
+  const overdue = repayments.filter((r) => r.status === "overdue");
+  const overdueTotal = overdue.reduce((sum, r) => sum + r.amount, 0);
+  const pendingTotal = repayments.filter((r) => r.status === "pending").reduce((sum, r) => sum + r.amount, 0);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -48,85 +54,59 @@ export default function RepaymentTracking() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold">Repayment Tracking</h1>
-            <p className="text-gray-500">Fortnightly view of all active loans</p>
+            <p className="text-gray-500">Repayment schedule across all loans</p>
           </div>
-          <div className="flex gap-2">
+          {overdue.length > 0 && (
             <Badge variant="destructive" className="flex items-center gap-1">
               <AlertCircle className="h-3 w-3" />
-              2 Overdue
+              {overdue.length} Overdue
             </Badge>
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Bell className="h-3 w-3" />
-              Automated Alerts Active
-            </Badge>
+          )}
+        </div>
+
+        {error && (
+          <div className="flex items-center gap-2 p-3 mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm">
+            <AlertCircle className="h-4 w-4" />
+            {error}
           </div>
-        </div>
+        )}
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle className="text-lg">This Fortnight's Overview</CardTitle>
-              <CardDescription>Repayments due in the current period</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Paid</p>
-                    <p className="text-2xl font-bold text-green-600">K 1,250</p>
-                  </div>
-                  <CheckCircle className="h-8 w-8 text-green-600" />
+        <Card className="shadow-none">
+          <CardHeader>
+            <CardTitle className="text-lg">Repayment Summary</CardTitle>
+            <CardDescription>Across all borrowers, all statuses</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Paid</p>
+                  <p className="text-2xl font-bold text-green-600">K {paidTotal.toLocaleString()}</p>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Overdue</p>
-                    <p className="text-2xl font-bold text-red-600">K 1,200</p>
-                  </div>
-                  <AlertCircle className="h-8 w-8 text-red-600" />
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Upcoming</p>
-                    <p className="text-2xl font-bold text-blue-600">K 2,100</p>
-                  </div>
-                  <KinaIcon className="h-8 w-8 text-blue-600" />
-                </div>
+                <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle className="text-lg">Automated Alerts</CardTitle>
-              <CardDescription>System-generated follow-up notifications</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="p-3 border-l-4 border-red-500 bg-red-50 rounded">
-                  <p className="font-medium text-sm">Mary P. - Overdue by 5 days</p>
-                  <p className="text-xs text-gray-500">K 450 due • Sent 3 reminders</p>
+              <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Overdue</p>
+                  <p className="text-2xl font-bold text-red-600">K {overdueTotal.toLocaleString()}</p>
                 </div>
-                <div className="p-3 border-l-4 border-yellow-500 bg-yellow-50 rounded">
-                  <p className="font-medium text-sm">Michael K. - Due today</p>
-                  <p className="text-xs text-gray-500">K 750 due • Reminder sent</p>
-                </div>
-                <div className="p-3 border-l-4 border-blue-500 bg-blue-50 rounded">
-                  <p className="font-medium text-sm">James R. - Due in 2 days</p>
-                  <p className="text-xs text-gray-500">K 600 due • Pre-reminder sent</p>
-                </div>
-                <Button variant="outline" size="sm" className="w-full mt-2">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Send Bulk Follow-ups
-                </Button>
+                <AlertCircle className="h-8 w-8 text-red-600" />
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Pending</p>
+                  <p className="text-2xl font-bold text-blue-600">K {pendingTotal.toLocaleString()}</p>
+                </div>
+                <KinaIcon className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="shadow-none mt-6">
           <CardHeader>
-            <CardTitle>All Fortnightly Repayments</CardTitle>
-            <CardDescription>Complete repayment schedule for all active loans</CardDescription>
+            <CardTitle>All Repayments</CardTitle>
+            <CardDescription>Complete repayment schedule across all loans</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -140,25 +120,37 @@ export default function RepaymentTracking() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {repayments.map((repayment, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{repayment.first_name} {repayment.last_name}</TableCell>
-                    <TableCell>K {repayment.amount}</TableCell>
-                    <TableCell>{repayment.due_date}</TableCell>
-                    <TableCell>
-                      <Badge variant={
-                        repayment.status === "paid" ? "outline" :
-                          repayment.status === "overdue" ? "destructive" :
-                            "default"
-                      }>
-                        {repayment.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button size='sm'>Contact</Button>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center text-gray-500">Loading...</TableCell>
+                  </TableRow>
+                ) : repayments.length ? (
+                  repayments.map((repayment) => (
+                    <TableRow key={repayment.id}>
+                      <TableCell className="font-medium">{repayment.first_name} {repayment.last_name}</TableCell>
+                      <TableCell>K {repayment.amount.toLocaleString()}</TableCell>
+                      <TableCell>{formatFullDate(repayment.due_date)}</TableCell>
+                      <TableCell>
+                        <Badge variant={
+                          repayment.status === "paid" ? "outline" :
+                            repayment.status === "overdue" ? "destructive" :
+                              "default"
+                        }>
+                          {repayment.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button size='sm'>Contact</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center text-gray-500">
+                      No repayments yet — schedules are generated once a loan application is approved.
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </CardContent>

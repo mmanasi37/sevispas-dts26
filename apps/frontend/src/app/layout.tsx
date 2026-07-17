@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Sans, JetBrains_Mono, Merriweather } from "next/font/google";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "@/contexts/AppContext";

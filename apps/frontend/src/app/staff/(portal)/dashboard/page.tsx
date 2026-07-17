@@ -1,47 +1,51 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Users, FileText, Clock } from "lucide-react";
+import { FileText, Clock, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { KinaIcon } from "@/components/ui/kina-icon";
-import { getLoansWithOverduePayments, getNewLoans, getPendingLoans, getActiveLoans, getRecentLoans } from "@/lib/api";
+import { getApplications } from "@/lib/api";
+import { formatShortDate } from "@/lib/format";
+
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 export default async function StaffDashboard() {
-  const [recentLoans, newLoans, pendingLoans, activeLoans, loansWithOverduePayments] = await Promise.all([
-    getRecentLoans(),
-    getNewLoans(),
-    getPendingLoans(),
-    getActiveLoans(),
-    getLoansWithOverduePayments()
-  ]);
+  const applications = await getApplications();
+
+  const newThisWeek = applications.filter(
+    (app) => Date.now() - new Date(app.submitted_at).getTime() < SEVEN_DAYS_MS
+  ).length;
+  const pendingApprovals = applications.filter((app) => !app.decided_at).length;
+  const activeLoans = applications.filter((app) => app.status === "approved").length;
+
+  const overdueRepayments = applications.flatMap((app) =>
+    app.repayments
+      .filter((r) => r.status === "overdue")
+      .map((r) => ({
+        borrower: `${app.borrower.first_name} ${app.borrower.last_name}`,
+        amount: Number(r.amount),
+        due_date: r.due_date,
+      }))
+  );
 
   const stats = [
-    { label: "New Applications", value: newLoans.count, icon: FileText, change: newLoans.change, trend: newLoans.trend },
-    { label: "Pending Approvals", value: pendingLoans.count, icon: Clock, change: pendingLoans.change, trend: pendingLoans.trend },
-    { label: "Active Loans", value: activeLoans.count, icon: KinaIcon, change: activeLoans.change, trend: activeLoans.trend },
-    { label: "Overdue Repayments", value: loansWithOverduePayments.count, icon: Users, change: loansWithOverduePayments.change, trend: loansWithOverduePayments.trend },
+    { label: "New Applications (7d)", value: newThisWeek, icon: FileText },
+    { label: "Pending Approvals", value: pendingApprovals, icon: Clock },
+    { label: "Active Loans", value: activeLoans, icon: KinaIcon },
+    { label: "Overdue Repayments", value: overdueRepayments.length, icon: AlertCircle },
   ];
 
-  const recentApplications = recentLoans.map((loan: any) => ({
-    id: loan.id,
-    borrower: loan.borrower,
-    amount: loan.amount,
-    date: loan.date,
-    status: loan.status,
-  }));
+  const recentApplications = [...applications]
+    .sort((a, b) => new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime())
+    .slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-gray-500">Loan officer overview</p>
-          </div>
-          <Badge variant="outline" className="text-sm">
-            Last updated: Today, 10:30 AM
-          </Badge>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-gray-500">Loan officer overview</p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
@@ -53,9 +57,6 @@ export default async function StaffDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p className={`text-xs ${stat.trend === "up" ? "text-green-600" : "text-red-600"}`}>
-                  {stat.change} from last week
-                </p>
               </CardContent>
             </Card>
           ))}
@@ -65,24 +66,26 @@ export default async function StaffDashboard() {
           <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Recent Applications</CardTitle>
-              <CardDescription>New applications awaiting review</CardDescription>
+              <CardDescription>Most recently submitted applications</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentApplications.map((app) => (
-                  <div key={app.id} className="flex items-center justify-between border-b pb-3">
-                    <div>
-                      <p className="font-medium">{app.borrower}</p>
-                      <p className="text-sm text-gray-500">{app.amount} • {app.date}</p>
+                {recentApplications.length ? (
+                  recentApplications.map((app) => (
+                    <div key={app.id} className="flex items-center justify-between border-b pb-3 last:border-b-0 last:pb-0">
+                      <div>
+                        <p className="font-medium">{app.borrower.first_name} {app.borrower.last_name}</p>
+                        <p className="text-sm text-gray-500">K {Number(app.loan_amount).toLocaleString()} • {formatShortDate(app.submitted_at)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{app.status ?? "pending"}</Badge>
+                        <Link href={`/staff/applications/${app.id}/review`} className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>Review</Link>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={app.status === "pending" ? "outline" : "default"}>
-                        {app.status}
-                      </Badge>
-                      <Link href={`/staff/applications/${app.id}/review`} className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>Review</Link>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No applications yet.</p>
+                )}
               </div>
               <Link href={"/staff/applications"} className={cn(buttonVariants({ variant: 'link' }), "w-full mt-4")}>View All Applications</Link>
             </CardContent>
@@ -95,27 +98,19 @@ export default async function StaffDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div>
-                    <p className="font-medium">Mary P.</p>
-                    <p className="text-sm text-gray-500">Due: 3 days ago • K 500</p>
-                  </div>
-                  <Button size="sm" variant="destructive">Follow Up</Button>
-                </div>
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div>
-                    <p className="font-medium">James R.</p>
-                    <p className="text-sm text-gray-500">Due: 5 days ago • K 750</p>
-                  </div>
-                  <Button size="sm" variant="destructive">Follow Up</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Anne K.</p>
-                    <p className="text-sm text-gray-500">Due: 1 week ago • K 1,000</p>
-                  </div>
-                  <Button size="sm" variant="destructive">Follow Up</Button>
-                </div>
+                {overdueRepayments.length ? (
+                  overdueRepayments.map((r, i) => (
+                    <div key={i} className="flex items-center justify-between border-b pb-3 last:border-b-0 last:pb-0">
+                      <div>
+                        <p className="font-medium">{r.borrower}</p>
+                        <p className="text-sm text-gray-500">Due: {formatShortDate(r.due_date)} • K {r.amount.toLocaleString()}</p>
+                      </div>
+                      <Button size="sm" variant="destructive">Follow Up</Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No overdue repayments.</p>
+                )}
               </div>
             </CardContent>
           </Card>

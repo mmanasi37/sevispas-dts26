@@ -120,17 +120,14 @@ export interface LoanStatusTypeTable {
     status_name: string;
     status_code: string;
     status_description: string | null;
-    created_at: Timestamp;
-    updated_at: Timestamp;
 }
 
 export interface LoanApplicationStatusTable {
     id: Generated<number>;
     loan_application_id: number;
     loan_status_type_id: number;
-    is_active: boolean;
-    created_at: Timestamp;
-    updated_at: Timestamp;
+    created_at: Timestamp | null;
+    updated_at: Timestamp | null;
 }
 
 export interface LoanApplicationApprovalTable {

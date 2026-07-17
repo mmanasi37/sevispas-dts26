@@ -119,12 +119,6 @@ export interface Borrower {
   updated_at: string | null;
   deleted_at: string | null;
   deleted_by: number | null;
-  totalBorrowed: number;
-  repaymentRate: number;
-  loans: LoanApplication[];
-  amount: number;
-  // status: string;
-  risk: string;
 }
 
 export interface Loan {

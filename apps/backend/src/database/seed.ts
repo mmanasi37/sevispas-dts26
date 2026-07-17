@@ -34,6 +34,13 @@ async function main() {
         created_by: staff.id,
     }).returningAll().executeTakeFirstOrThrow();
 
+    // Referenced by name in updateLoanApplicationDecision (approve/reject).
+    await db.insertInto('LoanStatusType').values([
+        { status_name: 'pending', status_code: 'PENDING', status_description: 'Application submitted, awaiting review' },
+        { status_name: 'approved', status_code: 'APPROVED', status_description: 'Application approved, funds to be disbursed' },
+        { status_name: 'rejected', status_code: 'REJECTED', status_description: 'Application rejected' },
+    ]).execute();
+
     const borrower = await db.insertInto('Borrower').values({
         sevispass_id: 'SP-2024-001',
         first_name: 'John',

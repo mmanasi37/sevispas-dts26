@@ -271,9 +271,9 @@ export async function cancelLoanApplication(req: Request, res: Response, next: N
 export async function approveLoanApplication(req: Request, res: Response, next: NextFunction) {
     const loanId = parseInt(String(req.params.loanId));
     try {
-        const types = await loanRepo.getLoanApplication(loanId);
+        const application = await loanRepo.updateLoanApplicationDecision(loanId, 'approved', req.body?.note);
 
-        res.json(types);
+        res.json(application);
     } catch (error: any) {
         const dbError = handleDatabaseError(error);
 
@@ -290,9 +290,9 @@ export async function approveLoanApplication(req: Request, res: Response, next: 
 export async function rejectLoanApplication(req: Request, res: Response, next: NextFunction) {
     const loanId = parseInt(String(req.params.loanId));
     try {
-        const types = await loanRepo.getLoanApplication(loanId);
+        const application = await loanRepo.updateLoanApplicationDecision(loanId, 'rejected', req.body?.rejectionReason);
 
-        res.json(types);
+        res.json(application);
     } catch (error: any) {
         const dbError = handleDatabaseError(error);
 

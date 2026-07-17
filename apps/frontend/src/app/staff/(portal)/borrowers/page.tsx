@@ -8,20 +8,19 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, Filter, User, AlertTriangle } from "lucide-react";
 import { Borrower } from "@/lib/types";
-import { getBorrowers } from "@/lib/api";
+import { getBorrowers, getApplications } from "@/lib/api";
+import { creditScoreRisk } from "@/lib/utils";
 import Link from "next/link";
+
+interface BorrowerRow extends Borrower {
+  loanCount: number;
+  totalBorrowed: number;
+  risk: "low" | "medium" | "high";
+}
 
 export default function BorrowerManagement() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [borrowers, setBorrowers] = useState<Borrower[]>([]);
-
-  // const borrowers = [
-  //   { id: 1, name: "Sarah M.", email: "sarah@email.com", loans: 3, status: "active", risk: "low", amount: 5000 },
-  //   { id: 2, name: "Michael K.", email: "michael@email.com", loans: 2, status: "active", risk: "medium", amount: 4500 },
-  //   { id: 3, name: "David L.", email: "david@email.com", loans: 1, status: "completed", risk: "low", amount: 2000 },
-  //   { id: 4, name: "Mary P.", email: "mary@email.com", loans: 4, status: "overdue", risk: "high", amount: 3000 },
-  //   { id: 5, name: "James R.", email: "james@email.com", loans: 2, status: "active", risk: "medium", amount: 6000 },
-  // ];
+  const [borrowers, setBorrowers] = useState<BorrowerRow[]>([]);
 
   const filteredBorrowers = borrowers.filter(b =>
     b.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -30,11 +29,19 @@ export default function BorrowerManagement() {
   );
 
   useEffect(() => {
-    const fetchBorrowers = async () => {
-      const response = await getBorrowers();
-      setBorrowers(response);
-    };
-    fetchBorrowers();
+    Promise.all([getBorrowers(), getApplications()]).then(([allBorrowers, applications]) => {
+      setBorrowers(allBorrowers.map((borrower) => {
+        const theirApplications = applications.filter((app) => app.borrower_id === borrower.id);
+        return {
+          ...borrower,
+          loanCount: theirApplications.length,
+          totalBorrowed: theirApplications
+            .filter((app) => app.status === "approved")
+            .reduce((sum, app) => sum + Number(app.loan_amount), 0),
+          risk: creditScoreRisk(borrower.credit_score),
+        };
+      }));
+    });
   }, []);
 
   return (
@@ -93,21 +100,12 @@ export default function BorrowerManagement() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{borrower?.loans?.length}</TableCell>
-                    <TableCell>K {borrower?.amount}</TableCell>
-                    {/* <TableCell>
-                      <Badge variant={
-                        borrower?.status === "active" ? "default" :
-                          borrower?.status === "completed" ? "outline" :
-                            "destructive"
-                      }>
-                        {borrower?.status}
-                      </Badge>
-                    </TableCell> */}
+                    <TableCell>{borrower.loanCount}</TableCell>
+                    <TableCell>K {borrower.totalBorrowed.toLocaleString()}</TableCell>
                     <TableCell>
-                      <Badge variant={borrower?.risk === "low" ? "outline" : borrower?.risk === "medium" ? "default" : "destructive"}>
-                        {borrower?.risk === "high" && <AlertTriangle className="h-3 w-3 mr-1" />}
-                        {borrower?.risk}
+                      <Badge variant={borrower.risk === "low" ? "outline" : borrower.risk === "medium" ? "default" : "destructive"}>
+                        {borrower.risk === "high" && <AlertTriangle className="h-3 w-3 mr-1" />}
+                        {borrower.risk}
                       </Badge>
                     </TableCell>
                     <TableCell>

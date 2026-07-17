@@ -153,6 +153,65 @@ export async function getLoanApplication(applicationId: number) {
     return types;
 }
 
+const FORTNIGHTS_BY_TERM: Record<string, number> = { short: 5, long: 10 };
+const FORTNIGHT_MS = 14 * 24 * 60 * 60 * 1000;
+
+// Records a real approve/reject decision (LoanApplicationStatus row +
+// LoanApplication.decided_at/reviewed_by/rejection_reason) and, on approval,
+// generates a fortnightly repayment schedule. The wizard only persists the
+// coarse `term` category (short/long), not the exact fortnight count the
+// borrower picked on the calculator, so installment count is derived from
+// term here (short -> 5, long -> 10), matching the "up to N fortnights" copy.
+export async function updateLoanApplicationDecision(
+    applicationId: number,
+    decision: 'approved' | 'rejected',
+    notes?: string,
+) {
+    const application = await getLoanApplication(applicationId);
+    if (!application) {
+        throw new Error('Loan application not found');
+    }
+
+    const statusType = await db.selectFrom('LoanStatusType')
+        .where('status_name', '=', decision)
+        .select('id')
+        .executeTakeFirstOrThrow();
+
+    await db.insertInto('LoanApplicationStatus').values({
+        loan_application_id: applicationId,
+        loan_status_type_id: statusType.id,
+    }).execute();
+
+    await db.updateTable('LoanApplication')
+        .set({
+            decided_at: new Date().toISOString(),
+            reviewed_by: 1,
+            review_notes: notes ?? null,
+            rejection_reason: decision === 'rejected' ? (notes ?? null) : null,
+        })
+        .where('id', '=', applicationId)
+        .execute();
+
+    if (decision === 'approved') {
+        const loan = application.loan_id ? await getLoanType(application.loan_id) : undefined;
+        const interestRate = Number(loan?.interest_rate ?? 0);
+        const installments = FORTNIGHTS_BY_TERM[application.term] ?? 5;
+        const total = Number(application.loan_amount) * (1 + interestRate / 100);
+        const installmentAmount = Math.round(total / installments);
+
+        const now = Date.now();
+        await db.insertInto('LoanRepayment').values(
+            Array.from({ length: installments }, (_, i) => ({
+                loan_application_id: applicationId,
+                due_date: new Date(now + (i + 1) * FORTNIGHT_MS),
+                amount: installmentAmount,
+            }))
+        ).execute();
+    }
+
+    return getLoanApplication(applicationId);
+}
+
 export async function getLoanApplicationStatus(applicationId: number) {
     const status = await db.selectFrom('LoanApplication')
         .where('LoanApplication.id', '=', applicationId)
