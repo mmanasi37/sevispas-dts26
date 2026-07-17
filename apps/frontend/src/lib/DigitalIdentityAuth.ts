@@ -3,11 +3,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 export type InitiateAuthResponse = {
   qrCode: string;
   sessionId: string;
-  // Same OIDC4VP authorization URL the QR code encodes. On a phone that
-  // already holds the SevisPass wallet, opening it directly (instead of
-  // scanning a code shown on that same screen) lets a single-device
-  // borrower complete the exact same session — no separate device needed.
-  authUrl?: string;
 };
 
 type SessionStatus = {
