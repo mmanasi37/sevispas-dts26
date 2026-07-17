@@ -1,4 +1,4 @@
-import { Borrower, BorrowerDashboard, ERepaymentStatus, LoanApplication, NewLoanApplicationInput, LoanRepayment } from "./types";
+import { Borrower, BorrowerDashboard, ERepaymentStatus, LoanApplication, LoanProduct, NewLoanApplicationInput, LoanRepayment } from "./types";
 import { sleep } from "./utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -41,6 +41,10 @@ export async function createLoanApplication(
     console.error("Failed to submit application:", error);
     throw error;
   }
+}
+
+export async function getLoanTypes(): Promise<LoanProduct[]> {
+  return createApi(`/loan_types`);
 }
 
 export async function getBorrowers(): Promise<Borrower[]> {

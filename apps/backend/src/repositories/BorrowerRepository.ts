@@ -170,6 +170,10 @@ export async function createLoanApplication(borrowerId: number, input: {
     amount: number;
     term: string;
     purpose: string;
+    existingLoans?: { lender: string; amount: number }[];
+    disbursementMethod?: string;
+    disbursementDetails?: string | null;
+    declarationLanguage?: string;
 }) {
     const { count } = await db
         .selectFrom('LoanApplication')
@@ -189,6 +193,11 @@ export async function createLoanApplication(borrowerId: number, input: {
             loan_id: 1,
             loan_officer_id: 1,
             application_date: new Date(),
+            existing_loans_json: input.existingLoans?.length ? JSON.stringify(input.existingLoans) : null,
+            disbursement_method: input.disbursementMethod ?? null,
+            disbursement_details: input.disbursementDetails ?? null,
+            declaration_language: input.declarationLanguage ?? null,
+            declared_at: new Date(),
         })
         .returningAll()
         .executeTakeFirstOrThrow();

@@ -24,7 +24,7 @@ import { BorrowerDashboard } from "@/lib/types";
 
 const quickActions = [
   {
-    href: "/borrower/application",
+    href: "/borrower/apply",
     label: "Apply for a New Loan",
     description: "Submit a new loan request",
     icon: FileText,
@@ -159,7 +159,7 @@ export default function BorrowerDashboardPage() {
                   </Link>
                 </>
               ) : (
-                <Link href="/borrower/application">
+                <Link href="/borrower/apply">
                   <Button className="w-full">Apply for Your First Loan</Button>
                 </Link>
               )}

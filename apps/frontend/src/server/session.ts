@@ -6,6 +6,7 @@ export interface UserSession {
   username: string;
   isLoggedIn: boolean;
   sevispassId?: string;
+  tier?: number;
 }
 
 export const defaultSession: UserSession = {

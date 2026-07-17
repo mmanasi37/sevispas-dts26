@@ -77,7 +77,7 @@ export default function LoanStatus() {
         <Card className="shadow-none">
           <CardContent className="pt-6 text-center text-sm text-gray-500">
             You haven&apos;t applied for a loan yet.
-            <Button className="mt-4 w-full" onClick={() => (window.location.href = "/borrower/application")}>
+            <Button className="mt-4 w-full" onClick={() => (window.location.href = "/borrower/apply")}>
               Apply Now
             </Button>
           </CardContent>
@@ -92,7 +92,7 @@ export default function LoanStatus() {
     <div className="p-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-end mb-6">
-          <Button variant="outline" onClick={() => (window.location.href = "/borrower/application")}>
+          <Button variant="outline" onClick={() => (window.location.href = "/borrower/apply")}>
             New Application
           </Button>
         </div>

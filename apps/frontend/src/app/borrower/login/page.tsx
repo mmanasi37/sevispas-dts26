@@ -35,7 +35,7 @@ export default function BorrowerLogin() {
       authRef.current!.pollForCompletion(
         sessionId,
         async (user) => {
-          await loginBorrowerWithSevispass(user.sub, user.name);
+          await loginBorrowerWithSevispass(user.sub, user.name, user.credentials);
           setIsLoading(false);
           router.push("/borrower/dashboard");
         },

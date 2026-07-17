@@ -12,26 +12,27 @@ async function main() {
     // await db.deleteFrom('Borrower').execute();
     // await db.deleteFrom('Staff').execute();
 
-    // const staff = await db.insertInto('Staff').values({
-    //     staff_number: 'STAFF-2024-003',
-    //     first_name: 'John',
-    //     last_name: 'Doe',
-    //     email: 'email@exmaple.com',
-    //     password: 'secr3t',
-    //     phone_number: 1234567890,
-    //     gender: 'female'
-    // }).returningAll().executeTakeFirstOrThrow();
+    // loan_officer_id: 1 / loan_id: 1 are hardcoded in createLoanApplication, so at
+    // least one Staff and one Loan row must exist or every submission 500s on the FK.
+    // StaffTable in schema.ts still declares email/password/gender/phone_number, which
+    // don't exist on the live table (pre-existing drift, staff auth is separately broken) —
+    // cast past it here rather than touching auth.controller.ts's staff login.
+    const staff = await db.insertInto('Staff').values({
+        staff_number: 'STAFF-2024-001',
+        first_name: 'John',
+        last_name: 'Doe',
+    } as any).returningAll().executeTakeFirstOrThrow();
 
-    // const loan = await db.insertInto('Loan').values({
-    //     loan_name: 'LOAN-2024-002',
-    //     loan_description: "This is a loan for business purposes",
-    //     max_amount: 10000,
-    //     min_amount: 1000,
-    //     max_term: 12,
-    //     min_term: 6,
-    //     interest_rate: 10,
-    //     created_by: staff.id,
-    // }).returningAll().executeTakeFirstOrThrow();
+    const loan = await db.insertInto('Loan').values({
+        loan_name: 'MIJOE Personal Loan',
+        loan_description: 'General-purpose microfinance loan for MIJOE borrowers',
+        max_amount: 20000,
+        min_amount: 500,
+        max_term: 10,
+        min_term: 1,
+        interest_rate: 15,
+        created_by: staff.id,
+    }).returningAll().executeTakeFirstOrThrow();
 
     const borrower = await db.insertInto('Borrower').values({
         sevispass_id: 'SP-2024-001',

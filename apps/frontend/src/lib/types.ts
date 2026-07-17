@@ -51,10 +51,26 @@ export interface User {
   verified: boolean;
 }
 
+export interface ExistingLoanDeclaration {
+  lender: string;
+  amount: number;
+}
+
+export type TDisbursementMethod = 'bank_transfer' | 'cash_pickup';
+
 export interface NewLoanApplicationInput {
   amount: number;
   term: TLoanTerm;
   purpose: string;
+  village: string;
+  province: string;
+  phoneNumber: string;
+  employmentStatus: TEmploymentStatus;
+  monthlyIncome: number | null;
+  existingLoans: ExistingLoanDeclaration[];
+  disbursementMethod: TDisbursementMethod;
+  disbursementDetails: string | null;
+  declarationLanguage: 'en' | 'tp';
 }
 
 export interface BorrowerDashboard {
@@ -91,12 +107,14 @@ export interface Borrower {
   sevispass_id: string;
   credit_score: number;
   member_since: string;
-  phone_number: number | null;
+  phone_number: string | null;
   email: string;
   physical_address: string | null;
   employment_status: TEmploymentStatus;
   employer_name: string | null;
   monthly_income: number | null;
+  village: string | null;
+  province: string | null;
   created_at: string | null;
   updated_at: string | null;
   deleted_at: string | null;
@@ -151,6 +169,24 @@ export interface LoanApplication {
   submitted_at: string;
   decided_at: string | null;
   repayments: LoanRepayment[];
+  existing_loans_json: string | null;
+  disbursement_method: string | null;
+  disbursement_details: string | null;
+  declaration_language: string | null;
+  declared_at: string | null;
+}
+
+// The Loan "product" (rate/term/amount bounds) a borrower applies against —
+// distinct from `Loan` above, which models a disbursed/individual loan.
+export interface LoanProduct {
+  id: number;
+  loan_name: string;
+  loan_description: string | null;
+  min_amount: number;
+  max_amount: number;
+  min_term: number;
+  max_term: number;
+  interest_rate: number;
 }
 
 export type LoanApplicationWithRelations = LoanApplication & {

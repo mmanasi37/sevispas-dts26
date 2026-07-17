@@ -52,12 +52,14 @@ export interface BorrowerTable {
     sevispass_id: string;
     credit_score: Generated<number>;
     member_since: Timestamp;
-    phone_number: number | null;
+    phone_number: string | null;
     email: string | null;
     physical_address: string | null;
     employment_status: string | null;
     employer_name: string | null;
     monthly_income: Decimal | null;
+    village: string | null;
+    province: string | null;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
     deleted_at: Timestamp | null;
@@ -106,6 +108,11 @@ export interface LoanApplicationTable {
     rejection_reason: string | null;
     submitted_at: Generated<DateTime>;
     decided_at: DateTime | null;
+    existing_loans_json: string | null;
+    disbursement_method: string | null;
+    disbursement_details: string | null;
+    declaration_language: string | null;
+    declared_at: Timestamp | null;
 }
 
 export interface LoanStatusTypeTable {

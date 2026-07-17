@@ -70,12 +70,37 @@ router.post('/borrowers/:sevispassId/applications', async (req: Request, res: Re
             return res.status(404).json({ error: 'Borrower not found' });
         }
 
-        const { amount, term, purpose } = req.body ?? {};
+        const {
+            amount, term, purpose,
+            village, province, phoneNumber, employmentStatus, monthlyIncome,
+            existingLoans, disbursementMethod, disbursementDetails, declarationLanguage,
+        } = req.body ?? {};
+
         if (typeof amount !== 'number' || amount <= 0 || typeof term !== 'string' || typeof purpose !== 'string') {
             return res.status(400).json({ error: 'amount (positive number), term, and purpose are required' });
         }
+        if (typeof disbursementMethod !== 'string' || typeof declarationLanguage !== 'string') {
+            return res.status(400).json({ error: 'disbursementMethod and declarationLanguage are required' });
+        }
 
-        const application = await borrowerRepo.createLoanApplication(borrower.id, { amount, term, purpose });
+        // Steps 3-4 are self-declared profile facts, not application-specific — update Borrower in place.
+        await borrowerRepo.updateBorrower(borrower.id, {
+            village: typeof village === 'string' ? village : undefined,
+            province: typeof province === 'string' ? province : undefined,
+            phone_number: typeof phoneNumber === 'string' ? phoneNumber : undefined,
+            employment_status: typeof employmentStatus === 'string' ? employmentStatus : undefined,
+            monthly_income: typeof monthlyIncome === 'number' ? monthlyIncome : undefined,
+        });
+
+        const application = await borrowerRepo.createLoanApplication(borrower.id, {
+            amount,
+            term,
+            purpose,
+            existingLoans: Array.isArray(existingLoans) ? existingLoans : undefined,
+            disbursementMethod,
+            disbursementDetails: typeof disbursementDetails === 'string' ? disbursementDetails : null,
+            declarationLanguage,
+        });
         res.status(201).json({ ...application, repayments: [] });
     } catch (error: any) {
         const dbError = handleDatabaseError(error);
