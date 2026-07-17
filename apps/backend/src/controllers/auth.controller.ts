@@ -287,7 +287,7 @@ export const initiate = async (req: Request, res: Response) => {
         );
 
         const { qrCode, sessionId, authUrl, nonce, state } = response.data;
-        res.json({ qrCode, sessionId });
+        res.json({ qrCode, sessionId, authUrl });
     } catch (error) {
         const err = handleError(error);
         console.log(err);

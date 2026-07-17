@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Fingerprint, Shield, User } from "lucide-react";
+import { Fingerprint, Shield, User, Smartphone } from "lucide-react";
 import { DigitalIdentityAuth } from "@/lib/DigitalIdentityAuth";
 import { loginBorrowerWithSevispass } from "@/server/actions";
 
@@ -15,6 +15,7 @@ export default function BorrowerLogin() {
   const [loginMethod, setLoginMethod] = useState<"biometric" | "credential">("biometric");
   const [isLoading, setIsLoading] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const [authUrl, setAuthUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const authRef = useRef<DigitalIdentityAuth | null>(null);
 
@@ -26,11 +27,13 @@ export default function BorrowerLogin() {
   const handleBiometricLogin = async () => {
     setError(null);
     setQrCode(null);
+    setAuthUrl(null);
     setIsLoading(true);
 
     try {
-      const { qrCode, sessionId } = await authRef.current!.initiateAuth();
+      const { qrCode, sessionId, authUrl } = await authRef.current!.initiateAuth();
       setQrCode(qrCode);
+      setAuthUrl(authUrl ?? null);
 
       authRef.current!.pollForCompletion(
         sessionId,
@@ -103,8 +106,27 @@ export default function BorrowerLogin() {
                     dangerouslySetInnerHTML={{ __html: qrCode }}
                   />
                   <p className="text-sm text-gray-600 mt-2">
-                    Scan this QR code with your SevisPass wallet
+                    Scan this QR code with your SevisPass wallet on another device
                   </p>
+                  {authUrl && (
+                    <>
+                      <div className="flex items-center gap-2 my-3">
+                        <div className="h-px flex-1 bg-gray-200" />
+                        <span className="text-xs text-gray-400">OR</span>
+                        <div className="h-px flex-1 bg-gray-200" />
+                      </div>
+                      <a
+                        href={authUrl}
+                        className="flex items-center justify-center gap-2 w-full py-2 px-4 rounded-md border border-blue-200 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100"
+                      >
+                        <Smartphone className="h-4 w-4" />
+                        Open in SevisPass Wallet on this phone
+                      </a>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Using this same phone for your wallet? Tap above instead of scanning.
+                      </p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="bg-blue-50 p-4 rounded-lg text-center">
