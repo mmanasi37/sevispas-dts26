@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Fingerprint, Shield, User } from "lucide-react";
 import { DigitalIdentityAuth } from "@/lib/DigitalIdentityAuth";
+import { loginBorrowerWithSevispass } from "@/server/actions";
 
 export default function BorrowerLogin() {
   const router = useRouter();
@@ -33,7 +34,8 @@ export default function BorrowerLogin() {
 
       authRef.current!.pollForCompletion(
         sessionId,
-        () => {
+        async (user) => {
+          await loginBorrowerWithSevispass(user.sub, user.name);
           setIsLoading(false);
           router.push("/borrower/dashboard");
         },

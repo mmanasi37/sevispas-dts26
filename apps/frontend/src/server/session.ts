@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 export interface UserSession {
   username: string;
   isLoggedIn: boolean;
+  sevispassId?: string;
 }
 
 export const defaultSession: UserSession = {

@@ -7,15 +7,17 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Shield, TrendingUp, AlertCircle } from "lucide-react";
 import { getBorrowerDashboard } from "@/lib/api";
 import { BorrowerDashboard } from "@/lib/types";
-import { DEMO_SEVISPASS_ID, initials } from "@/lib/utils";
+import { initials } from "@/lib/utils";
 import { formatMonthShort, formatMonthYear } from "@/lib/format";
+import { getCurrentSevispassId } from "@/server/actions";
 
 export default function BorrowerProfile() {
   const [data, setData] = useState<BorrowerDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getBorrowerDashboard(DEMO_SEVISPASS_ID)
+    getCurrentSevispassId()
+      .then(getBorrowerDashboard)
       .then(setData)
       .catch((err) => setError(err.message));
   }, []);

@@ -40,6 +40,37 @@ export async function createBorrower(user: NewBorrower) {
         .executeTakeFirstOrThrow()
 }
 
+// Provisions a Borrower row the first time a real SevisPass identity logs in.
+// SevisPass only gives us sub/name/email/ageOver18 — fields our schema requires
+// but SevisPass doesn't provide (date_of_birth, id_number) get placeholder values.
+export async function findOrCreateBySevisPass(sevisUser: { sub: string; name?: string; email?: string }) {
+    const existing = await findBorrowerBySevisPassId(sevisUser.sub);
+    if (existing) {
+        return existing;
+    }
+
+    const { count } = await db
+        .selectFrom('Borrower')
+        .select(({ fn }) => fn.count<number>('id').as('count'))
+        .executeTakeFirstOrThrow();
+
+    const borrowerNumber = `BORROWER-${new Date().getFullYear()}-${String(Number(count) + 1).padStart(3, '0')}`;
+    const [first_name, ...rest] = (sevisUser.name ?? 'SevisPass User').split(' ');
+    const last_name = rest.join(' ') || 'Unknown';
+
+    return await createBorrower({
+        borrower_number: borrowerNumber,
+        first_name,
+        last_name,
+        date_of_birth: '2000-01-01',
+        id_type_id: 1,
+        id_number: sevisUser.sub,
+        sevispass_id: sevisUser.sub,
+        member_since: new Date().toISOString().slice(0, 10),
+        email: sevisUser.email ?? null,
+    });
+}
+
 export async function deleteBorrower(id: number) {
     return await db.deleteFrom('Borrower').where('id', '=', id)
         .returningAll()

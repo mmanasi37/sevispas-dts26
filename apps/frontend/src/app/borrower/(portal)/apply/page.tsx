@@ -13,7 +13,7 @@ import { KinaIcon } from "@/components/ui/kina-icon";
 import { createLoanApplication } from "@/lib/api";
 import useLanguage from "@/hooks/use-language";
 import { ELoanTerm, TLoanTerm } from "@/lib/types";
-import { DEMO_SEVISPASS_ID } from "@/lib/utils";
+import { getCurrentSevispassId } from "@/server/actions";
 
 export default function LoanApplication() {
   const router = useRouter();
@@ -30,7 +30,8 @@ export default function LoanApplication() {
     setError(null);
     setIsSubmitting(true);
     try {
-      await createLoanApplication(DEMO_SEVISPASS_ID, {
+      const sevispassId = await getCurrentSevispassId();
+      await createLoanApplication(sevispassId, {
         amount: Number(amount),
         term,
         purpose,

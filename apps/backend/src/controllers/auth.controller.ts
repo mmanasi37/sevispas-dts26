@@ -6,6 +6,7 @@ import { env } from '../env.ts';
 import { generateState, generateNonce, verifyState, processVPToken, generateToken, verifyToken, handleDatabaseError, handleError } from '../libs/utils.ts';
 import { OIDC4VP_SERVER_URL, CLIENT_ID, CLIENT_SECRET, CALLBACK_URL, WEB_ORIGIN } from '../config.ts';
 import { number } from 'zod';
+import * as borrowerRepo from '../repositories/BorrowerRepository.ts';
 
 function ssoHeaders() {
     return {
@@ -330,6 +331,18 @@ export const user = async (req: Request, res: Response) => {
         });
 
         // {"user":{"sub":"urn:uuid:7bf46411-2e33-4868-919b-d12b3e06f3a5","name":"Christian","email":"chrisaugu61@gmail.com","ageOver18":true,"validUntil":"2027-07-15T21:12:45.000Z","holder":"did:nfid:2161383915911882","credentials":[{"type":["PID"],"issuer":"did:nfid:1941389815611810","issuanceDate":"2026-07-15T21:12:45.000Z","validUntil":"2027-07-15T21:12:45.000Z","subject":{"id":"urn:uuid:7bf46411-2e33-4868-919b-d12b3e06f3a5","firstName":"Christian","email":"chrisaugu61@gmail.com","ageOver18":true,"credentialSubject":"did:nfid:2161383915911882","credentialStatus":[{"type":"BitstringStatusListEntry","statusPurpose":"revocation","statusListIndex":497,"statusListCredential":"http://system-service:80/v1/status-list/revocation/6"},{"type":"BitstringStatusListEntry","statusPurpose":"suspension","statusListIndex":498,"statusListCredential":"http://system-service:80/v1/status-list/suspension/7","statusReference":"http://system-service:80/suspension-information/6107027c-5309-4649-9d23-d870ba578559"}],"_sd_alg":"sha-256"}}]},"sessionId":"duhY8g0h1JoTQdylkwZyZ56_UzZuLkyt","fieldClaims":["firstName","email","ageOver18"]}
+
+        // Provision a Borrower row for this SevisPass identity on first login,
+        // so the frontend's dashboard/status/repayment/profile lookups succeed.
+        const sevisUser = response.data?.user;
+        if (sevisUser?.sub) {
+            try {
+                await borrowerRepo.findOrCreateBySevisPass(sevisUser);
+            } catch (err) {
+                console.error('Failed to provision borrower for SevisPass user:', err);
+            }
+        }
+
         res.json(response.data);
     } catch {
         res.status(502).json({ error: 'Failed to fetch verified user' });

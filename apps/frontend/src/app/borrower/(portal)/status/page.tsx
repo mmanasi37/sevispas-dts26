@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle, XCircle, AlertCircle, RefreshCw } from "lucide-react";
 import { getBorrowerDashboard } from "@/lib/api";
 
-import { DEMO_SEVISPASS_ID } from "@/lib/utils";
+import { getCurrentSevispassId } from "@/server/actions";
 import { formatFullDate, formatTerm } from "@/lib/format";
 import { BorrowerDashboard, ELoanApplicationStatus } from "@/lib/types";
 
@@ -47,7 +47,8 @@ export default function LoanStatus() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getBorrowerDashboard(DEMO_SEVISPASS_ID)
+    getCurrentSevispassId()
+      .then(getBorrowerDashboard)
       .then(setData)
       .catch((err) => setError(err.message));
   }, []);

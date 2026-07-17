@@ -8,7 +8,7 @@ import { CheckCircle, Circle, Calendar, AlertCircle } from "lucide-react";
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { getBorrowerDashboard, getActiveLoan, sumAmount, getNextPayment } from "@/lib/api";
 
-import { DEMO_SEVISPASS_ID } from "@/lib/utils";
+import { getCurrentSevispassId } from "@/server/actions";
 import { formatFullDate, formatShortDate } from "@/lib/format";
 import { BorrowerDashboard } from "@/lib/types";
 
@@ -17,7 +17,8 @@ export default function RepaymentSchedule() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getBorrowerDashboard(DEMO_SEVISPASS_ID)
+    getCurrentSevispassId()
+      .then(getBorrowerDashboard)
       .then(setData)
       .catch((err) => setError(err.message));
   }, []);
