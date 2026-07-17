@@ -34,7 +34,7 @@ export default function Home() {
             </Card>
           </Link>
 
-          <Link href="/staff/dashboard">
+          <Link href="/staff/login">
             <Card className="shadow-none cursor-pointer h-full">
               <CardHeader>
                 <CardTitle className="text-2xl">Staff Portal</CardTitle>
