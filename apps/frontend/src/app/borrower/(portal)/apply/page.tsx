@@ -186,9 +186,9 @@ export default function LoanApplication() {
                 <p className="text-sm text-gray-600">{t.identityConfirmedSubtitle}</p>
                 <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
                   <div className="flex justify-center pb-2">
-                    <Avatar size="lg">
+                    <Avatar className="h-24 w-24">
                       <AvatarImage src={toPhotoSrc(borrower.photo)} alt={`${borrower.first_name} ${borrower.last_name}`} />
-                      <AvatarFallback>{initials(borrower.first_name, borrower.last_name)}</AvatarFallback>
+                      <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">{initials(borrower.first_name, borrower.last_name)}</AvatarFallback>
                     </Avatar>
                   </div>
                   <div className="flex justify-between">

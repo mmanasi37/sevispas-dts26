@@ -16,9 +16,19 @@ export async function findBorrowerBySevisPassId(sevispassId: string) {
         .executeTakeFirst();
 }
 
+// Excludes `photo` (a base64 blob) — this backs the staff borrower list/detail
+// views, which don't render photos, and pulling every borrower's photo on
+// every list load is wasted bandwidth. Fetch a single borrower for the photo.
 export async function getBorrowers() {
     return await db.selectFrom('Borrower')
-        .selectAll()
+        .select([
+            'id', 'borrower_number', 'first_name', 'last_name', 'date_of_birth',
+            'marital_status', 'id_type_id', 'id_number', 'sevispass_id',
+            'credit_score', 'member_since', 'phone_number', 'email',
+            'physical_address', 'employment_status', 'employer_name',
+            'monthly_income', 'village', 'province', 'created_at',
+            'updated_at', 'deleted_at', 'deleted_by',
+        ])
         .execute();
 }
 
