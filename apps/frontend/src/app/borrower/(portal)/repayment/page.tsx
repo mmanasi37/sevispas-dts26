@@ -76,7 +76,7 @@ export default function RepaymentSchedule() {
               <div className="bg-yellow-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-gray-600">Next Payment</p>
                 <p className="text-2xl font-bold text-yellow-600">
-                  {nextPayment ? formatShortDate(nextPayment.due_date.toString()) : "—"}
+                  {nextPayment ? formatShortDate(nextPayment.due_date) : "—"}
                 </p>
               </div>
             </div>

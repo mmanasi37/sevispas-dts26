@@ -91,7 +91,7 @@ export default function BorrowerDashboardPage() {
     { label: "Credit Score", value: String(borrower.credit_score), icon: TrendingUp },
     {
       label: "Next Payment",
-      value: nextPayment ? `K ${nextPayment.amount.toLocaleString()} · ${formatShortDate(nextPayment.due_date.toString())}` : "None due",
+      value: nextPayment ? `K ${nextPayment.amount.toLocaleString()} · ${formatShortDate(nextPayment.due_date)}` : "None due",
       icon: Calendar,
     },
     { label: "Repayment Rate", value: `${repaymentRate}%`, icon: CheckCircle },
