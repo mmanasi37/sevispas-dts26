@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { createLoanApplication, getBorrowerDashboard, getLoanTypes } from "@/lib/api";
 import useLanguage from "@/hooks/use-language";
 import { ELoanTerm, EEmploymentStatus, TLoanTerm, TEmploymentStatus, Borrower, LoanProduct, TDisbursementMethod } from "@/lib/types";
 import { getCurrentSevispassId, getCurrentTier, upgradeTier } from "@/server/actions";
 import { formatFullDate } from "@/lib/format";
+import { initials, toPhotoSrc } from "@/lib/utils";
 
 const TOTAL_STEPS = 8;
 
@@ -183,6 +185,12 @@ export default function LoanApplication() {
                 </div>
                 <p className="text-sm text-gray-600">{t.identityConfirmedSubtitle}</p>
                 <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                  <div className="flex justify-center pb-2">
+                    <Avatar size="lg">
+                      <AvatarImage src={toPhotoSrc(borrower.photo)} alt={`${borrower.first_name} ${borrower.last_name}`} />
+                      <AvatarFallback>{initials(borrower.first_name, borrower.last_name)}</AvatarFallback>
+                    </Avatar>
+                  </div>
                   <div className="flex justify-between">
                     <span className="text-gray-500">{t.fullName}</span>
                     <span className="font-medium">{borrower.first_name} {borrower.last_name}</span>

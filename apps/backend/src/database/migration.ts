@@ -117,6 +117,7 @@ const statements = [
   monthly_income decimal(10,2) CHECK (monthly_income >= 0),
   village text,
   province text,
+  photo text,
   created_at timestamp DEFAULT (CURRENT_TIMESTAMP),
   updated_at timestamp,
   deleted_at timestamp,

@@ -60,6 +60,7 @@ export interface BorrowerTable {
     monthly_income: Decimal | null;
     village: string | null;
     province: string | null;
+    photo: string | null;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
     deleted_at: Timestamp | null;

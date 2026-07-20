@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Shield, TrendingUp, AlertCircle } from "lucide-react";
 import { getBorrowerDashboard } from "@/lib/api";
 import { BorrowerDashboard } from "@/lib/types";
-import { initials } from "@/lib/utils";
+import { initials, toPhotoSrc } from "@/lib/utils";
 import { formatMonthShort, formatMonthYear } from "@/lib/format";
 import { getCurrentSevispassId } from "@/server/actions";
 
@@ -56,6 +56,7 @@ export default function BorrowerProfile() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <Avatar className="h-24 w-24 mx-auto mb-4">
+                  <AvatarImage src={toPhotoSrc(borrower.photo)} alt={`${borrower.first_name} ${borrower.last_name}`} />
                   <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">
                     {initials(borrower.first_name!, borrower.last_name!)}
                   </AvatarFallback>

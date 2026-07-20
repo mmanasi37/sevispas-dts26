@@ -115,6 +115,7 @@ export interface Borrower {
   monthly_income: number | null;
   village: string | null;
   province: string | null;
+  photo: string | null;
   created_at: string | null;
   updated_at: string | null;
   deleted_at: string | null;
