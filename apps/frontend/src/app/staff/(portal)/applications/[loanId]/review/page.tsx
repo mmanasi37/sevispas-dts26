@@ -10,7 +10,7 @@ import { UserCheck, Shield, Calendar, Target, CheckCircle, XCircle, AlertCircle 
 import { KinaIcon } from "@/components/ui/kina-icon";
 import { toast } from 'sonner';
 import { approveLoan, rejectLoan, getApplications } from "@/lib/api";
-import { LoanApplication, ExistingLoanDeclaration } from "@/lib/types";
+import { LoanApplication, ExistingLoanDeclaration, ELoanApplicationStatus } from "@/lib/types";
 import { formatTerm, formatFullDate } from "@/lib/format";
 import { initials } from "@/lib/utils";
 
@@ -19,36 +19,46 @@ export default function ApplicationReview({ params }: { params: Promise<{ loanId
 
   const [application, setApplication] = useState<LoanApplication | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decision, setDecision] = useState<"approve" | "reject" | null>(null);
   const [showReason, setShowReason] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
+  const loadApplication = () =>
+    getApplications().then((applications) => {
+      const match = applications.find((app) => String(app.id) === loanId);
+      if (!match) {
+        setError("Application not found");
+        return;
+      }
+      setApplication(match);
+    });
+
   useEffect(() => {
-    getApplications()
-      .then((applications) => {
-        const match = applications.find((app) => String(app.id) === loanId);
-        if (!match) {
-          setError("Application not found");
-          return;
-        }
-        setApplication(match);
-      })
+    loadApplication()
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load application"))
       .finally(() => setLoading(false));
   }, [loanId]);
 
   const submitDecision = async () => {
+    setSubmitting(true);
     try {
       if (decision === "approve") {
         await approveLoan(Number(loanId), rejectionReason);
       } else {
         await rejectLoan(Number(loanId), rejectionReason);
       }
-      toast.success(`Application ${decision}`);
+      await loadApplication();
+      toast.success(`Application ${decision}d`);
+      setDecision(null);
+      setShowReason(false);
+      setRejectionReason("");
     } catch (error) {
       console.error(error);
       toast.error(`Failed to ${decision} application`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -190,37 +200,64 @@ export default function ApplicationReview({ params }: { params: Promise<{ loanId
                 </div>
               </div>
 
-              {showReason && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Reason for Decision</label>
-                  <Textarea
-                    placeholder="Enter reason for approval/rejection..."
-                    value={rejectionReason}
-                    onChange={(e) => setRejectionReason(e.target.value)}
-                  />
+              {application.status === ELoanApplicationStatus.APPROVED ? (
+                <div className="border rounded-lg p-4 bg-green-50 border-green-200 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <p className="text-sm font-medium text-green-700">
+                    Approved{application.decided_at ? ` on ${formatFullDate(application.decided_at)}` : ""}
+                  </p>
                 </div>
-              )}
+              ) : application.status === ELoanApplicationStatus.REJECTED ? (
+                <div className="border rounded-lg p-4 bg-red-50 border-red-200 flex items-center gap-2">
+                  <XCircle className="h-5 w-5 text-red-600" />
+                  <div>
+                    <p className="text-sm font-medium text-red-700">
+                      Rejected{application.decided_at ? ` on ${formatFullDate(application.decided_at)}` : ""}
+                    </p>
+                    {application.rejection_reason && (
+                      <p className="text-sm text-red-600">{application.rejection_reason}</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {showReason && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Reason for Decision</label>
+                      <Textarea
+                        placeholder="Enter reason for approval/rejection..."
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                      />
+                    </div>
+                  )}
 
-              <div className="flex gap-4">
-                <Button
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                  onClick={() => { setDecision("approve"); setShowReason(false) }}
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Approve
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="flex-1"
-                  onClick={() => { setDecision("reject"); setShowReason(true) }}
-                >
-                  <XCircle className="h-4 w-4 mr-2" />
-                  Reject
-                </Button>
-              </div>
+                  <div className="flex gap-4">
+                    <Button
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      disabled={submitting}
+                      onClick={() => { setDecision("approve"); setShowReason(false) }}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Approve
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="flex-1"
+                      disabled={submitting}
+                      onClick={() => { setDecision("reject"); setShowReason(true) }}
+                    >
+                      <XCircle className="h-4 w-4 mr-2" />
+                      Reject
+                    </Button>
+                  </div>
 
-              {decision && (
-                <Button className="w-full" onClick={submitDecision}>Submit Decision</Button>
+                  {decision && (
+                    <Button className="w-full" onClick={submitDecision} disabled={submitting}>
+                      {submitting ? "Submitting..." : "Submit Decision"}
+                    </Button>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
