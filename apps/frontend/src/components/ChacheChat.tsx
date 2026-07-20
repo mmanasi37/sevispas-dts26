@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, X, Send, Sparkles } from "lucide-react";
+import { MessageCircle, X, Send, Sparkles, Mic, Square, Volume2, VolumeX } from "lucide-react";
 import useLanguage from "@/hooks/use-language";
 
 interface ChatMessage {
@@ -20,18 +20,41 @@ const GREETING: ChatMessage = {
 };
 
 export default function ChacheChat() {
+  const { language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [voiceReplyEnabled, setVoiceReplyEnabled] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages, open]);
 
-  const send = async () => {
-    const text = input.trim();
+  useEffect(() => {
+    return () => {
+      mediaRecorderRef.current?.stream.getTracks().forEach((track) => track.stop());
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
+
+  const speak = (text: string) => {
+    if (!voiceReplyEnabled || !text || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    // No browser ships a Tok Pisin voice; English TTS reading Tok Pisin's
+    // Latin-script text is still intelligible, so it's the best fallback.
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const send = async (override?: string) => {
+    const text = (override ?? input).trim();
     if (!text || isStreaming) return;
 
     const nextMessages: ChatMessage[] = [...messages, { role: "user", content: text }];
@@ -57,6 +80,7 @@ export default function ChacheChat() {
         assistantText += decoder.decode(value, { stream: true });
         setMessages([...nextMessages, { role: "assistant", content: assistantText }]);
       }
+      speak(assistantText);
     } catch {
       setMessages([
         ...nextMessages,
@@ -64,6 +88,65 @@ export default function ChacheChat() {
       ]);
     } finally {
       setIsStreaming(false);
+    }
+  };
+
+  const transcribeAndSend = async (blob: Blob) => {
+    setIsTranscribing(true);
+    try {
+      const form = new FormData();
+      form.append("audio", blob, "speech.webm");
+      form.append("language", language);
+
+      const res = await fetch("/api/transcribe", { method: "POST", body: form });
+      const data = (await res.json()) as { text?: string; error?: string };
+      if (!res.ok || !data.text?.trim()) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.error ?? "Sorry, I couldn't hear that clearly. Please try again." },
+        ]);
+        return;
+      }
+      send(data.text.trim());
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Sorry, I couldn't hear that clearly. Please try again." },
+      ]);
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const toggleRecording = async () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
+        transcribeAndSend(blob);
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "I couldn't access your microphone. Please check your browser's mic permission." },
+      ]);
     }
   };
 
@@ -101,9 +184,23 @@ export default function ChacheChat() {
             <p className="text-xs text-gray-500">Borrower assistant</p>
           </div>
         </div>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setOpen(false)} aria-label="Close">
-          <X className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => {
+              setVoiceReplyEnabled((v) => !v);
+              window.speechSynthesis?.cancel();
+            }}
+            aria-label={voiceReplyEnabled ? "Mute Chache's voice" : "Unmute Chache's voice"}
+          >
+            {voiceReplyEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setOpen(false)} aria-label="Close">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
 
       <CardContent ref={scrollRef} className="flex-1 overflow-y-auto py-4 px-4 space-y-3">
@@ -124,11 +221,21 @@ export default function ChacheChat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask Chache..."
+          placeholder={isRecording ? "Listening…" : isTranscribing ? "Transcribing…" : "Ask Chache..."}
           className="min-h-[40px] max-h-24 resize-none text-sm py-2"
-          disabled={isStreaming}
+          disabled={isStreaming || isRecording || isTranscribing}
         />
-        <Button onClick={send} disabled={isStreaming || !input.trim()} size="sm" className="h-10 w-10 p-0 shrink-0">
+        <Button
+          onClick={toggleRecording}
+          disabled={isStreaming || isTranscribing}
+          variant={isRecording ? "destructive" : "outline"}
+          size="sm"
+          className="h-10 w-10 p-0 shrink-0"
+          aria-label={isRecording ? "Stop recording" : "Ask Chache by voice"}
+        >
+          {isRecording ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+        </Button>
+        <Button onClick={() => send()} disabled={isStreaming || !input.trim()} size="sm" className="h-10 w-10 p-0 shrink-0">
           <Send className="h-4 w-4" />
         </Button>
       </div>
