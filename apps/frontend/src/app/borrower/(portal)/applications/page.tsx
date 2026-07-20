@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Search, Filter, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { LoanApplication } from "@/lib/types";
+import { ELoanApplicationStatus, LoanApplication } from "@/lib/types";
 import { getApplications } from "@/lib/api";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -44,16 +44,17 @@ export default function ApplicationsPage() {
 
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case "Pending":
+            case ELoanApplicationStatus.PENDING:
                 return <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50 font-normal">Pending</Badge>;
-            case "Review":
-                return <Badge variant="outline" className="text-brand-green-600 border-brand-green-200 bg-brand-green-50 font-normal">Review</Badge>;
-            case "Approved":
+            case ELoanApplicationStatus.REVIEW:
+            case ELoanApplicationStatus.UNDER_REVIEW:
+                return <Badge variant="outline" className="text-brand-green-600 border-brand-green-200 bg-brand-green-50 font-normal">Under Review</Badge>;
+            case ELoanApplicationStatus.APPROVED:
                 return <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 font-normal">Approved</Badge>;
-            case "Rejected":
+            case ELoanApplicationStatus.REJECTED:
                 return <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50 font-normal">Rejected</Badge>;
             default:
-                return <Badge variant="outline">Pending</Badge>;
+                return <Badge variant="outline" className="capitalize">{status}</Badge>;
         }
     };
 
