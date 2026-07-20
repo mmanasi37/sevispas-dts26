@@ -11,6 +11,10 @@ export function initials(firstName: string, lastName: string) {
   return `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
 }
 
+export function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 // SevisPass returns the photo claim as raw base64, not a data URI.
 export function toPhotoSrc(photo: string | null | undefined): string | undefined {
   if (!photo) return undefined;

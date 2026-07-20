@@ -59,10 +59,29 @@ type SevisPassUser = {
             firstName?: string;
             lastName?: string;
             photo?: string;
+            phone?: string;
+            dob?: string;
+            title?: string;
+            nationality?: string;
+            gender?: string;
+            maritalStatus?: string;
+            address?: string;
+            province?: string;
+            district?: string;
+            issueDate?: string;
+            expiryDate?: string;
             [key: string]: unknown;
         };
     }>;
 };
+
+function normalizeEnum<T extends string>(value: string | undefined, allowed: readonly T[]): T | null {
+    const normalized = value?.trim().toLowerCase();
+    return (allowed as readonly string[]).includes(normalized ?? '') ? (normalized as T) : null;
+}
+
+const GENDERS = ['male', 'female', 'other'] as const;
+const MARITAL_STATUSES = ['single', 'married', 'divorced', 'widowed'] as const;
 
 // The verified /api/user response only puts the claims that were actually
 // disclosed inside credentials[].subject — top-level `name` is a single
@@ -76,16 +95,28 @@ function extractSevisPassProfile(sevisUser: SevisPassUser) {
         firstName: subject?.firstName || nameFirst || 'SevisPass',
         lastName: subject?.lastName || nameRest.join(' ') || 'User',
         photo: subject?.photo ?? null,
+        phone: subject?.phone ?? null,
+        dob: subject?.dob ?? null,
+        title: subject?.title ?? null,
+        nationality: subject?.nationality ?? null,
+        gender: normalizeEnum(subject?.gender, GENDERS),
+        maritalStatus: normalizeEnum(subject?.maritalStatus, MARITAL_STATUSES),
+        address: subject?.address ?? null,
+        province: subject?.province ?? null,
+        district: subject?.district ?? null,
+        issueDate: subject?.issueDate ?? null,
+        expiryDate: subject?.expiryDate ?? null,
     };
 }
 
 // Provisions a Borrower row the first time a real SevisPass identity logs in,
-// and backfills name/photo on later logins once SevisPass discloses richer
-// claims (e.g. after a Tier upgrade) than it did the first time around.
-// Fields our schema requires but SevisPass doesn't provide (date_of_birth,
-// id_number) get placeholder values.
+// and backfills profile fields on later logins once SevisPass discloses
+// richer claims (e.g. after a Tier upgrade) than it did the first time
+// around. Fields our schema requires but SevisPass doesn't provide
+// (date_of_birth, id_number) get placeholder values.
 export async function findOrCreateBySevisPass(sevisUser: SevisPassUser) {
-    const { firstName, lastName, photo } = extractSevisPassProfile(sevisUser);
+    const profile = extractSevisPassProfile(sevisUser);
+    const { firstName, lastName, photo, phone, dob, title, nationality, gender, maritalStatus, address, province, district, issueDate, expiryDate } = profile;
 
     const existing = await findBorrowerBySevisPassId(sevisUser.sub);
     if (existing) {
@@ -94,6 +125,17 @@ export async function findOrCreateBySevisPass(sevisUser: SevisPassUser) {
         if (existing.last_name === 'User' && lastName !== 'User') update.last_name = lastName;
         if (!existing.photo && photo) update.photo = photo;
         if (!existing.email && sevisUser.email) update.email = sevisUser.email;
+        if (!existing.phone_number && phone) update.phone_number = phone;
+        if (String(existing.date_of_birth) === '2000-01-01' && dob) update.date_of_birth = dob;
+        if (!existing.title && title) update.title = title;
+        if (!existing.nationality && nationality) update.nationality = nationality;
+        if (!existing.gender && gender) update.gender = gender;
+        if (!existing.marital_status && maritalStatus) update.marital_status = maritalStatus;
+        if (!existing.physical_address && address) update.physical_address = address;
+        if (!existing.province && province) update.province = province;
+        if (!existing.district && district) update.district = district;
+        if (!existing.issue_date && issueDate) update.issue_date = issueDate;
+        if (!existing.expiry_date && expiryDate) update.expiry_date = expiryDate;
 
         if (Object.keys(update).length > 0) {
             await updateBorrower(existing.id, update);
@@ -114,7 +156,17 @@ export async function findOrCreateBySevisPass(sevisUser: SevisPassUser) {
         first_name: firstName,
         last_name: lastName,
         photo,
-        date_of_birth: '2000-01-01',
+        phone_number: phone,
+        date_of_birth: dob ?? '2000-01-01',
+        title,
+        nationality,
+        gender,
+        marital_status: maritalStatus,
+        physical_address: address,
+        province,
+        district,
+        issue_date: issueDate,
+        expiry_date: expiryDate,
         id_type_id: 1,
         id_number: sevisUser.sub,
         sevispass_id: sevisUser.sub,

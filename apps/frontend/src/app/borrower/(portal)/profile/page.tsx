@@ -7,8 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Shield, TrendingUp, AlertCircle } from "lucide-react";
 import { getBorrowerDashboard } from "@/lib/api";
 import { BorrowerDashboard } from "@/lib/types";
-import { initials, toPhotoSrc } from "@/lib/utils";
-import { formatMonthShort, formatMonthYear } from "@/lib/format";
+import { initials, toPhotoSrc, capitalize } from "@/lib/utils";
+import { formatFullDate, formatMonthShort, formatMonthYear } from "@/lib/format";
 import { getCurrentSevispassId } from "@/server/actions";
 
 export default function BorrowerProfile() {
@@ -153,6 +153,38 @@ export default function BorrowerProfile() {
             </CardContent>
           </Card>
         </div>
+
+        <Card className="shadow-none mt-6">
+          <CardHeader>
+            <CardTitle>Personal Details</CardTitle>
+            <CardDescription>
+              From your verified SevisPass credential
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+              {[
+                ["Title", borrower.title],
+                ["Last Name", borrower.last_name],
+                ["Gender", borrower.gender ? capitalize(borrower.gender) : null],
+                ["Date of Birth", borrower.date_of_birth ? formatFullDate(borrower.date_of_birth) : null],
+                ["Nationality", borrower.nationality],
+                ["Marital Status", borrower.marital_status ? capitalize(borrower.marital_status) : null],
+                ["Phone", borrower.phone_number],
+                ["Email", borrower.email],
+                ["Province", borrower.province],
+                ["District", borrower.district],
+                ["Issue Date", borrower.issue_date ? formatFullDate(borrower.issue_date) : null],
+                ["Expiry Date", borrower.expiry_date ? formatFullDate(borrower.expiry_date) : null],
+              ].map(([label, value]) => (
+                <div key={label} className="flex justify-between border-b pb-2">
+                  <span className="text-gray-500">{label}</span>
+                  <span className="font-medium">{value ?? "-"}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

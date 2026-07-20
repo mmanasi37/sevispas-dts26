@@ -102,6 +102,9 @@ export interface Borrower {
   last_name: string;
   date_of_birth: string;
   marital_status: TMaritalStatus;
+  gender: 'male' | 'female' | 'other' | null;
+  title: string | null;
+  nationality: string | null;
   id_type_id: number;
   id_number: string;
   sevispass_id: string;
@@ -115,6 +118,9 @@ export interface Borrower {
   monthly_income: number | null;
   village: string | null;
   province: string | null;
+  district: string | null;
+  issue_date: string | null;
+  expiry_date: string | null;
   photo: string | null;
   created_at: string | null;
   updated_at: string | null;

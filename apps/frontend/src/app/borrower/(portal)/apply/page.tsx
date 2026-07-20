@@ -16,7 +16,7 @@ import useLanguage from "@/hooks/use-language";
 import { ELoanTerm, EEmploymentStatus, TLoanTerm, TEmploymentStatus, Borrower, LoanProduct, TDisbursementMethod } from "@/lib/types";
 import { getCurrentSevispassId, getCurrentTier, upgradeTier } from "@/server/actions";
 import { formatFullDate } from "@/lib/format";
-import { initials, toPhotoSrc } from "@/lib/utils";
+import { initials, toPhotoSrc, capitalize } from "@/lib/utils";
 
 const TOTAL_STEPS = 8;
 
@@ -196,8 +196,52 @@ export default function LoanApplication() {
                     <span className="font-medium">{borrower.first_name} {borrower.last_name}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span className="text-gray-500">{t.lastName}</span>
+                    <span className="font-medium">{borrower.last_name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.idTitle}</span>
+                    <span className="font-medium">{borrower.title ?? "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.gender}</span>
+                    <span className="font-medium">{borrower.gender ? capitalize(borrower.gender) : "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-gray-500">{t.dateOfBirth}</span>
                     <span className="font-medium">{formatFullDate(borrower.date_of_birth)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.nationality}</span>
+                    <span className="font-medium">{borrower.nationality ?? "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.maritalStatus}</span>
+                    <span className="font-medium">{borrower.marital_status ? capitalize(borrower.marital_status) : "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.phoneNumber}</span>
+                    <span className="font-medium">{borrower.phone_number ?? "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.email}</span>
+                    <span className="font-medium">{borrower.email ?? "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.province}</span>
+                    <span className="font-medium">{borrower.province ?? "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.district}</span>
+                    <span className="font-medium">{borrower.district ?? "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.issueDate}</span>
+                    <span className="font-medium">{borrower.issue_date ? formatFullDate(borrower.issue_date) : "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">{t.expiryDate}</span>
+                    <span className="font-medium">{borrower.expiry_date ? formatFullDate(borrower.expiry_date) : "-"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-500">{t.sevispassId}</span>

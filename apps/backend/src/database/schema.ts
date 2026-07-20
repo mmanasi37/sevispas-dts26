@@ -47,6 +47,9 @@ export interface BorrowerTable {
     last_name: string;
     date_of_birth: Timestamp;
     marital_status: 'single' | 'married' | 'divorced' | 'widowed' | null;
+    gender: 'male' | 'female' | 'other' | null;
+    title: string | null;
+    nationality: string | null;
     id_type_id: number;
     id_number: string;
     sevispass_id: string;
@@ -60,6 +63,9 @@ export interface BorrowerTable {
     monthly_income: Decimal | null;
     village: string | null;
     province: string | null;
+    district: string | null;
+    issue_date: Timestamp | null;
+    expiry_date: Timestamp | null;
     photo: string | null;
     created_at: Timestamp | null;
     updated_at: Timestamp | null;
