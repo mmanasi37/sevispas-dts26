@@ -21,8 +21,8 @@ const statusConfig = {
   },
   review: {
     icon: RefreshCw,
-    color: "text-blue-600",
-    bgColor: "bg-blue-100",
+    color: "text-brand-green-600",
+    bgColor: "bg-brand-green-100",
     label: "Under Review",
     description: "A loan officer is currently reviewing your application.",
   },

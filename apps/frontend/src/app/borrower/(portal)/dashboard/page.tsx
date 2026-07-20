@@ -180,8 +180,8 @@ export default function BorrowerDashboardPage() {
                     className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-full bg-blue-50">
-                        <action.icon className="h-4 w-4 text-blue-600" />
+                      <div className="p-2 rounded-full bg-brand-green-50">
+                        <action.icon className="h-4 w-4 text-brand-green-600" />
                       </div>
                       <div>
                         <p className="text-sm font-medium">{action.label}</p>

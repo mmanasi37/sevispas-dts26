@@ -60,7 +60,7 @@ export default function BorrowerPortalLayout({
                     className={cn(
                       "flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors",
                       active
-                        ? "bg-blue-600 text-white"
+                        ? "bg-brand-green-600 text-white"
                         : "text-gray-600 hover:bg-gray-100"
                     )}
                   >
@@ -75,7 +75,7 @@ export default function BorrowerPortalLayout({
 
             <div className="flex items-center gap-3 shrink-0">
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                <AvatarFallback className="bg-brand-green-100 text-brand-green-600 text-xs">
                   JD
                 </AvatarFallback>
               </Avatar>

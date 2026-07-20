@@ -63,7 +63,7 @@ export default function BorrowerDetailsPage({ params }: { params: Promise<{ borr
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarFallback className="bg-blue-100 text-blue-600">
+                  <AvatarFallback className="bg-brand-green-100 text-brand-green-600">
                     {initials(borrower.first_name, borrower.last_name)}
                   </AvatarFallback>
                 </Avatar>
@@ -142,7 +142,7 @@ export default function BorrowerDetailsPage({ params }: { params: Promise<{ borr
                       <TableCell className="capitalize">{app.purpose}</TableCell>
                       <TableCell>{formatFullDate(app.submitted_at)}</TableCell>
                       <TableCell className="text-right pr-6">
-                        <Link href={`/staff/applications/${app.id}/review`} className="text-blue-600 hover:underline text-sm">
+                        <Link href={`/staff/applications/${app.id}/review`} className="text-brand-green-600 hover:underline text-sm">
                           Review
                         </Link>
                       </TableCell>

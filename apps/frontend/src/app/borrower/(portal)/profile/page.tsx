@@ -57,7 +57,7 @@ export default function BorrowerProfile() {
               <div className="text-center">
                 <Avatar className="h-24 w-24 mx-auto mb-4">
                   <AvatarImage src={toPhotoSrc(borrower.photo)} alt={`${borrower.first_name} ${borrower.last_name}`} />
-                  <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">
+                  <AvatarFallback className="text-2xl bg-brand-green-100 text-brand-green-600">
                     {initials(borrower.first_name!, borrower.last_name!)}
                   </AvatarFallback>
                 </Avatar>
@@ -144,8 +144,8 @@ export default function BorrowerProfile() {
                 })}
               </div>
 
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-700 flex items-center">
+              <div className="mt-4 p-3 bg-brand-green-50 rounded-lg">
+                <p className="text-sm text-brand-green-700 flex items-center">
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Your digital credit file is growing. The longer you use MIJOE, the richer this gets.
                 </p>

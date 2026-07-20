@@ -56,7 +56,7 @@ export default function ApplicationReview({ loanId }: { loanId: string }) {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center gap-4">
                   <Avatar>
-                    <AvatarFallback className="bg-blue-100 text-blue-600">SM</AvatarFallback>
+                    <AvatarFallback className="bg-brand-green-100 text-brand-green-600">SM</AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-semibold">Sarah M.</p>
@@ -95,12 +95,12 @@ export default function ApplicationReview({ loanId }: { loanId: string }) {
                 <p>Business - Small retail shop expansion</p>
               </div>
 
-              <div className="border rounded-lg p-4 bg-blue-50">
+              <div className="border rounded-lg p-4 bg-brand-green-50">
                 <div className="flex items-start gap-2">
-                  <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <Shield className="h-5 w-5 text-brand-green-600 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-blue-700">SevisPass Verified Data</p>
-                    <p className="text-sm text-blue-600">
+                    <p className="font-semibold text-brand-green-700">SevisPass Verified Data</p>
+                    <p className="text-sm text-brand-green-600">
                       Identity: Sarah M. • Age: 32 • Location: Port Moresby • Verified: Yes
                     </p>
                   </div>

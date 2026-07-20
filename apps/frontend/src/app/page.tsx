@@ -22,7 +22,7 @@ const staffFeatures = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-100">
+    <div className="min-h-screen bg-linear-to-br from-brand-green-50 via-white to-brand-gold-100">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-14">
           <div className="flex justify-center mb-4">
@@ -35,10 +35,10 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
           <Link href="/borrower/login" className="group h-full">
             <Card
-              className="h-full flex flex-col shadow-md ring-1 ring-blue-100 transition-all duration-300 ease-out cursor-pointer hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-blue-200/60 hover:ring-blue-300"
+              className="h-full flex flex-col shadow-md ring-1 ring-brand-green-100 transition-all duration-300 ease-out cursor-pointer hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-brand-green-200/60 hover:ring-brand-green-300"
             >
               <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600 transition-transform duration-300 group-hover:scale-110">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-green-100 text-brand-green-600 transition-transform duration-300 group-hover:scale-110">
                   <Landmark className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-2xl mt-3">Borrower Portal</CardTitle>
@@ -50,13 +50,13 @@ export default function Home() {
                 <div className="space-y-2.5 text-sm text-gray-600 flex-1">
                   {borrowerFeatures.map((feature) => (
                     <div key={feature} className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-brand-green-500 mt-0.5 shrink-0" />
                       <span>{feature}</span>
                     </div>
                   ))}
                 </div>
                 <Button
-                  className="mt-6 w-full h-12 rounded-full text-base font-semibold shadow-md transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-300/50 group-hover:gap-3"
+                  className="mt-6 w-full h-12 rounded-full text-base font-semibold shadow-md transition-all duration-300 group-hover:shadow-lg group-hover:shadow-brand-green-300/50 group-hover:gap-3"
                 >
                   Enter Borrower Portal
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
@@ -67,10 +67,10 @@ export default function Home() {
 
           <Link href="/staff/login" className="group h-full">
             <Card
-              className="h-full flex flex-col shadow-md ring-1 ring-indigo-100 transition-all duration-300 ease-out cursor-pointer hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-indigo-200/60 hover:ring-indigo-300"
+              className="h-full flex flex-col shadow-md ring-1 ring-brand-gold-100 transition-all duration-300 ease-out cursor-pointer hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-brand-gold-200/60 hover:ring-brand-gold-300"
             >
               <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 transition-transform duration-300 group-hover:scale-110">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-gold-100 text-brand-gold-600 transition-transform duration-300 group-hover:scale-110">
                   <UserCog className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-2xl mt-3">Staff Portal</CardTitle>
@@ -82,14 +82,14 @@ export default function Home() {
                 <div className="space-y-2.5 text-sm text-gray-600 flex-1">
                   {staffFeatures.map((feature) => (
                     <div key={feature} className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-indigo-500 mt-0.5 shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-brand-gold-500 mt-0.5 shrink-0" />
                       <span>{feature}</span>
                     </div>
                   ))}
                 </div>
                 <Button
                   variant="outline"
-                  className="mt-6 w-full h-12 rounded-full text-base font-semibold border-2 border-indigo-200 text-indigo-700 shadow-sm transition-all duration-300 hover:bg-indigo-50 hover:border-indigo-300 group-hover:shadow-lg group-hover:shadow-indigo-200/50 group-hover:gap-3"
+                  className="mt-6 w-full h-12 rounded-full text-base font-semibold border-2 border-brand-gold-200 text-brand-gold-700 shadow-sm transition-all duration-300 hover:bg-brand-gold-50 hover:border-brand-gold-300 group-hover:shadow-lg group-hover:shadow-brand-gold-200/50 group-hover:gap-3"
                 >
                   Enter Staff Portal
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />

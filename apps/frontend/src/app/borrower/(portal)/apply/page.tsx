@@ -188,7 +188,7 @@ export default function LoanApplication() {
                   <div className="flex justify-center pb-2">
                     <Avatar className="h-24 w-24">
                       <AvatarImage src={toPhotoSrc(borrower.photo)} alt={`${borrower.first_name} ${borrower.last_name}`} />
-                      <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">{initials(borrower.first_name, borrower.last_name)}</AvatarFallback>
+                      <AvatarFallback className="text-2xl bg-brand-green-100 text-brand-green-600">{initials(borrower.first_name, borrower.last_name)}</AvatarFallback>
                     </Avatar>
                   </div>
                   <div className="flex justify-between">
@@ -405,13 +405,13 @@ export default function LoanApplication() {
                   </Select>
                 </div>
                 {amountNum > 0 && (
-                  <div className="bg-blue-50 p-4 rounded-lg space-y-1">
-                    <p className="text-sm font-medium text-blue-800">{t.calculatorTitle}</p>
-                    <div className="flex justify-between text-sm text-blue-700">
+                  <div className="bg-brand-green-50 p-4 rounded-lg space-y-1">
+                    <p className="text-sm font-medium text-brand-green-800">{t.calculatorTitle}</p>
+                    <div className="flex justify-between text-sm text-brand-green-700">
                       <span>{t.totalRepayable}</span>
                       <span>K {totalRepayable.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="flex justify-between text-sm text-blue-700">
+                    <div className="flex justify-between text-sm text-brand-green-700">
                       <span>{t.installmentPerFortnight}</span>
                       <span>K {installment.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                     </div>
@@ -461,8 +461,8 @@ export default function LoanApplication() {
                   <input type="checkbox" className="mt-1" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
                   {t.declarationAgree}
                 </label>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm text-blue-700 flex items-start">
+                <div className="bg-brand-green-50 p-4 rounded-lg">
+                  <p className="text-sm text-brand-green-700 flex items-start">
                     <Shield className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
                     {t.noDocs}
                   </p>

@@ -59,7 +59,7 @@ export default function StaffLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-brand-green-50 to-brand-gold-100 flex items-center justify-center p-4">
       <Card className="shadow-none w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -106,8 +106,8 @@ export default function StaffLogin() {
                   </p>
                 </div>
               ) : (
-                <div className="bg-blue-50 p-4 rounded-lg text-center">
-                  <Fingerprint className="h-16 w-16 text-blue-600 mx-auto mb-2" />
+                <div className="bg-brand-green-50 p-4 rounded-lg text-center">
+                  <Fingerprint className="h-16 w-16 text-brand-green-600 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">
                     Verify your identity with SevisPass
                   </p>

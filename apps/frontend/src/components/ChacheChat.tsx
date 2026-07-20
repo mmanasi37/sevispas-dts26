@@ -175,7 +175,7 @@ export default function ChacheChat() {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b">
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-blue-600 text-white">
+            <AvatarFallback className="bg-brand-green-600 text-white">
               <Sparkles className="h-4 w-4" />
             </AvatarFallback>
           </Avatar>
@@ -207,7 +207,7 @@ export default function ChacheChat() {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${m.role === "user" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
+              className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${m.role === "user" ? "bg-brand-green-600 text-white" : "bg-gray-100 text-gray-900"
                 }`}
             >
               {m.content || (isStreaming && i === messages.length - 1 ? "…" : "")}

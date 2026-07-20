@@ -69,9 +69,9 @@ export default function RepaymentSchedule() {
                 <p className="text-sm text-gray-600">Total Repaid</p>
                 <p className="text-2xl font-bold text-green-600">K {totalRepaid.toLocaleString()}</p>
               </div>
-              <div className="bg-blue-50 p-4 rounded-lg text-center">
+              <div className="bg-brand-green-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-gray-600">Remaining</p>
-                <p className="text-2xl font-bold text-blue-600">K {remaining.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-brand-green-600">K {remaining.toLocaleString()}</p>
               </div>
               <div className="bg-yellow-50 p-4 rounded-lg text-center">
                 <p className="text-sm text-gray-600">Next Payment</p>

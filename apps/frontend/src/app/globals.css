@@ -9,6 +9,29 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Brand palette sampled from the MIJOE SevisPass logo (forest green + gold). */
+  --color-brand-green-50: #f1fdf6;
+  --color-brand-green-100: #dffbeb;
+  --color-brand-green-200: #b6f6d0;
+  --color-brand-green-300: #7ff0ad;
+  --color-brand-green-400: #40e884;
+  --color-brand-green-500: #19cd62;
+  --color-brand-green-600: #139b4a;
+  --color-brand-green-700: #0f7b3b;
+  --color-brand-green-800: #0b5b2c;
+  --color-brand-green-900: #084421;
+  --color-brand-green-950: #052914;
+  --color-brand-gold-50: #fdf9f2;
+  --color-brand-gold-100: #faf2e1;
+  --color-brand-gold-200: #f3e1ba;
+  --color-brand-gold-300: #eacb85;
+  --color-brand-gold-400: #dfb149;
+  --color-brand-gold-500: #c39222;
+  --color-brand-gold-600: #946e1a;
+  --color-brand-gold-700: #755814;
+  --color-brand-gold-800: #57410f;
+  --color-brand-gold-900: #41310b;
+  --color-brand-gold-950: #271d07;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);

@@ -92,12 +92,12 @@ export default function RepaymentTracking() {
                 </div>
                 <AlertCircle className="h-8 w-8 text-red-600" />
               </div>
-              <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+              <div className="flex justify-between items-center p-3 bg-brand-green-50 rounded-lg">
                 <div>
                   <p className="font-medium">Pending</p>
-                  <p className="text-2xl font-bold text-blue-600">K {pendingTotal.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-brand-green-600">K {pendingTotal.toLocaleString()}</p>
                 </div>
-                <KinaIcon className="h-8 w-8 text-blue-600" />
+                <KinaIcon className="h-8 w-8 text-brand-green-600" />
               </div>
             </div>
           </CardContent>

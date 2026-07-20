@@ -108,7 +108,7 @@ export default function Reports() {
                     <span className="text-sm font-medium">45%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: "45%" }} />
+                    <div className="bg-brand-green-600 h-2 rounded-full" style={{ width: "45%" }} />
                   </div>
                 </div>
                 <div>

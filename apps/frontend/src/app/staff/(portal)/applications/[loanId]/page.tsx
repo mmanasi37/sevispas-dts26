@@ -45,7 +45,7 @@ export default function ApplicationsPage({ params }: { params: { loanId: string 
             case "Pending":
                 return <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50 font-normal">Pending</Badge>;
             case "Review":
-                return <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 font-normal">Review</Badge>;
+                return <Badge variant="outline" className="text-brand-green-600 border-brand-green-200 bg-brand-green-50 font-normal">Review</Badge>;
             case "Approved":
                 return <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 font-normal">Approved</Badge>;
             case "Rejected":
