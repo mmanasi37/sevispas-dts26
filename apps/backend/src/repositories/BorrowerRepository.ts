@@ -1,6 +1,7 @@
 import { sql } from 'kysely';
 import { db } from '../database/index.ts';
 import type { BorrowerUpdate, Borrower, NewBorrower } from '../database/types.ts';
+import { loanApplicationStatus } from '../database/helpers.ts';
 
 export async function findBorrowerById(id: number) {
     return await db.selectFrom('Borrower')
@@ -310,7 +311,8 @@ export async function createLoanApplication(borrowerId: number, input: {
 export async function getBorrowerLoanApplications(borrowerId: number) {
     return await db.selectFrom('LoanApplication')
         .where('borrower_id', '=', borrowerId)
-        .selectAll()
+        .selectAll('LoanApplication')
+        .select((eb) => [loanApplicationStatus(eb.ref('LoanApplication.id'))])
         .orderBy('submitted_at', 'desc')
         .execute();
 }
