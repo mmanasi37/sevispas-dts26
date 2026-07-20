@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import ChacheChat from "@/components/ChacheChat";
 import LocaleSelector from "@/components/LocaleSelector";
+import Logo from "@/components/Logo";
 
 const navItems = [
   { href: "/borrower/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -41,6 +42,7 @@ export default function BorrowerPortalLayout({
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/borrower/dashboard" className="flex items-center gap-2 shrink-0">
+              <Logo size="sm" animate href={null} />
               <span className="text-xl font-bold">MIJOE</span>
               <Badge variant="outline" className="hidden sm:inline-flex text-xs">
                 <Shield className="h-3 w-3 mr-1" />

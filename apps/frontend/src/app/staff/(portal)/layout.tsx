@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import Logo from "@/components/Logo";
 import {
   LayoutDashboard,
   NotebookText,
@@ -36,6 +37,7 @@ export default function StaffPortalLayout({
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/staff/dashboard" className="flex items-center gap-2 shrink-0">
+              <Logo size="sm" animate href={null} />
               <span className="text-xl font-bold">MIJOE</span>
               <Badge variant="outline" className="hidden sm:inline-flex text-xs">
                 <Shield className="h-3 w-3 mr-1" />

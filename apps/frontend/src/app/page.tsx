@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Landmark, UserCog, CheckCircle2, ArrowRight } from "lucide-react";
+import { Landmark, UserCog, CheckCircle2, ArrowRight } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const borrowerFeatures = [
   "SevisPass digital identity login",
@@ -24,9 +25,8 @@ export default function Home() {
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-100">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <Shield className="h-8 w-8 text-blue-600" />
-            <h1 className="text-5xl font-bold text-gray-900">MIJOE</h1>
+          <div className="flex justify-center mb-4">
+            <Logo size="lg" animate href={null} />
           </div>
           <p className="text-xl text-gray-600">Microfinance Platform powered by SevisPass</p>
           <p className="text-sm text-gray-500 mt-2">Secure • Transparent • Inclusive</p>

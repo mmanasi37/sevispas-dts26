@@ -190,3 +190,27 @@
     @apply font-sans;
   }
 }
+
+@keyframes logo-fly-in {
+  from {
+    opacity: 0;
+    transform: translate(140%, -140%) scale(0.6) rotate(10deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+.logo-fly-in {
+  animation: logo-fly-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-fly-in {
+    animation: none;
+  }
+}

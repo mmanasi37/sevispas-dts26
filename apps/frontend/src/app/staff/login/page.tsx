@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Fingerprint, Shield, User } from "lucide-react";
+import { Fingerprint, User } from "lucide-react";
 import { DigitalIdentityAuth } from "@/lib/DigitalIdentityAuth";
+import Logo from "@/components/Logo";
 
 export default function StaffLogin() {
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function StaffLogin() {
       <Card className="shadow-none w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <Shield className="h-12 w-12 text-blue-600" />
+            <Logo size="md" animate href={null} />
           </div>
           <CardTitle className="text-2xl">Staff Login</CardTitle>
           <CardDescription>
